@@ -1453,26 +1453,16 @@
   window.addEventListener("resize", fit); fit();
 
   /* ------------------------------------------------------- review helpers */
-  const sel = $("#review-jump"), notes = $("#notes");
+  // the production notes panel was removed from the bar (client); the notes stay in data.js for the Storyline build
+  const sel = $("#review-jump");
   let lastScene = null, group = null;
   DATA.screens.forEach(s => {
     if (s.scene !== lastScene) { group = document.createElement("optgroup"); group.label = s.scene; sel.appendChild(group); lastScene = s.scene; }
-    const o = document.createElement("option"); o.value = s.id; o.textContent = (s.index + 1) + ". " + s.name + (s.note ? " 📝" : ""); group.appendChild(o);
+    const o = document.createElement("option"); o.value = s.id; o.textContent = (s.index + 1) + ". " + s.name; group.appendChild(o);
   });
   sel.addEventListener("change", () => goTo(sel.value));
   $("#review-reset").addEventListener("click", () => { state = Object.assign(fresh(), { sound: state.sound }); save(); goTo("intro"); toast("ההתקדמות אופסה"); });
-  function reviewSync() {
-    if (!current) return;
-    sel.value = current.id;
-    const v = current.video && VIDEOS[current.video];
-    const script = v && v.scenes.length ? `<p><b>תסריט הסרטון${v.length ? ` (${v.length})` : ""} – קריינות: ${v.narrator}</b></p><ol>${v.scenes.map(sc => `<li>${sc[0]}${sc[1] ? `<br><i>רואים: ${sc[1]}</i>` : ""}${sc[2] ? `<br>כותרת: <b>${sc[2]}</b>` : ""}</li>`).join("")}</ol>` : "";
-    notes.innerHTML = `<h4>${current.index + 1}. ${current.name}</h4>` + (current.note ? `<p>${current.note.replace(/⚠/g, "<b>⚠</b>")}</p>` : (script ? "" : "<i>אין הערות הפקה למסך זה.</i>")) + script;
-  }
-  document.addEventListener("keydown", e => {
-    if (e.target.tagName === "INPUT") return;
-    if (e.key === "n" || e.key === "N" || e.key === "מ") { notes.classList.toggle("show"); reviewSync(); }
-  });
-  $("#review-notes").addEventListener("click", () => { notes.classList.toggle("show"); reviewSync(); });
+  function reviewSync() { if (current) sel.value = current.id; }
 
   window.LOMDA = { DATA, SETS, LINKS, goTo, state: () => state };
 
