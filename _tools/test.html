@@ -1,0 +1,54 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>test</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}iframe{border:0;width:1200px;height:675px;display:block}</style></head>
+<body>
+<!-- dev tool only: drives the lomda for screenshots. test.html#<screen>|<step>|<step>…
+     steps: click:<css> · wait:<ms> · solve (play the current station / quiz, mostly right) · bad (the same, mostly wrong) -->
+<iframe id="f"></iframe>
+<script>
+const [id, ...steps] = decodeURIComponent(location.hash.slice(1)).split("|");
+const f = document.getElementById("f");
+localStorage.clear();
+f.src = "../index.html#" + id;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+f.onload = async () => {
+  const w = f.contentWindow, d = w.document, $ = s => d.querySelector(s), $$ = s => [...d.querySelectorAll(s)];
+  const scr = () => $(".screen.active"), cur = () => w.LOMDA.DATA.screens.find(s => s.id === scr().id.slice(4));
+  await sleep(300);
+  for (const st of steps) {
+    const [k, v] = st.split(/:(.+)/);
+    if (k === "click") { const el = scr().querySelector(v) || $(v); if (el) el.click(); await sleep(150); }
+    else if (k === "wait") await sleep(+v);
+    else if (k === "js") { w.eval(v); await sleep(150); }
+    else if (k === "solve" || k === "bad") {
+      const s = cur(), good = k === "solve";
+      if (s.type === "station") {
+        for (let i = 0; i < s.rows.length; i++) {
+          await sleep(500);
+          const r = s.rows[i], btns = $$(".screen.active .st-item");
+          const pick = good ? r.correct : r.items.map((x, j) => j).filter(j => !r.correct.includes(j)).slice(0, r.correct.length);
+          for (const j of pick) { const b = btns[j]; if (b && !b.disabled) { if (s.drag) { b.click(); await sleep(50); $(".screen.active [data-drop]").click(); } else b.click(); } await sleep(120); }
+          await sleep(1900);
+        }
+      } else if (s.type === "match") {
+        for (let i = 0; i < s.items.length; i++) {
+          await sleep(400);
+          const it = s.items[i], key = s.kind === "figure" ? it : it.ans;
+          const o = good || i % 2 ? scr().querySelector(`[data-opt="${key}"]`) : $$(".screen.active [data-opt]").find(x => x.dataset.opt !== key);
+          if (o) o.click(); await sleep(1900);
+        }
+      } else if (s.type === "dragmatch") {
+        s.targets.forEach((t, i) => { const c = $$(".screen.active [data-chip]").find(x => x.dataset.val === (good || i ? t.ans : s.targets[(i + 1) % s.targets.length].ans)); if (c) { c.click(); scr().querySelector(`[data-drop="${i}"]`).click(); } });
+        await sleep(200); scr().querySelector("[data-check]").click();
+      } else if (s.type === "wall") {
+        for (let r = 0; r < s.rows.length; r++) {
+          const c = s.rows[r].findIndex(x => x[1]);
+          if (!good && r === 2) { const wrong = scr().querySelector(`.stone.option:not([data-c="${c}"])`); if (wrong) wrong.click(); await sleep(300); }
+          scr().querySelector(`.stone[data-r="${r}"][data-c="${c}"]`).click(); await sleep(250);
+        }
+      }
+    }
+  }
+};
+</script>
+</body></html>

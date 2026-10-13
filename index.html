@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>חדר כושר פיננסי – מטבע</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/payments.css">
+  <link rel="stylesheet" href="css/currency.css">
+</head>
+<body>
+  <div id="viewport">
+    <div id="stage">
+      <div id="screens"></div>
+      <div id="chrome"></div>
+      <!-- the cover the lomda opens on (not a slide): PLAY closes it and opens slide 1 -->
+      <div id="cover">
+        <img src="assets/img/cover.jpg" alt="חדר כושר פיננסי – אימון מטבע">
+        <button type="button" class="cover-play" aria-label="התחלת הלומדה" title="התחלת הלומדה">
+          <svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+            <circle cx="60" cy="60" r="55" fill="rgba(11,43,59,.55)" stroke="#FFFFFF" stroke-width="5"></circle>
+            <path d="M50 38 L84 60 L50 82 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7" stroke-linejoin="round"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- כלי בדיקה (מחוץ לבמה – לא חלק מהלומדה) -->
+  <div id="review">
+    <select id="review-jump" title="מעבר למסך"></select>
+    <button id="review-notes" title="הערות הפקה ותסריטי סרטונים (מקש N)">📝 הערות</button>
+    <button id="review-reset" title="איפוס התקדמות">↺ איפוס</button>
+  </div>
+  <div id="notes"></div>
+  <div id="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

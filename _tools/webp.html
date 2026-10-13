@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>GIF → animated WebP</title></head>
+<body>
+<pre id="log"></pre>
+<script>
+/* Dev tool (not part of the lomda): converts the original GIFs in /_src to animated WebP files.
+   Every frame is decoded (ImageDecoder), scaled on a canvas, encoded as a lossy WebP with alpha
+   (canvas.toBlob), and the single-frame files are muxed into one animated WebP (VP8X + ANIM + ANMF),
+   keeping each frame's duration and an endless loop. Results are PUT to /_out/<name>.webp. */
+const log = m => (document.getElementById("log").textContent += m + "\n");
+
+const fourcc = s => [...s].map(c => c.charCodeAt(0));
+const u24 = v => [v & 255, (v >> 8) & 255, (v >> 16) & 255];
+const u32 = v => [v & 255, (v >> 8) & 255, (v >> 16) & 255, (v >>> 24) & 255];
+function chunk(tag, data) {                       // RIFF chunk, padded to an even length
+  const out = new Uint8Array(8 + data.length + (data.length & 1));
+  out.set(fourcc(tag), 0); out.set(u32(data.length), 4); out.set(data, 8);
+  return out;
+}
+function concat(parts) {
+  const n = parts.reduce((s, p) => s + p.length, 0), out = new Uint8Array(n);
+  let o = 0; for (const p of parts) { out.set(p, o); o += p.length; }
+  return out;
+}
+// the image chunks (ALPH + VP8, or VP8L) of a single-frame WebP file
+function frameChunks(buf) {
+  const b = new Uint8Array(buf), parts = [];
+  for (let o = 12; o + 8 <= b.length;) {
+    const tag = String.fromCharCode(b[o], b[o + 1], b[o + 2], b[o + 3]);
+    const size = b[o + 4] | (b[o + 5] << 8) | (b[o + 6] << 16) | (b[o + 7] << 24);
+    const total = 8 + size + (size & 1);
+    if (tag === "ALPH" || tag === "VP8 " || tag === "VP8L") parts.push(b.slice(o, o + total));
+    o += total;
+  }
+  return concat(parts);
+}
+
+async function convert(name, width, quality) {
+  const t0 = performance.now();
+  const buf = await (await fetch("/_src/" + name + ".gif", { cache: "no-store" })).arrayBuffer();
+  const dec = new ImageDecoder({ data: buf, type: "image/gif" });
+  await dec.tracks.ready;
+  const n = dec.tracks.selectedTrack.frameCount;
+  const first = (await dec.decode({ frameIndex: 0 })).image;
+  const W = Math.min(width, first.displayWidth), H = Math.round(W * first.displayHeight / first.displayWidth);
+  first.close();
+  const cv = new OffscreenCanvas(W, H), g = cv.getContext("2d");
+  g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high";
+  const frames = [];
+  let total = 0;
+  for (let i = 0; i < n; i++) {
+    const { image } = await dec.decode({ frameIndex: i });
+    g.clearRect(0, 0, W, H); g.drawImage(image, 0, 0, W, H);
+    const dur = Math.max(10, Math.round((image.duration || 40000) / 1000));   // µs → ms
+    image.close();
+    const blob = await cv.convertToBlob({ type: "image/webp", quality });
+    const data = frameChunks(await blob.arrayBuffer());
+    // ANMF: x/2, y/2, w-1, h-1, duration, flags (bit1 = do not blend: every frame replaces the canvas)
+    frames.push(chunk("ANMF", concat([new Uint8Array([...u24(0), ...u24(0), ...u24(W - 1), ...u24(H - 1), ...u24(dur), 0x02]), data])));
+    total += dur;
+  }
+  dec.close();
+  const vp8x = chunk("VP8X", new Uint8Array([0x12, 0, 0, 0, ...u24(W - 1), ...u24(H - 1)]));   // animation + alpha
+  const anim = chunk("ANIM", new Uint8Array([0, 0, 0, 0, 0, 0]));                               // transparent bg, loop forever
+  const body = concat([new Uint8Array(fourcc("WEBP")), vp8x, anim, ...frames]);
+  const file = concat([new Uint8Array(fourcc("RIFF")), new Uint8Array(u32(body.length)), body]);
+  const r = await fetch("/_out/" + name + ".webp", { method: "PUT", body: file });
+  log(`${name}: ${n} frames ${W}x${H} ${(total / 1000).toFixed(2)}s → ${(file.length / 1048576).toFixed(1)}MB (${r.status}) in ${((performance.now() - t0) / 1000).toFixed(0)}s`);
+  return { name, n, W, H, total, size: file.length, status: r.status };
+}
+
+// target width ≈ 2× the largest size each animation is shown at in the lomda (never above the original)
+window.JOBS = [["aya-pulley-pull", 940]];
+window.JOBS_OLD = [
+  ["st3-rope", 756], ["st2-deadlift", 548], ["st1-squat", 752], ["st4-box", 476], ["st5-pushup", 566],
+  ["aya-bench", 824], ["adam-pull-his-right", 752], ["adam-pull-his-left", 752], ["aya-stretch", 848], ["adam-stretch", 928]
+];
+window.runAll = async (quality = 0.85, only) => {
+  const out = [];
+  for (const [name, w] of JOBS) if (!only || only.includes(name)) out.push(await convert(name, w, quality));
+  log("done"); return out;
+};
+window.addEventListener("load", () => runAll(0.85).then(() => (document.title = "DONE")));
+</script>
+</body></html>

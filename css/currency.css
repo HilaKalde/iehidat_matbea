@@ -1,0 +1,759 @@
+/* =====================================================================================
+   יחידת מטבע – רכיבים ייעודיים (נטען אחרי style.css ו-payments.css)
+   ===================================================================================== */
+
+/* ---------- cover ---------- */
+#cover > img { filter: saturate(1.05); }
+.cover-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,22,30,.55) 0%, rgba(7,22,30,.15) 45%, rgba(7,22,30,.45) 100%); }
+.cover-logo { position: absolute; left: 74px; top: 0; width: 96px; height: 92px; display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.97); border-radius: 0 0 24px 24px; box-shadow: 0 8px 20px rgba(0,0,0,.22); }
+.cover-logo img { width: 86px; height: 86px; object-fit: contain; }
+.cover-title { position: absolute; left: 300px; top: 70px; width: 600px; text-align: center; color: #FFFFFF; text-shadow: 0 3px 14px rgba(0,0,0,.6); }
+.cover-title .ct-1 { display: block; font-size: 64px; font-weight: 800; line-height: 1.05; }
+.cover-title .ct-2 { display: inline-block; margin-top: 12px; font-size: 26px; font-weight: 800; color: var(--navy); background: var(--orange); border-radius: 26px; padding: 4px 26px; text-shadow: none; }
+.cover-char { position: absolute; height: 470px; top: 210px; filter: drop-shadow(0 10px 12px rgba(0,0,0,.35)); }
+.cover-char.adam { left: 70px; }
+.cover-char.aya { left: 820px; }
+.cover-play { top: 62%; }
+
+/* ---------- menu ---------- */
+.machine-img.m-functional { z-index: 3; }
+.menu-panel { left: 245px; width: 640px; }
+.intro-title.on-menu span { font-size: 19pt; }
+
+/* ---------- shared bits ---------- */
+.tick { position: absolute; left: 8px; top: 8px; width: 24px; height: 24px; border-radius: 50%; background: var(--ok-mid); color: #fff; font-size: 14px; font-weight: 800; display: none; align-items: center; justify-content: center; }
+.seen > .tick { display: flex; }
+.q-scrim.strong { background: rgba(7,22,30,.62); }
+.st-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 12px; }
+.st-actions .link-btn { padding: 6px 16px; }
+.btn.practice-btn { padding: 10px 30px; }
+
+/* countdown bar */
+.tbar { position: relative; flex: 1; height: 16px; border-radius: 8px; background: rgba(11,43,59,.18); overflow: hidden; --p: 100%; }
+.tbar .tb-fill { position: absolute; top: 0; bottom: 0; right: 0; width: var(--p); background: var(--cyan-d); border-radius: 8px; }
+.tbar.low .tb-fill { background: #E8862A; }
+.tbar .tb-sec { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--navy); }
+.tbar.big { height: 22px; width: 260px; flex: none; background: rgba(255,255,255,.25); }
+.tbar.big .tb-sec { font-size: 14px; color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.tbar[hidden] { display: none; }
+
+/* ---------- functional: timeline ---------- */
+.tl-head { left: 150px; top: 92px; width: 900px; text-align: center; color: #FFFFFF; }
+.tl-head .h-title { color: #FFFFFF; font-size: 30px; }
+.tl-head .txt { margin-top: 6px; font-size: 18.5px; }
+.tl-line { left: 120px; top: 368px; width: 960px; height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--cyan), var(--orange)); }
+.tl { left: 110px; top: 220px; width: 980px; margin: 0; padding: 0; list-style: none; display: flex; justify-content: space-between; }
+.tl > li { width: 152px; display: flex; flex-direction: column; align-items: center; }
+.tl-btn { position: relative; width: 152px; height: 226px; padding: 10px 8px; border: 0; border-radius: 20px; cursor: pointer; font-family: inherit;
+  background: linear-gradient(180deg, #FFFFFF 0%, #E9F7FA 100%); color: var(--navy); box-shadow: var(--btn-shadow);
+  display: flex; flex-direction: column; align-items: center; gap: 6px; transition: transform 180ms ease, box-shadow 180ms ease; }
+.tl-btn:is(:hover, :focus-visible) { transform: translateY(-3px); box-shadow: var(--btn-shadow-hover); }
+.tl-btn.seen { background: linear-gradient(180deg, #FFFFFF 0%, #DDF0D2 100%); }
+.tl-n { width: 30px; height: 30px; border-radius: 50%; background: var(--navy); color: #fff; font-weight: 800; font-size: 17px; display: flex; align-items: center; justify-content: center; }
+.tl-img { width: 132px; height: 104px; display: flex; align-items: center; justify-content: center; }
+.tl-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.tl-lbl { font-size: 18px; font-weight: 800; line-height: 1.12; text-align: center; text-wrap: balance; }
+.tl-when { margin-top: 10px; font-size: 15px; font-weight: 700; color: #FFFFFF; text-align: center; line-height: 1.2; background: rgba(11,43,59,.85); border-radius: 12px; padding: 4px 10px; }
+.tl-prog { left: 0; right: 0; top: 548px; margin: 0 auto; }
+.era-modal { left: 210px; top: 130px; width: 780px; padding: 28px 34px; }
+.era-grid { display: grid; grid-template-columns: 280px 1fr; gap: 26px; align-items: center; }
+.era-grid > img { width: 280px; max-height: 260px; object-fit: contain; }
+.era-grid .h-title { margin-top: 10px; }
+.era-st { margin-top: 12px; font-size: 17px; color: var(--teal); }
+
+/* ---------- functional: how-to ---------- */
+.fh-wrap { left: 140px; top: 90px; width: 920px; color: #FFFFFF; text-align: right; }
+.fh-wrap .h-title { color: #FFFFFF; font-size: 31px; }
+.fh-lead { margin-top: 6px; font-size: 19px; }
+.fh-list { list-style: none; padding: 0; margin: 16px 0 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.fh-list li { background: rgba(255,255,255,.96); color: var(--navy); border-radius: 18px; padding: 10px 8px 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 3px; box-shadow: var(--btn-shadow); }
+.fh-list img { width: 100px; height: 72px; object-fit: contain; }
+.fh-n { font-size: 13px; font-weight: 700; color: var(--teal); }
+.fh-list b { font-size: 19px; line-height: 1.1; }
+.fh-topic { font-size: 15.5px; font-weight: 700; line-height: 1.15; min-height: 36px; display: flex; align-items: center; }
+.fh-task { font-size: 13.5px; background: #FFF3D6; border-radius: 10px; padding: 2px 8px; line-height: 1.2; }
+.fh-tip { margin-top: 14px; font-size: 17.5px; color: #FFF0C4; font-weight: 700; }
+
+/* ---------- functional: stations ---------- */
+.stepper-wrap { left: 250px; top: 10px; width: 660px; }
+.st-stepper.six .stp { width: 100px; }
+.st-stepper.six .stp-line { left: 54px; right: 54px; }
+.st-stepper.six .stp-dot img { width: 32px; height: 32px; }
+.st-card { left: 310px; top: 98px; width: 580px; max-height: 470px; padding: 16px 24px 16px; }
+.st-head { display: flex; align-items: center; gap: 10px; }
+.st-title { font-size: 22px; font-weight: 800; }
+.st-intro { margin-top: 10px; font-size: 17.5px; line-height: 1.42; }
+.st-task { margin-top: 10px; font-size: 17.5px; line-height: 1.4; background: #E8F6FA; border-radius: 14px; padding: 8px 14px; display: flex; gap: 10px; align-items: flex-start; }
+.ic-task { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--navy); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+.st-meta { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+.st-rowno { font-size: 16px; font-weight: 800; white-space: nowrap; }
+.st-pts { display: inline-flex; align-items: center; gap: 5px; font-weight: 800; font-size: 18px; background: #FFF6DC; border: 1px solid #E3B93B; border-radius: 14px; padding: 2px 10px; }
+.st-pts.bump { animation: bump .5s; }
+.st-q { margin-top: 12px; font-size: 19px; font-weight: 800; line-height: 1.3; }
+.st-items { margin-top: 14px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.st-item {
+  position: relative; min-height: 58px; padding: 8px 14px; border: 2px solid #BFE6EE; border-radius: 16px; background: #FFFFFF; cursor: pointer;
+  font-family: inherit; font-size: 19px; font-weight: 700; color: var(--navy); line-height: 1.2; text-wrap: balance;
+  box-shadow: var(--btn-shadow); transition: transform 160ms ease, box-shadow 160ms ease, background .15s, border-color .15s;
+}
+.st-item:is(:hover, :focus-visible):not(:disabled) { transform: translateY(-2px); border-color: var(--cyan-d); box-shadow: var(--btn-shadow-hover); }
+.st-item:disabled { cursor: default; }
+/* chosen right / wrong: solid colour + ✓ / ✗ – readable white text (≥ 6.5:1) */
+.st-item.ok, .rv-it.ok { background: #2E6B1F; border-color: #2E6B1F; color: #FFFFFF; }
+.st-item.bad, .rv-it.bad { background: #A3262A; border-color: #A3262A; color: #FFFFFF; }
+.st-item.ok::after, .st-item.bad::after { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 20px; font-weight: 800; }
+.st-item.ok::after { content: "✓"; }
+.st-item.bad::after { content: "✗"; }
+.st-item.should, .rv-it.should { border: 3px dashed #2E6B1F; background: #EEF7E6; color: #1F4D13; }
+.st-item.should::after { content: "✓"; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 18px; font-weight: 800; color: #2E6B1F; }
+.st-items.drag { grid-template-columns: 1fr 1fr; }
+.st-items.drag .st-item { cursor: grab; touch-action: none; }
+.bars-drop { margin: 12px auto 0; width: 300px; height: 112px; border: 3px dashed rgba(11,43,59,.25); border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background .2s, border-color .2s; }
+.bars-drop img { height: 92px; }
+.bars-drop span { font-weight: 800; color: var(--teal); }
+.bars-drop.ready { border-color: var(--orange); background: #FFF6DC; }
+.bars-drop.over { background: #FFE7A8; }
+[data-chip].armed { outline: 3px solid var(--orange); outline-offset: 2px; }
+[data-chip].lifted { opacity: .35; }
+.ghost { box-shadow: 0 12px 24px rgba(0,0,0,.35) !important; }
+.st-need { margin-top: 10px; min-height: 26px; text-align: center; font-size: 17px; font-weight: 700; color: var(--teal); }
+.row-ok { color: #2E6B1F; font-weight: 800; font-size: 19px; }
+.row-bad { color: #A3262A; font-weight: 800; font-size: 19px; }
+.st-stop { margin-left: auto; }
+.st-card .inline-fb { margin-top: 12px; }
+.st-review { margin-top: 10px; max-height: 190px; overflow: auto; display: flex; flex-direction: column; gap: 5px; }
+.rv-row { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.rv-q { width: 100%; font-size: 14px; font-weight: 700; }
+.rv-it { font-size: 14px; padding: 2px 9px; border-radius: 10px; border: 1px solid #CDEFF5; background: #F2FDFF; }
+/* the athletes on the mats */
+.ex-fig { z-index: 2; transition: transform .5s ease; }
+.ex-fig.hold { animation: hold-pulse .9s ease; }
+@keyframes hold-pulse { 0%,100% { transform: none } 50% { transform: translateY(-4px) } }
+.ex-fig.fallen { animation: none; }
+.ex-fig.run { animation: run-bob .3s ease-in-out 5; }
+@keyframes run-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-16px) } }
+[data-fig="w"].stepping { transform: translateX(calc(var(--step, 0) * 26px)); }
+[data-fig="m"].stepping { transform: translateX(calc(var(--step, 0) * -26px)); }
+.lunge-marks i { position: absolute; width: 66px; height: 18px; border-radius: 50%; background: rgba(102,209,227,.55); box-shadow: 0 0 0 3px rgba(255,255,255,.5); }
+.lunge-marks i:nth-child(1) { left: 150px; top: 628px; } .lunge-marks i:nth-child(2) { left: 205px; top: 628px; } .lunge-marks i:nth-child(3) { left: 260px; top: 628px; }
+
+/* ---------- ladder (set 2) ---------- */
+.ladder { left: 0; top: 112px; width: 300px; height: 560px; z-index: 3; }
+.ladder-img { position: absolute; left: -48px; top: 30px; width: 352px; height: 528px; filter: drop-shadow(0 10px 12px rgba(0,0,0,.35)); transition: transform .35s ease, opacity .35s ease; }
+.ladder-img.climbing { animation: climb .9s ease; }
+@keyframes climb { 0% { transform: none } 35% { transform: translateY(-18px); opacity: .25 } 60% { transform: translateY(10px); opacity: .25 } 100% { transform: none; opacity: 1 } }
+.ladder-top { position: absolute; left: 92px; top: -2px; width: 58px; height: 58px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 4px 10px rgba(0,0,0,.35); }
+.ladder-top img { width: 100%; height: 100%; }
+.ladder-steps { position: absolute; left: 212px; top: 70px; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 46px; }
+.lstep { display: flex; align-items: center; gap: 6px; width: 92px; padding: 5px 6px; border: 0; border-radius: 12px; cursor: pointer; font-family: inherit; text-align: right;
+  background: rgba(255,255,255,.9); color: var(--navy); box-shadow: var(--btn-shadow); transition: transform 160ms ease; }
+.lstep:is(:hover, :focus-visible) { transform: translateY(-2px); }
+.lstep .ls-n { flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.lstep .ls-t { font-size: 12.5px; font-weight: 800; line-height: 1.1; }
+.lstep.here { background: var(--orange); }
+.lstep.done .ls-n { background: #2E6B1F; }
+/* the content column beside the ladder */
+.lad-content { left: 320px; top: 92px; width: 820px; color: #FFFFFF; }
+.lad-content .h-title { color: #FFFFFF; font-size: 29px; }
+.lad-content .lc-lead { margin-top: 6px; font-size: 18.5px; }
+.lad-content .txt { color: #FFFFFF; }
+.lad-text .txt { margin-top: 12px; font-size: 20px; line-height: 1.45; }
+.lad-text { top: 120px; width: 760px; }
+.lc-after { margin-top: 12px; font-size: 17.5px; color: #FFF0C4; font-weight: 700; }
+.lc-after.strong { font-size: 19px; }
+/* stage 1: figures grid */
+.fig-grid { margin-top: 12px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.fig-btn { position: relative; height: 136px; padding: 8px 4px; border: 0; border-radius: 16px; cursor: pointer; font-family: inherit;
+  background: linear-gradient(180deg, #FFFFFF 0%, #E9F7FA 100%); color: var(--navy); box-shadow: var(--btn-shadow);
+  display: flex; flex-direction: column; align-items: center; gap: 6px; transition: transform 180ms ease; }
+.fig-btn:is(:hover, :focus-visible) { transform: translateY(-2px); }
+.fig-btn.seen { background: linear-gradient(180deg, #FFFFFF 0%, #DDF0D2 100%); }
+.fb-name { font-size: 15px; font-weight: 800; line-height: 1.1; text-align: center; }
+/* a portrait cut out of a banknote, black & white */
+.portrait { position: relative; display: inline-block; overflow: hidden; border-radius: 12px; background: #DDE6EA; flex: none; }
+.portrait img { position: absolute; max-width: none; filter: grayscale(1) contrast(1.1); }
+.portrait.missing { display: inline-flex; align-items: center; justify-content: center; background: #C9D5DA; }
+.portrait.missing svg { width: 55%; fill: #8FA3AC; }
+.bn { display: block; width: 100%; height: auto; border-radius: 6px; box-shadow: 0 3px 8px rgba(0,0,0,.25); }
+.bn-missing { aspect-ratio: 2 / 1; display: flex; align-items: center; justify-content: center; text-align: center; background: repeating-linear-gradient(45deg, #EEF4F6, #EEF4F6 10px, #E2EBEE 10px, #E2EBEE 20px);
+  border: 2px dashed #9FB3BB; color: #4C5D64; font-size: 15px; font-weight: 700; line-height: 1.3; }
+.bn-modal { left: 240px; top: 80px; width: 720px; padding: 26px 34px 28px; }
+.bn-modal .h-title { padding-left: 48px; font-size: 28px; }
+.bn.big { margin-top: 14px; max-width: 520px; margin-inline: auto; }
+.bn-missing.big { width: 460px; }
+/* stage 2: series */
+.ser-grid { margin-top: 14px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.ser-btn { position: relative; padding: 12px 10px; border: 0; border-radius: 16px; cursor: pointer; font-family: inherit; background: linear-gradient(180deg, #FFFFFF 0%, #E9F7FA 100%);
+  color: var(--navy); box-shadow: var(--btn-shadow); display: flex; flex-direction: column; align-items: center; gap: 10px; transition: transform 180ms ease; }
+.ser-btn:is(:hover, :focus-visible) { transform: translateY(-2px); }
+.ser-btn.seen { background: linear-gradient(180deg, #FFFFFF 0%, #DDF0D2 100%); }
+.sb-name { font-size: 17px; font-weight: 800; }
+.lad-content .wall-actions { margin-top: 14px; }
+/* matching quiz */
+.mq-top { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.mq-dots { margin: 12px 0 0; padding: 0; list-style: none; display: flex; gap: 8px; }
+.mq-dots li { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.22); color: #FFFFFF; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.mq-dots li.now { background: var(--orange); color: var(--navy); }
+.mq-dots li.ok { background: #2E6B1F; }
+.mq-dots li.bad { background: #A3262A; }
+.mq-body { margin-top: 14px; display: grid; grid-template-columns: 250px 1fr; gap: 24px; align-items: start; }
+.mq-visual { background: rgba(255,255,255,.96); border-radius: 22px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--navy); min-height: 290px; justify-content: center; }
+.mq-visual.series { grid-column: 1 / -1; min-height: 0; }
+.mq-visual .mq-note { max-width: 440px; }
+.mq-name { font-size: 21px; font-weight: 800; text-align: center; }
+.mq-body:has(.mq-visual.series) { grid-template-columns: 1fr; }
+.mq-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mq-opts.series { grid-template-columns: repeat(5, 1fr); }
+.mq-opt { position: relative; min-height: 64px; padding: 8px 14px; border: 2px solid transparent; border-radius: 18px; background: #FFFFFF; color: var(--navy);
+  font-family: inherit; font-size: 18px; font-weight: 700; line-height: 1.2; cursor: pointer; box-shadow: var(--btn-shadow); text-wrap: balance;
+  display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 160ms ease, box-shadow 160ms ease; }
+.mq-opt:is(:hover, :focus-visible):not(:disabled) { transform: translateY(-2px); box-shadow: var(--btn-shadow-hover); }
+.mq-opt:disabled { cursor: default; }
+.mq-opt.ok { background: #2E6B1F; color: #fff; }
+.mq-opt.bad { background: #A3262A; color: #fff; }
+.mq-opt.should { border: 3px dashed #7CD35A; }
+.mq-opt .sw { width: 30px; height: 30px; border-radius: 8px; flex: none; box-shadow: inset 0 0 0 2px rgba(0,0,0,.15); }
+.lad-content .inline-fb { margin-top: 12px; }
+.mq-results { margin-top: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-height: 330px; overflow: auto; }
+.mq-results.series { grid-template-columns: repeat(3, 1fr); }
+.mr { position: relative; background: rgba(255,255,255,.96); color: var(--navy); border-radius: 14px; padding: 8px 10px 8px; display: flex; flex-direction: column; gap: 3px; border: 3px solid transparent; }
+.mr.ok { border-color: #2E6B1F; } .mr.bad { border-color: #A3262A; }
+.mr .bn.sm { width: 100%; max-height: 110px; object-fit: contain; }
+.mr .bn-missing.sm { font-size: 12px; }
+.mr b { font-size: 15px; line-height: 1.15; }
+.mr span { font-size: 13px; line-height: 1.3; }
+.mr-mark { position: absolute; left: -6px; top: -8px; width: 26px; height: 26px; border-radius: 50%; color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 15px !important; z-index: 1; }
+.mr.ok .mr-mark { background: #2E6B1F; } .mr.bad .mr-mark { background: #A3262A; }
+/* stage 3 */
+.vis-grid { margin-top: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.vis-grid figure { margin: 0; background: rgba(255,255,255,.96); color: var(--navy); border-radius: 16px; padding: 8px; }
+.vis-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; display: block; }
+.vis-grid figcaption { margin-top: 6px; font-size: 14.5px; line-height: 1.3; }
+.acc-wrap { margin-top: 10px; display: grid; grid-template-columns: 1fr 270px; gap: 18px; }
+.acc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.acc-list li { background: rgba(255,255,255,.96); color: var(--navy); border-radius: 14px; padding: 8px 14px; display: flex; flex-direction: column; gap: 2px; }
+.acc-list b { font-size: 17.5px; } .acc-list span { font-size: 15.5px; line-height: 1.35; }
+.acc-notes { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.zoom-bn { padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: 6px; }
+.zoom-bn:is(:hover, :focus-visible) { transform: translateY(-2px); }
+.acc-cap { font-size: 13.5px; color: #CFEFF5; }
+.zoom-modal { left: 100px; top: 70px; width: 1000px; padding: 0; background: none; }
+.zoom-modal img { width: 100%; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+.zoom-modal .close-x { left: -10px; top: -10px; z-index: 2; }
+.coin-groups { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.cg { background: rgba(255,255,255,.96); color: var(--navy); border-radius: 18px; padding: 10px 14px 12px; }
+.cg h3 { margin: 0; font-size: 19px; }
+.cg-sub { font-size: 14.5px; color: var(--teal); }
+.cg-items { margin-top: 6px; display: flex; flex-direction: column; gap: 6px; }
+.cg-it { display: grid; grid-template-columns: 150px 52px 1fr; align-items: center; gap: 8px; }
+.cg-it img { width: 150px; height: 56px; object-fit: contain; }
+.cg-it b { font-size: 17px; } .cg-it span { font-size: 14.5px; line-height: 1.25; }
+/* drag-and-match */
+.dm-targets { margin-top: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.dm.coins .dm-targets { grid-template-columns: repeat(6, 1fr); }
+.dm-t { position: relative; background: rgba(255,255,255,.96); border-radius: 16px; padding: 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; border: 3px solid transparent; transition: border-color .2s, background .2s; }
+.dm-t img { width: 100%; border-radius: 6px; }
+.dm-t.ready { border-color: var(--orange); }
+.dm-t.over { background: #FFE7A8; }
+.dm-t.ok { border-color: #2E6B1F; } .dm-t.bad { border-color: #A3262A; }
+.dm-slot { min-width: 90px; min-height: 40px; padding: 4px 10px; border: 2px dashed #9FB3BB; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--navy); font-size: 20px; font-weight: 800; }
+.dm-t.filled .dm-slot { border-style: solid; border-color: var(--cyan-d); background: #E8F6FA; }
+.dm-t.ok .dm-slot { background: #2E6B1F; border-color: #2E6B1F; color: #fff; }
+.dm-t.bad .dm-slot { background: #A3262A; border-color: #A3262A; color: #fff; font-size: 16px; }
+.dm-slot s { opacity: .75; }
+/* coins: a black disc in true relative size (mm × 4.2) + the real edge, darkened so the number cannot be read */
+.coin-t { justify-content: flex-end; min-height: 230px; }
+.coin-sil { width: calc(var(--d) * 4.2px); height: calc(var(--d) * 4.2px); border-radius: 50%; background: radial-gradient(circle at 40% 35%, #3A3F43, #0E1012 70%); box-shadow: 0 4px 8px rgba(0,0,0,.35); }
+.coin-t .coin-edge { width: auto; height: 62px; filter: grayscale(1) brightness(.5) contrast(1.3); }
+.dm-chips { margin-top: 14px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.dm-chip { min-width: 96px; height: 50px; padding: 0 16px; border: 0; border-radius: 25px; background: var(--orange); color: var(--navy); font-family: inherit; font-size: 21px; font-weight: 800; cursor: grab; touch-action: none; box-shadow: var(--btn-shadow); }
+.dm-chip.used { opacity: .35; }
+.dm-chip:disabled { cursor: default; }
+.dm .st-actions { justify-content: center; }
+
+/* ---------- pulley (set 3) ---------- */
+.sec-head { left: 90px; top: 92px; width: 1020px; color: #FFFFFF; }
+.sec-head .h-title { color: #FFFFFF; font-size: 29px; }
+.sec-head .txt { margin-top: 4px; font-size: 17.5px; }
+.sec-note { left: 560px; top: 196px; width: 560px; }
+.sec-note img { width: 100%; display: block; border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,.4); }
+.sec-cap { position: absolute; right: 8px; bottom: -26px; color: #CFEFF5; font-size: 14px; font-weight: 700; }
+.sec-dot { position: absolute; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; border: 3px solid #FFFFFF; color: #FFFFFF; font-family: inherit; font-weight: 800; font-size: 15px; cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,.45); animation: pulse 1.8s infinite; }
+.sec-dot.see, .sec-badge.see, .sg.see h3 { background: #2F7FD8; }
+.sec-dot.touch, .sec-badge.touch, .sg.touch h3 { background: #B5651D; }
+.sec-dot.tilt, .sec-badge.tilt, .sg.tilt h3 { background: #6B4FB5; }
+.sec-dot.seen { animation: none; box-shadow: 0 0 0 3px #7CD35A, 0 3px 8px rgba(0,0,0,.45); }
+.sec-groups { left: 90px; top: 196px; width: 440px; display: flex; flex-direction: column; gap: 8px; }
+.sg { background: rgba(255,255,255,.96); border-radius: 16px; overflow: hidden; }
+.sg h3 { margin: 0; padding: 4px 14px; color: #FFFFFF; font-size: 17px; }
+.sg-it { position: relative; display: flex; align-items: center; gap: 8px; width: 100%; padding: 5px 14px 5px 36px; border: 0; background: none; font-family: inherit; font-size: 15.5px; font-weight: 700; color: var(--navy); text-align: right; cursor: pointer; }
+.sg-it + .sg-it { border-top: 1px solid #E1EEF2; }
+.sg-it:is(:hover, :focus-visible) { background: #E8F6FA; }
+.sg-n { flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; }
+.sg-it .tick { left: 8px; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; font-size: 12px; }
+.sec-link { left: 560px; top: 520px; }
+.sec-modal { left: 200px; top: 60px; width: 800px; max-height: 570px; overflow: auto; padding: 24px 32px; }
+.sec-badge { width: 52px; height: 52px; border-radius: 50%; color: #fff; font-size: 24px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none; }
+.sec-foot { margin-top: 8px; font-size: 14px; color: #4C5D64; }
+.sec-video { margin-top: 12px; height: 300px; border-radius: 12px; background: #0B2B3B; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.sec-video .tv-play { display: flex; flex-direction: column; align-items: center; gap: 6px; color: #FFFFFF; font-family: inherit; font-weight: 800; font-size: 17px; }
+.sec-video iframe { width: 100%; height: 100%; border: 0; }
+.ph-wall { left: 470px; top: 110px; width: 620px; }
+.ph-sub { color: #FFF0C4; margin-top: 4px; }
+/* the pulley exercise */
+.pl-q { left: 250px; top: 92px; width: 700px; text-align: center; color: #FFFFFF; }
+.pl-title { margin-top: 8px; font-size: 25px; font-weight: 800; line-height: 1.25; }
+.pl-hint { margin-top: 4px; font-size: 17.5px; }
+.pl-note { top: 236px; width: 330px; padding: 8px; border: 4px solid transparent; border-radius: 14px; background: rgba(255,255,255,.95); cursor: pointer; box-shadow: var(--btn-shadow); transition: transform 180ms ease, border-color .2s; z-index: 3; }
+.pl-note.right { left: 840px; } .pl-note.left { left: 30px; }
+.pl-note img { width: 100%; display: block; border-radius: 6px; }
+.pl-note:is(:hover, :focus-visible):not(:disabled) { transform: translateY(-3px); border-color: var(--orange); }
+.pl-note:disabled { cursor: default; }
+.pl-note.ok { border-color: #2E6B1F; } .pl-note.bad { border-color: #A3262A; }
+.pl-tag { position: absolute; left: 50%; top: -18px; transform: translateX(-50%); padding: 3px 16px; border-radius: 14px; color: #fff; font-weight: 800; font-size: 17px; }
+.pl-tag.real { background: #2E6B1F; } .pl-tag.fake { background: #A3262A; }
+.pl-rig { left: 365px; top: 228px; width: 470px; height: 376px; z-index: 2; transition: transform .3s; }
+.pl-rig img { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 10px 12px rgba(0,0,0,.3)); }
+.pl-rig.mirror { transform: scaleX(-1); }
+.pl-rig.pulled img { animation: pull-in .6s ease; }
+@keyframes pull-in { from { transform: translateY(4px) } to { transform: none } }
+.pl-weights { left: 30px; top: 470px; display: flex; align-items: center; gap: 6px; background: rgba(11,43,59,.85); border-radius: 14px; padding: 6px 12px; color: #FFFFFF; }
+.pl-wl { font-size: 14px; font-weight: 700; margin-left: 6px; }
+.pl-weights i { width: 22px; height: 30px; border-radius: 4px; background: rgba(255,255,255,.2); }
+.pl-weights i.on { background: linear-gradient(180deg, #F7C21A, #D99A00); }
+.pl-fb { position: absolute; left: 845px; top: 420px; width: 330px; padding: 10px 14px 12px; z-index: 4; max-height: 248px; overflow: auto; }
+.pl-fb .ifb-head { font-size: 17px; } .pl-fb .ifb-body { font-size: 14.5px; }
+.pl-fb .ifb-row { flex-wrap: wrap; }
+.pl-fb .ifb-actions { display: flex; justify-content: flex-end; margin-top: 8px; }
+.pl-fb .btn { padding: 6px 20px; font-size: 17px; }
+
+/* ---------- climbing wall (set 4) ---------- */
+.climb-wall { z-index: 1; border-radius: 10px; overflow: hidden; box-shadow: 0 10px 26px rgba(0,0,0,.4); }
+.climb-wall img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.95); }
+.stone {
+  z-index: 2; padding: 2px 10px; border: 0; font-family: inherit; color: #FFFFFF; font-size: 12.5px; font-weight: 800; line-height: 1.12; text-align: center;
+  border-radius: 46% 54% 42% 58% / 58% 46% 54% 42%; box-shadow: inset -4px -6px 0 rgba(0,0,0,.18), 0 4px 6px rgba(0,0,0,.35);
+  display: flex; align-items: center; justify-content: center; text-wrap: balance; opacity: .55; transition: opacity .2s, transform .18s, box-shadow .2s;
+}
+.stone span { text-shadow: 0 1px 2px rgba(0,0,0,.45); }
+.stone.orange { background: #E0702A; } .stone.blue { background: #2C6FC4; } .stone.green { background: #3E9A47; }
+.stone.option { opacity: 1; cursor: pointer; box-shadow: 0 0 0 3px #FFF3B0, 0 0 18px 4px rgba(255,236,140,.8), inset -4px -6px 0 rgba(0,0,0,.18); }
+.stone.option:is(:hover, :focus-visible) { transform: scale(1.05); }
+.stone.ok { opacity: 1; background: #1F5C17; box-shadow: 0 0 0 3px #B6F09A, inset -4px -6px 0 rgba(0,0,0,.18); }
+.stone.bad { background: #A3262A !important; }
+.stone.shown:not(.picked) { background: #2E6B1F; }
+.climber { z-index: 3; transition: left .6s ease, top .6s ease; }
+.wall-panel { left: 990px; top: 92px; width: 196px; max-height: 548px; overflow: auto; background: rgba(255,255,255,.96); color: var(--navy); border-radius: 18px; padding: 10px 12px; z-index: 4; }
+.wp-title { font-size: 18px; font-weight: 800; }
+.wp-instr { margin-top: 4px; font-size: 14.5px; font-weight: 700; color: var(--teal); line-height: 1.3; }
+.wp-steps { margin: 6px 0 0; padding-right: 18px; font-size: 13px; line-height: 1.3; }
+.wp-steps li { margin-bottom: 3px; }
+.wp-fb { margin-top: 8px; padding: 8px 10px; }
+.wp-fb .ifb-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+.wp-fb .ifb-head { font-size: 15px; } .wp-fb .ifb-body { font-size: 13.5px; }
+.wp-fb .ifb-coins { margin: 0; font-size: 14px; padding: 3px 10px; }
+.wp-fb .btn { margin-top: 8px; padding: 6px 16px; font-size: 16px; }
+.wp-actions { flex-direction: column; align-items: stretch; margin-top: 8px; }
+.wp-actions .link-btn { justify-content: center; font-size: 14px; white-space: normal; text-align: center; }
+
+/* ---------- stretching / end ---------- */
+.qw-l { flex: none; font-weight: 800; margin-left: 8px; }
+.end-card { left: 420px; width: 720px; top: 80px; padding: 20px 30px; }
+.end-card .bul li { font-size: 16.5px; }
+.open-note { margin-top: 6px; font-size: 15.5px; color: #A3262A; font-weight: 700; }
+.skip-practice.wide { width: 150px; }
+
+/* ---------- round 1 tuning ---------- */
+.st-task > span { flex: 1; }
+/* coins: bigger discs (mm × 5.6), the 5 ₪ as a 12-sided shape, a larger edge */
+.coin-sil { width: calc(var(--d) * 5.6px); height: calc(var(--d) * 5.6px); }
+.coin-sil.dodeca { border-radius: 0; clip-path: polygon(50% 0, 75% 6.7%, 93.3% 25%, 100% 50%, 93.3% 75%, 75% 93.3%, 50% 100%, 25% 93.3%, 6.7% 75%, 0 50%, 6.7% 25%, 25% 6.7%); }
+.coin-t { min-height: 270px; }
+.coin-t .coin-edge { height: 84px; }
+/* the climbing wall: a plain concrete panel fixed to the wall, so only the learning stones stand out */
+.climb-wall { background: radial-gradient(circle at 20% 30%, rgba(255,255,255,.18), transparent 40%), linear-gradient(160deg, #D7D0C5, #BDB4A6); border: 6px solid #6E5A44; }
+.stone { opacity: .82; font-size: 12.5px; }
+.stone:disabled { cursor: default; }
+.wall-panel { top: 150px; max-height: 470px; }
+/* ladder stage labels */
+.ladder-steps { left: 206px; gap: 40px; }
+.lstep { width: 104px; }
+.lstep .ls-t { font-size: 13px; }
+/* security list: compact so all eleven fit */
+.sec-groups { gap: 6px; }
+.sg h3 { padding: 2px 14px; font-size: 16px; }
+.sg-it { padding: 3px 14px 3px 36px; font-size: 14.5px; }
+.sg-n { width: 21px; height: 21px; font-size: 12px; }
+/* round 2 */
+.dm.coins .dm-targets { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.coin-sil { width: calc(var(--d) * 4.8px); height: calc(var(--d) * 4.8px); flex: none; }
+.coin-t { min-height: 250px; padding: 10px 6px; }
+.coin-t .coin-edge { height: 74px; }
+.dm-chips[hidden] { display: none; }
+.mq-results { max-height: 300px; }
+.mr .bn-missing.sm { height: 64px; aspect-ratio: auto; }
+.mr .bn.sm { max-height: 96px; }
+.climber { filter: drop-shadow(0 6px 8px rgba(0,0,0,.4)); }
+/* the shared "#cover > img" rule fills the stage – the characters keep their own box */
+#cover > img.cover-char { inset: auto; top: 205px; width: auto; height: 470px; object-fit: contain; }
+#cover > img.cover-char.adam { left: 70px; }
+#cover > img.cover-char.aya { left: auto; right: 70px; }
+/* round 3 – client notes */
+.screen[data-type="intro"] .start-wrap { top: 484px; }   /* below the (longer) intro text */
+.menu-panel { padding-top: 14px; }
+/* round 4 – client notes */
+.intro-title .pill-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; filter: drop-shadow(0 4px 5px rgba(0,0,0,.25)); }
+.intro-title span { z-index: 1; }
+/* climbing wall: a softer hover than the other machines (its panel is light already) */
+.machine-img.m-wall.hover { filter: brightness(1.12); }
+/* an element still carrying its entrance class must never fall back to opacity 0 when hover swaps its animation */
+.screen.active .a:is(:hover, :focus-visible, .hover) { opacity: 1; }
+.machine-pill:is(:hover, :focus-visible, .hover) { opacity: 1; }
+/* hover on an element still in its entrance animation: float at full opacity – never loop the entrance (it faded in and out) */
+.screen.active :is(button, [role="button"], .machine-pill).a:is(.pop, .fade, .fly-l, .fly-r, .fly-t, .fly-b, .rise):is(:hover, :focus-visible, .hover) {
+  opacity: 1; animation: btn-float 1.4s ease-in-out 0ms infinite alternate;
+}
+
+/* the designed cover (רקעים/קאבר - יחדת מטבע-04): PLAY on the dark stand below the banknotes */
+.cover-play { top: 50%; width: 110px; height: 110px; }
+/* round 5 – client notes */
+/* slide 4 (boost): the text higher, clear of the TV */
+.screen[data-type="boost"] .boost-text { top: 92px; }
+.screen[data-type="boost"] .boost-shade { top: 66px; }
+/* slide 5 (timeline): the closing line in cyan, straight on the wall – no pill behind it */
+.tl-prog, .tl-prog.done { background: none; box-shadow: none; padding: 0; color: var(--cyan); font-size: 20px; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+
+/* round 6 – client notes */
+.tl-prog { top: 522px; }
+/* stations: "סעיף X מתוך Y" as a chip, and the task's timer badge (seconds per item) instead of the "!" */
+.st-rowno { background: var(--navy); color: #FFFFFF; border-radius: 14px; padding: 3px 12px; font-size: 16px; }
+.ic-task.sec { width: 52px; height: 52px; flex-direction: column; line-height: 1; background: #FFFFFF; color: var(--navy); border: 3px solid var(--cyan-d); box-shadow: 0 2px 5px rgba(0,0,0,.18); margin-top: 0; }
+.ic-task.sec b { font-size: 21px; font-weight: 800; }
+.ic-task.sec small { font-size: 10.5px; font-weight: 700; }
+.st-task { align-items: center; }
+/* ladder text screens (slide 15 etc.): the text on a white card, not on the room */
+.lad-text { background: rgba(255,255,255,.97); color: var(--navy); border-radius: 28px; padding: 26px 34px 28px; box-shadow: 0 10px 30px rgba(0,0,0,.28); }
+.lad-text .h-title, .lad-text .txt { color: var(--navy); }
+.lad-text .txt { font-size: 19px; }
+.st-task > .ic-task.sec { flex: none; width: 52px; height: 52px; border-radius: 50%; }
+/* round 8: the menu tag fitted to "אימון מטבע" (pill drawn 196 units long instead of 249) */
+.intro-title.on-menu { left: 952px; top: 14px; width: 222px; height: 76px; }
+.intro-title.on-menu span { left: 10px; top: 21px; width: 178px; height: 30px; font-size: 19pt; }
+/* sit-ups: the man's GIF faces right – mirrored so he lies along the right mat like Aya on the left */
+.ex-fig[data-base="situp-m"] { scale: -1 1; }
+
+/* push-ups: the woman's GIF faces the other way – mirrored so the two face each other like on the mats */
+.ex-fig[data-base="pushup-w"] { scale: -1 1; }
+
+/* sprint: the running GIF faces right – mirrored so Aya runs to the left, out of the frame */
+.ex-fig[data-base="sprint-w"] { object-fit: contain; object-position: center bottom; }
+.ex-fig[data-base="sprint-w"].running { scale: -1 1; transition: none; }
+
+
+/* round 12: the mirrored figures use the independent "scale" property, so the entrance animation (which animates
+   "transform") no longer cancels the flip for its first second */
+/* answers review: a light dashed outline, and the explanation folds away while the answers are shown */
+.st-item.should, .rv-it.should { border-width: 1.5px; }
+.st-card.rev-open .ifb-body { display: none; }
+.st-review { max-height: 210px; }
+.rv-it { font-size: 13.5px; padding: 2px 8px; }
+/* round 15 – accessibility: the ladder screens' text sits on a white card (navy text ≥ 13:1), like slide 15 */
+.lad-content { background: rgba(255,255,255,.97); color: var(--navy); border-radius: 26px; padding: 18px 26px 20px; box-shadow: 0 10px 30px rgba(0,0,0,.28); }
+.lad-content .h-title, .lad-content .txt, .lad-content .lc-lead { color: var(--navy); }
+.lad-content .lc-after { color: var(--teal); }
+.lad-content .acc-cap { color: #3B5663; }
+.lad-content .mq-dots li { background: #DDE9EE; color: var(--navy); }
+.lad-content .mq-dots li.now { background: var(--orange); }
+.lad-content .mq-dots li.ok, .lad-content .mq-dots li.bad { color: #FFFFFF; }
+.lad-content .tbar.big { background: #DDE9EE; }
+.lad-content .tbar.big .tb-sec { color: var(--navy); text-shadow: none; }
+.lad-content .mq-visual, .lad-content .mr, .lad-content .dm-t, .lad-content .cg, .lad-content .acc-list li, .lad-content .vis-grid figure { border: 1px solid #CFE3EA; }
+.lad-content .mq-opt { border-color: #CFE3EA; }
+/* slide 18: every series card has the same note area, so all the names sit on one line */
+.ser-btn { justify-content: flex-start; }
+.ser-btn > .bn { height: 82px; width: 100%; object-fit: contain; box-shadow: none; }
+.ser-btn .sb-name { margin-top: auto; }
+/* notes accessibility screen: four notes in a 2×2 grid so the card fits the stage */
+.acc-wrap { grid-template-columns: 1fr 330px; }
+.acc-notes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: end; align-content: start; }
+.acc-notes .zoom-bn { width: auto !important; }
+.acc-notes .zoom-bn:nth-child(1) { width: 135px !important; } .acc-notes .zoom-bn:nth-child(2) { width: 142px !important; }
+.acc-notes .zoom-bn:nth-child(3) { width: 150px !important; } .acc-notes .zoom-bn:nth-child(4) { width: 157px !important; }
+.acc-cap { grid-column: 1 / -1; }
+.acc-list li { padding: 6px 12px; } .acc-list span { font-size: 15px; }
+/* other screens with text on the room: the same white panels (security list, timeline, pulley question, how-to's) */
+.sec-head, .tl-head, .pl-q { background: rgba(255,255,255,.97); color: var(--navy); border-radius: 22px; padding: 12px 22px; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+.sec-head .h-title, .tl-head .h-title, .sec-head .txt, .tl-head .txt, .pl-q .pl-title, .pl-q .pl-hint { color: var(--navy); }
+.sec-head { top: 86px; } .sec-groups { top: 206px; } .sec-note { top: 206px; }
+.tl-head { top: 88px; padding: 10px 22px; }
+.tl-when { background: var(--navy); }
+.wall-content:not(.wide), .fh-wrap { background: rgba(11,43,59,.9); border-radius: 26px; padding: 22px 28px 24px; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+.fh-wrap { top: 84px; }
+
+/* round 17: in the ladder screens the action buttons sit on the left (RTL: flex-end) */
+.lad-content .wall-actions, .lad-content .st-actions { justify-content: flex-end; }
+.acc-wrap + .wall-actions, .lad-content .wall-actions { margin-top: 12px; }
+.acc-list li { padding: 5px 12px; } .acc-list b { font-size: 16.5px; } .acc-list span { font-size: 14.5px; line-height: 1.3; }
+
+/* round 18 – slide 17 and the ladder instructions */
+/* the instruction: a highlighted box with a clock badge */
+.task-box { margin-top: 10px; display: flex; align-items: center; gap: 14px; background: #FFF6DC; border: 2px solid #E3B93B; border-radius: 18px; padding: 10px 16px; }
+.task-box p { flex: 1; font-size: 19px; font-weight: 700; line-height: 1.4; color: var(--navy); }
+.tb-clock { flex: none; width: 76px; height: 76px; border-radius: 50%; background: var(--navy); color: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; box-shadow: 0 3px 6px rgba(0,0,0,.25); }
+.tb-clock svg { width: 22px; height: 22px; color: var(--orange); margin-bottom: 2px; }
+.tb-clock b { font-size: 22px; font-weight: 800; }
+.tb-clock small { font-size: 11.5px; font-weight: 700; }
+/* the other ladder instructions ("בתרגול..." lines) stand out the same way */
+.lad-content .lc-after { background: #FFF6DC; border-right: 5px solid #E3B93B; border-radius: 12px; padding: 8px 14px; color: var(--navy); font-weight: 700; font-size: 18px; }
+/* the quiz intro: a narrower card, filled with a preview of the six figures */
+.lad-content.mq:has([data-phase="intro"]:not([hidden])) { width: 700px; left: 380px; }
+.mq-preview { margin-top: 14px; display: flex; gap: 10px; justify-content: center; }
+.mq-preview .portrait { border-radius: 14px; box-shadow: 0 3px 8px rgba(0,0,0,.2); }
+.mq-preview .bn.mini { width: 112px; height: auto; }
+.lad-content.mq [data-phase="intro"] .wall-actions { margin-top: 16px; }
+/* a wrong pick: the right answer is solid green and labelled */
+.mq-opt { flex-direction: column; gap: 2px; }
+.mq-opt.dim { opacity: .45; }
+.mq-opt.ok.right { box-shadow: 0 0 0 3px #B6F09A, var(--btn-shadow); }
+.mq-right { font-size: 13px; font-weight: 800; background: #FFFFFF; color: #2E6B1F; border-radius: 10px; padding: 0 8px; }
+/* results: 3 × 2 cards that fit without scrolling, the ✓ / ✗ badge inside the card */
+.mq-results { max-height: none; overflow: visible; gap: 8px; margin-top: 8px; }
+.mr { padding: 6px 8px 6px 8px; gap: 2px; }
+.mr .bn.sm { max-height: 64px; width: auto; max-width: 100%; margin: 0 auto; }
+.mr .bn-missing.sm { height: 56px; }
+.mr b { font-size: 14.5px; } .mr span { font-size: 12.5px; line-height: 1.25; }
+.mr-mark { left: 6px; top: 6px; width: 24px; height: 24px; font-size: 14px !important; }
+.mr-picked { color: #A3262A; font-weight: 700; }
+.lad-content.mq [data-phase="done"] .inline-fb { padding: 8px 16px; margin-top: 8px; }
+.lad-content.mq [data-phase="done"] .ifb-head { font-size: 17px; }
+.lad-content.mq [data-phase="done"] .st-actions { margin-top: 8px; }
+.mq-preview { flex-wrap: wrap; }
+.mq-preview .bn.mini { width: 96px; }
+
+/* round 20: a placed value is a chip of its own – drag it to another slot, out to the tray, or click to send it back */
+.dm-placed { display: inline-flex; align-items: center; gap: 6px; background: var(--orange); color: var(--navy); border-radius: 18px; padding: 4px 10px 4px 12px; font-weight: 800; cursor: grab; touch-action: none; box-shadow: var(--btn-shadow); user-select: none; }
+.dm-placed.lifted { opacity: .35; }
+.dm-back { font-size: 14px; opacity: .7; }
+.dm-t.filled .dm-slot { background: none; border-color: transparent; padding: 0; }
+.dm-t.ok .dm-slot, .dm-t.bad .dm-slot { padding: 4px 10px; }
+.dm-t.over { background: #FFE7A8; border-color: var(--orange); }
+/* checked slots: solid green / red (after the "filled" reset above) */
+.dm-t.ok .dm-slot { background: #2E6B1F; border-color: #2E6B1F; color: #FFFFFF; padding: 4px 12px; }
+.dm-t.bad .dm-slot { background: #A3262A; border-color: #A3262A; color: #FFFFFF; padding: 4px 12px; }
+/* coins drill: compact so the card, the check button and the feedback fit the stage */
+.dm.coins .coin-t { min-height: 0; padding: 8px 6px; gap: 6px; }
+.dm.coins .coin-sil { width: calc(var(--d) * 4px); height: calc(var(--d) * 4px); }
+.dm.coins .coin-t .coin-edge { height: 58px; }
+.dm.coins .task-box { padding: 6px 14px; } .dm.coins .task-box p { font-size: 17px; }
+.dm.coins .tb-clock { width: 62px; height: 62px; }
+.dm.coins .dm-chips { margin-top: 10px; }
+.dm.coins .st-actions { margin-top: 8px; }
+.dm.coins .dm-chips[hidden] + .st-actions, .dm [data-phase="done"] .st-actions { margin-top: 6px; }
+.dm [data-phase="done"] .inline-fb { margin-top: 8px; padding: 8px 16px; }
+.dm [data-phase="done"] .ifb-head { font-size: 17px; }
+
+/* round 22: checked drag answers – equal cards, the answer on one line at the bottom, the correction below it */
+.dm-targets { align-items: stretch; }
+.dm-t { justify-content: flex-start; }
+.dm-t .dm-slot { margin-top: auto; }
+.dm-t.ok .dm-slot, .dm-t.bad .dm-slot { min-width: 110px; gap: 6px; font-size: 18px; border-radius: 14px; }
+.dm-ans { display: inline-flex; width: 20px; height: 20px; border-radius: 50%; background: #FFFFFF; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; margin-left: 6px; }
+.dm-t.ok .dm-ans { color: #2E6B1F; } .dm-t.bad .dm-ans { color: #A3262A; }
+.dm-right { font-size: 14.5px; color: #1F4D13; background: #E7F2D8; border-radius: 10px; padding: 2px 10px; text-align: center; }
+.dm-right b { font-weight: 800; }
+.dm.notes .dm-t:not(.bad) { padding-bottom: 36px; }   /* keeps every card the same height, with or without a correction line */
+.dm.coins .dm-t:not(.bad).ok { padding-bottom: 34px; }
+
+/* round 23 */
+/* slide 25: the correction row is reserved on every card, so all answer boxes line up; the coins a little smaller */
+.dm-right.empty { visibility: hidden; }
+.dm-right { white-space: nowrap; font-size: 13.5px; }
+.dm.coins .coin-sil { width: calc(var(--d) * 3.6px); height: calc(var(--d) * 3.6px); }
+.dm.coins .coin-t .coin-edge { height: 52px; }
+.dm.notes .dm-t:not(.bad) { padding-bottom: 10px; }
+.dm.coins .dm-t:not(.bad).ok { padding-bottom: 8px; }
+/* slide 31: the pulley how-to text on a white panel */
+.wall-content.ph-wall { background: rgba(255,255,255,.97); color: var(--navy); text-shadow: none; }
+.ph-wall .h-title, .ph-wall .wall-lead, .ph-wall .wall-tip, .ph-wall .wall-success { color: var(--navy); }
+.ph-wall .ph-sub { color: var(--teal); }
+.ph-wall .wall-tip b { color: var(--navy); }
+.ph-wall .wall-success .t { color: #2E6B1F; }
+/* pulley titles: one weight */
+.pl-title, .pl-title b { font-weight: 700; }
+/* slide 32: Aya stands on the floor, never mirrored */
+.pl-rig { top: 268px; }
+.pl-rig.mirror { transform: none; }
+
+/* round 24 – pulley: both notes on the right, Aya in the centre, the feedback on the left */
+.pl-q { left: 300px; width: 600px; }
+.pl-note { width: 300px; padding: 8px 8px 8px 8px; }
+.pl-note.right { left: 872px; top: 200px; }
+.pl-note.left  { left: 872px; top: 412px; }
+.pl-letter { position: absolute; right: -14px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; border-radius: 50%; background: var(--navy); color: #FFFFFF; font-weight: 800; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,.3); }
+.pl-rig { left: 365px; top: 228px; width: 480px; height: 380px; }
+.pl-rig.pulled img { animation: none; }
+.pl-fb { left: 30px; top: 252px; width: 330px; max-height: 340px; }
+.pl-weights { left: 30px; top: 196px; }
+.pl-note.right { top: 196px; } .pl-note.left { top: 422px; }
+.pl-note { padding: 6px; } .pl-note img { height: 176px; object-fit: contain; }
+.pl-note.bad { border-color: #A3262A; }
+.pl-note { transition: transform 180ms ease; }   /* the result frame appears at once */
+/* round 25 – pulley: smaller notes, further from the edge, letter badge inside the card; Aya lower and a bit smaller */
+.pl-note { width: 268px; padding: 6px; }
+.pl-note img { height: 150px; }
+.pl-note.right { left: 858px; top: 214px; }
+.pl-note.left  { left: 858px; top: 418px; }
+.pl-letter { right: 8px; top: 8px; transform: none; width: 26px; height: 26px; font-size: 14px; z-index: 1; }
+.pl-rig { left: 395px; top: 300px; width: 420px; height: 332px; }
+/* round 26 */
+.pl-note.right { top: 232px; } .pl-note.left { top: 430px; }
+.pl-weights { top: 222px; }
+.pl-fb { top: 276px; }
+/* round 27 – pulley: option א lower, both options and Aya a little to the left */
+.pl-q { top: 84px; }
+.pl-note.right { left: 830px; top: 246px; } .pl-note.left { left: 830px; top: 440px; }
+.pl-note img { height: 140px; }
+.pl-rig { left: 360px; }
+/* round 28: the weights meter well clear of the question panel (which grows to 3 lines on long titles) */
+.pl-weights { top: 262px; }
+.pl-fb { top: 314px; max-height: 300px; }
+
+/* round 29 – climbing wall: the real board with holds, Aya climbing */
+.climb-board { z-index: 1; object-fit: fill; filter: drop-shadow(0 10px 18px rgba(0,0,0,.4)); }
+.stone { padding: 0; border: 0; border-radius: 0; background: none !important; box-shadow: none !important; opacity: .7; display: block; }
+.stone img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; filter: drop-shadow(0 4px 4px rgba(0,0,0,.35)); }
+.stone span { position: absolute; inset: 4px 14px; display: flex; align-items: center; justify-content: center; text-align: center;
+  color: #FFFFFF; font-size: 12.5px; font-weight: 800; line-height: 1.12; text-wrap: balance;
+  text-shadow: 0 0 2px #000, 0 0 3px #000, 0 1px 2px #000; }   /* white on the saturated holds, with a dark halo for contrast */
+.stone.option { opacity: 1; cursor: pointer; }
+.stone.option img { filter: drop-shadow(0 0 6px #FFF3B0) drop-shadow(0 0 10px rgba(255,236,140,.9)); }
+.stone.option:is(:hover, :focus-visible) { transform: scale(1.06); }
+.stone.ok { opacity: 1; }
+.stone.ok img { filter: drop-shadow(0 0 0 #2E6B1F) drop-shadow(0 0 5px #7CD35A) brightness(.85); }
+.stone.ok::after { content: "✓"; position: absolute; left: -8px; top: -8px; width: 22px; height: 22px; border-radius: 50%; background: #2E6B1F; color: #fff; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; z-index: 2; }
+.stone.bad img { filter: drop-shadow(0 0 6px #E33232) saturate(.4); }
+.stone.shown:not(.picked) { background: none !important; }
+.climber { z-index: 3; transition: left .6s ease, top .6s ease, rotate .6s ease; pointer-events: none; }
+.climber.flip { scale: -1 1; }
+.wall-panel { left: 962px; width: 222px; }
+/* slide 41 (how-to): white panel, coloured ✔ / ✖, Aya on a small wall */
+.wall-content.wh-content { left: 420px; width: 680px; top: 110px; background: rgba(255,255,255,.97); color: var(--navy); text-shadow: none; }
+.wh-content .h-title, .wh-content .wall-lead { color: var(--navy); }
+.ic-ok, .ic-bad { display: inline-flex; width: 26px; height: 26px; border-radius: 50%; color: #fff; font-size: 15px; font-weight: 800; align-items: center; justify-content: center; vertical-align: middle; margin-left: 4px; }
+.ic-ok { background: #2E6B1F; } .ic-bad { background: #A3262A; }
+.wh-wall { left: 60px; top: 120px; width: 300px; height: 470px; }
+.wh-board { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; filter: drop-shadow(0 10px 18px rgba(0,0,0,.4)); }
+.wh-hold { position: absolute; width: 100px; height: auto; filter: drop-shadow(0 3px 3px rgba(0,0,0,.3)); }
+.wh-aya { position: absolute; left: 60px; top: 150px; width: 190px; height: auto; filter: drop-shadow(0 8px 10px rgba(0,0,0,.35)); }
+/* round 30: pulley option א lower, closer to ב */
+.pl-note.right { top: 272px; } .pl-note.left { top: 456px; }
+.climber { z-index: 4; }
+
+/* round 31 – slide 41: the climbing-wall room, Aya on the wall, the text on the empty wall at the right */
+.wall-content.wh-content { left: 640px; width: 520px; top: 96px; }
+.wh-climber { left: 230px; top: 250px; width: 250px; height: 375px; object-fit: contain; }
+
+/* round 32 – slide 41: background Picture5, Aya smaller at the side, the text panel centred on the wall */
+.wh-climber { left: 70px; top: 360px; width: 180px; height: 270px; }
+.wall-content.wh-content { left: 300px; width: 600px; top: 110px; }
+/* round 33 – slide 41: the climbing wall (מכשירים/קיר טיפוס) small, against the back wall, Aya larger in front of it */
+.wh-wallbg { left: 40px; top: 150px; width: 330px; height: 440px; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 8px 14px rgba(0,0,0,.35)); }
+.wh-climber { left: 95px; top: 250px; width: 250px; height: 375px; }
+.wall-content.wh-content { left: 420px; width: 600px; }
+.wh-wallbg { top: 178px; height: 440px; }
+/* slide 41 on "רקע לאינטראקציית הליכון": the wall stands on the floor line of the back wall, Aya in front of it */
+.wh-wallbg { left: 60px; top: 132px; width: 290px; height: 300px; object-position: center bottom; }
+.wh-climber { left: 92px; top: 262px; width: 230px; height: 345px; }
+
+/* round 34 – climbing wall questions */
+/* the board is wider: a climbing lane on its left side for Aya (she climbs on the wall, beside the holds) */
+.climber { object-fit: contain; object-position: center bottom; }
+/* every hold in full colour; only the holds that can be chosen now glow */
+.stone { opacity: 1; }
+.stone img { filter: drop-shadow(0 3px 3px rgba(0,0,0,.3)); }
+/* the text a little lower (under the bolt hole), no shadow */
+.stone span { inset: 16px 14px 2px; text-shadow: none; font-size: 12.5px; }
+/* chosen-correct mark: a clear badge on the hold itself */
+.stone.ok::after { left: 4px; top: 50%; transform: translateY(-50%); width: 26px; height: 26px; font-size: 16px; border: 2px solid #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,.35); z-index: 3; }
+.stone.ok { z-index: 3; }
+/* slide 41: the wall larger, covering the equipment behind it */
+.wh-wallbg { left: 110px; top: 92px; width: 270px; height: 342px; object-fit: fill; }
+.wh-climber { left: 140px; top: 262px; }
+
+/* round 35: narrower wall – the holds a little smaller */
+.stone span { font-size: 11.5px; inset: 15px 12px 2px; }
+.stone.ok::after { left: -6px; top: -6px; transform: none; width: 24px; height: 24px; font-size: 14px; }
+.wall-panel { max-height: 560px; }
+/* round 36 – climbing wall: Aya (back to us) at the wall's left side; a small ✓ in the hold's corner */
+.wall-aya { left: 140px; top: 330px; width: 200px; height: 300px; object-fit: contain; object-position: center bottom; z-index: 3; }
+.stone.ok::after { left: -9px; top: -9px; width: 18px; height: 18px; font-size: 11px; border-width: 1.5px; }
+.stone span { inset: 15px 14px 4px; }
+.stone.ok { z-index: 4 !important; }
+.wall-aya { left: 105px; }
+.stone span { inset: 14px 12px 4px; }
+/* a wrong hold: no red box – the hold only shakes */
+.stone.bad { background: none !important; }
+.stone.bad img { filter: drop-shadow(0 3px 3px rgba(0,0,0,.3)); }
+.stone:focus { outline: none; }
+.stone:focus-visible { outline: 3px solid #FFFFFF; outline-offset: 2px; border-radius: 30px; }
+
+/* round 37 – climbing wall: row numbers, a wider steps panel, the skip button bottom-left */
+.wall-num { left: 300px; width: 26px; height: 26px; border-radius: 50%; background: var(--navy); color: #FFFFFF; font-size: 13px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center; z-index: 3; box-shadow: 0 2px 4px rgba(0,0,0,.35); }
+.wall-panel { left: 880px; width: 300px; }
+.wp-steps { font-size: 14.5px; }
+.skip-practice.wall-skip { left: 72px; top: 627px; width: auto; padding: 0 14px; z-index: 6; position: absolute; }
+.wall-panel { top: 130px; max-height: 480px; }
+.wp-fb .ifb-body { display: none; }
+.wp-steps li { margin-bottom: 1px; }
+.wp-steps { font-size: 13.5px; line-height: 1.25; margin-top: 4px; }
+.wall-panel { top: 120px; max-height: 500px; padding: 8px 12px; }
+.wp-fb { margin-top: 6px; padding: 6px 10px; }
+.wp-fb .btn { margin-top: 4px; }
+.wp-actions { margin-top: 4px; }
+.wp-actions .link-btn { padding: 3px 12px; }
+.wp-steps li.a { opacity: 1; animation: none; }
+
+/* round 38 – climbing wall */
+/* Aya climbs the free strip on the left of the board, row by row (slowly) */
+.climber { z-index: 4; object-fit: contain; object-position: center bottom; transition: top 1.1s ease-in-out; }
+.wall-aya { display: none; }
+/* row numbers: on the right side of the board, white discs */
+.wall-num { left: 818px; background: #FFFFFF; color: var(--navy); border: 2px solid var(--navy); }
+/* a correct hold: a clear green mark over its start, so it is unmistakable */
+.stone.ok::after { left: -10px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; font-size: 20px; border: 2.5px solid #FFFFFF; }
+.stone.ok img { filter: drop-shadow(0 0 0 #2E6B1F) drop-shadow(0 0 6px #7CD35A) brightness(.8) saturate(.8); }
+/* steps panel: below the Bank of Israel mark */
+.wall-panel { top: 152px; max-height: 470px; }
+/* climbing wall: "טיפוס חוזר" and "לסיכום הסט" side by side in the feedback */
+.wp-fb-actions { display: flex; gap: 8px; align-items: center; justify-content: flex-end; margin-top: 6px; }
+.wp-fb-actions .link-btn { padding: 4px 12px; font-size: 15px; }
+.wp-fb-actions .btn { margin-top: 0; }
+/* slide 41: the start button on the left */
+.wh-content .wall-actions { justify-content: flex-end; }
+/* round 39: narrower board; Aya larger, climbing its left edge (half on the board, half beside it) */
+.wall-num { left: 828px; }
+.wall-panel { left: 892px; width: 290px; }
+.stone span { font-size: 11px; inset: 14px 10px 4px; }
+/* round 40: narrow board; Aya climbs on the holds (left + top move smoothly) */
+.climber { transition: top 1.1s ease-in-out, left 1.1s ease-in-out; }
+.wall-num { left: 790px; }
+/* slide 41: more space between the two last lines */
+.wh-content .wall-lead:nth-of-type(3) { line-height: 2; }
+/* round 41: the ✓ of a correct hold back to the small corner badge */
+.stone.ok::after { left: -9px; top: -9px; transform: none; width: 18px; height: 18px; font-size: 11px; border-width: 1.5px; }
+.stone.ok img { filter: drop-shadow(0 0 0 #2E6B1F) drop-shadow(0 0 5px #7CD35A) brightness(.85); }
+
+/* slide 56 (advanced): the closing line a little higher */
+.adv-outro { top: 478px; }
+.wall-panel .wp-fb-actions { display: flex; gap: 8px; justify-content: flex-end; align-items: center; margin-top: 8px; }
+.wall-panel .wp-fb-actions > * { flex: none; white-space: nowrap; }
+.wall-panel .wp-fb-actions .btn { padding: 7px 20px; font-size: 17px; }
+.wall-panel .wp-fb-actions .link-btn { padding: 5px 14px; font-size: 15px; }
+/* "no time limit": just the clock and the words, no extra glyph */
+.tb-clock .nolimit { font-size: 13px; font-weight: 800; line-height: 1.05; text-align: center; }
+/* slide 2: the text a little higher inside the orange tag */
+.intro-title.on-menu span { top: 17px; }
+/* slide 28 (ladder summary): only the background is mirrored */
+.screen[data-type="summary"] .bg.flip-bg { transform: scaleX(-1); }
