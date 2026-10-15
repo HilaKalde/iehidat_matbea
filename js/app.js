@@ -259,9 +259,13 @@
       <p class="tv-soon" data-soon hidden>סרטון יתווסף בהמשך</p>
       <button type="button" class="tv-btn play" aria-label="הפעלת הסרטון" title="הפעלת הסרטון"><img src="${UI}play.png" alt=""></button>
     </div>`;
-  function bindBoost(scr) {
-    const box = $("[data-film]", scr), playBtn = $(".tv-btn.play", box);
-    playBtn.addEventListener("click", () => { $("[data-soon]", box).hidden = false; playBtn.hidden = true; });
+  /* PLAY: the set's film opens in a new tab (YouTube); a set without a film yet shows "סרטון יתווסף בהמשך" */
+  function bindBoost(scr, s) {
+    const box = $("[data-film]", scr), playBtn = $(".tv-btn.play", box), v = VIDEOS[s.video];
+    playBtn.addEventListener("click", () => {
+      if (v && v.url) { window.open(v.url, "_blank", "noopener"); return; }
+      $("[data-soon]", box).hidden = false; playBtn.hidden = true;
+    });
   }
 
   /* ------------------------------------------------ functional: timeline */
