@@ -757,3 +757,10 @@
 .intro-title.on-menu span { top: 17px; }
 /* slide 28 (ladder summary): only the background is mirrored */
 .screen[data-type="summary"] .bg.flip-bg { transform: scaleX(-1); }
+
+/* the set's film, full stage inside the lomda (above the chrome) */
+.film-full { position: absolute; inset: 0; z-index: 70; background: #000000; }
+.film-full iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+.film-full .film-close { position: absolute; left: 14px; top: 14px; z-index: 2; width: 44px; height: 44px; background: rgba(255,255,255,.92); color: var(--navy); }
+.film-full .film-close { border: 0; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: var(--btn-shadow); }
+.film-full .film-close svg { width: 20px; height: 20px; }

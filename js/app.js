@@ -259,11 +259,25 @@
       <p class="tv-soon" data-soon hidden>סרטון יתווסף בהמשך</p>
       <button type="button" class="tv-btn play" aria-label="הפעלת הסרטון" title="הפעלת הסרטון"><img src="${UI}play.png" alt=""></button>
     </div>`;
-  /* PLAY: the set's film opens in a new tab (YouTube); a set without a film yet shows "סרטון יתווסף בהמשך" */
+  /* PLAY: the set's film plays inside the lomda, over the whole stage (YouTube embed); ✕ closes it and stops it.
+     A set without a film yet shows "סרטון יתווסף בהמשך" on the TV. */
+  function openFilm(scr, v) {
+    const ov = document.createElement("div");
+    ov.className = "film-full"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", v.title);
+    ov.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${v.yt}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="${v.title}"
+        referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
+      <button type="button" class="close-x film-close" aria-label="סגירת הסרטון">${CLOSE_X}</button>`;
+    const close = () => { ov.remove(); modalMode(false); document.removeEventListener("keydown", esc); };
+    const esc = e => { if (e.key === "Escape") close(); };
+    $(".film-close", ov).addEventListener("click", close);
+    document.addEventListener("keydown", esc);
+    scr.appendChild(ov); modalMode(true);
+    $(".film-close", ov).focus({ preventScroll: true });
+  }
   function bindBoost(scr, s) {
     const box = $("[data-film]", scr), playBtn = $(".tv-btn.play", box), v = VIDEOS[s.video];
     playBtn.addEventListener("click", () => {
-      if (v && v.url) { window.open(v.url, "_blank", "noopener"); return; }
+      if (v && v.yt) { openFilm(scr, v); return; }
       $("[data-soon]", box).hidden = false; playBtn.hidden = true;
     });
   }
