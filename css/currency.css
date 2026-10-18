@@ -767,3 +767,9 @@
 
 /* round – slide 1: the title a little higher, centred in the orange pill */
 .intro-title:not(.on-menu) span { top: 21px; }
+
+/* slide 5: a longer lead (three lines) – the head a little higher, the timeline lower */
+.tl-head { top: 80px; }
+.tl { top: 246px; }
+.tl-line { top: 394px; }
+.tl-prog { top: 546px; }
