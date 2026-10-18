@@ -764,3 +764,6 @@
 .film-full .film-close { position: absolute; left: 14px; top: 14px; z-index: 2; width: 44px; height: 44px; background: rgba(255,255,255,.92); color: var(--navy); }
 .film-full .film-close { border: 0; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: var(--btn-shadow); }
 .film-full .film-close svg { width: 20px; height: 20px; }
+
+/* round – slide 1: the title a little higher, centred in the orange pill */
+.intro-title:not(.on-menu) span { top: 21px; }
