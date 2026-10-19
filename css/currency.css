@@ -773,3 +773,7 @@
 .tl { top: 246px; }
 .tl-line { top: 394px; }
 .tl-prog { top: 546px; }
+
+/* slide 6: a small figure doing each station's exercise, under the station name */
+.fh-list .fh-fig { width: 128px; height: 100px; object-fit: contain; margin-top: auto; padding-top: 4px; }
+.fh-list .fh-fig.fh-sprint { object-fit: cover; object-position: 50% 62%; }

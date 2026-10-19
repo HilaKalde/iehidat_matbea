@@ -340,7 +340,7 @@
       <div class="h-title">${s.title}</div>
       <p class="txt fh-lead">${s.lead}</p>
       <ol class="fh-list">
-        ${stations().map((x, i) => `<li><img src="${IMG + ERA_IMG[i]}" alt=""><span class="fh-n">תחנה ${i + 1}</span><b>${x.exName}</b><span class="fh-topic">${x.topic}</span></li>`).join("")}
+        ${stations().map((x, i) => `<li><img src="${IMG + ERA_IMG[i]}" alt=""><span class="fh-n">תחנה ${i + 1}</span><b>${x.exName}</b><span class="fh-topic">${x.topic}</span><img class="fh-fig fh-${x.ex}" src="${IMG}fh-${x.ex}.webp" alt=""></li>`).join("")}
       </ol>
       ${s.tip ? `<p class="fh-tip">${s.tip}</p>` : ""}
       <div class="wall-actions"><button class="btn practice-btn" data-go="${s.next}">${s.button}</button></div>
