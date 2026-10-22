@@ -348,14 +348,16 @@
 
   /* ------------------------------------------------ functional: stations */
   // Adam and Aya on the two mats of bg-mats (feet on y ≈ 640). still = frame 1 of each GIF, same canvas.
+  // intro: the station's opening card only – one figure does the exercise ("gif": its GIF loops, "bob": a still pose moving
+  // gently up and down, "still": the pose as is), the other stands (Adam arms crossed / Aya hands on hips);
+  // once the practice starts both are back to the practice figures. Sprint: no intro change.
+  const STAND = { m: ["adam-arms", [872, 226, 274, 410]], w: ["aya-hips", [54, 226, 274, 410]] };
   const EX = {
-    // squat – on the station's opening card only: Aya squats (looping GIF) and Adam stands with his arms crossed;
-    // once the practice starts both are back to the squat figures (a repetition after each correct item)
-    squat:  { w: ["squat-w", [0, 232, 315, 420]], m: ["squat-m", [885, 232, 315, 420]], ms: 3240, intro: { m: ["adam-arms", [890, 262, 248, 372]] } },
-    situp:  { w: ["situp-w", [50, 292, 285, 380]], m: ["situp-m", [830, 292, 285, 380]], ms: 1680 },
-    pushup: { w: ["pushup-w", [85, 440, 330, 186]], m: ["pushup-m", [790, 440, 330, 186]], ms: 2200 },
-    plank:  { w: ["aya-plank", [78, 398, 315, 210]], m: ["adam-plank", [820, 398, 315, 210]] },   // centred on the two mats
-    lunge:  { w: ["aya-lunge", [95, 284, 220, 330]], m: ["adam-lunge", [885, 284, 220, 330]] },
+    squat:  { w: ["squat-w", [0, 232, 315, 420]], m: ["squat-m", [885, 232, 315, 420]], ms: 3240, intro: { does: "w", how: "gif" } },
+    situp:  { w: ["situp-w", [50, 292, 285, 380]], m: ["situp-m", [830, 292, 285, 380]], ms: 1680, intro: { does: "w", how: "gif" } },
+    pushup: { w: ["pushup-w", [85, 440, 330, 186]], m: ["pushup-m", [790, 440, 330, 186]], ms: 2200, intro: { does: "m", how: "gif" } },
+    plank:  { w: ["aya-plank", [78, 398, 315, 210]], m: ["adam-plank", [820, 398, 315, 210]], intro: { does: "m", how: "still" } },   // centred on the two mats
+    lunge:  { w: ["aya-lunge", [95, 284, 220, 330]], m: ["adam-lunge", [885, 284, 220, 330]], intro: { does: "m", how: "bob" } },
     // sprint: Adam stands with his arms crossed; Aya crouches (ספרינט אישה) → gets ready (אישה מתכוננת לרוץ) → runs out to the left
     sprint: { w: ["sprint-w", [40, 372, 390, 260]], m: ["adam-arms", [850, 268, 248, 372]], ready: "sprint-ready", run: "sprint-run" }
   };
@@ -464,14 +466,16 @@
       }, 200);
     }
     if (s.ex === "sprint") { gifUrl(ex.run + ".gif"); new Image().src = IMG + ex.ready + ".png"; }
-    // the opening card (squat): Aya squats non-stop, Adam stands with his arms crossed; leaveIntro() puts the practice figures back
+    // the opening card: one figure does the exercise, the other stands (see EX.intro); leaveIntro() puts the practice figures back
     const setFig = (img, [base, box]) => { img.src = IMG + base + ".png"; Object.assign(img.style, { left: box[0] + "px", top: box[1] + "px", width: box[2] + "px", height: box[3] + "px" }); };
     let introLoop = !!ex.intro && !isDone(s.id);
     if (introLoop) {
-      setFig(figs.m, ex.intro.m);
-      gifUrl(ex.w[0] + ".gif").then(u => { if (introLoop && figs.w.isConnected) figs.w.src = u; });
+      const d = ex.intro.does, other = d === "w" ? "m" : "w", img = figs[d];
+      setFig(figs[other], STAND[other]);
+      if (ex.intro.how === "gif") gifUrl(ex[d][0] + ".gif").then(u => { if (introLoop && img.isConnected) img.src = u; });
+      if (ex.intro.how === "bob") img.classList.add("ex-bob");
     }
-    const leaveIntro = () => { if (!introLoop) return; introLoop = false; setFig(figs.w, ex.w); setFig(figs.m, ex.m); };
+    const leaveIntro = () => { if (!introLoop) return; introLoop = false; both(img => img.classList.remove("ex-bob")); setFig(figs.w, ex.w); setFig(figs.m, ex.m); };
     const rowHtml = (r, i) => r.items.map((t, j) => `<button type="button" class="st-item" ${s.drag ? "data-chip" : ""} data-j="${j}">${money(t)}</button>`).join("");
     async function playRow(i, myRun) {
       const r = s.rows[i], picks = [];
