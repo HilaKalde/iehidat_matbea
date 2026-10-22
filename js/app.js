@@ -349,7 +349,8 @@
   /* ------------------------------------------------ functional: stations */
   // Adam and Aya on the two mats of bg-mats (feet on y ≈ 640). still = frame 1 of each GIF, same canvas.
   const EX = {
-    squat:  { w: ["squat-w", [0, 232, 315, 420]], m: ["squat-m", [885, 232, 315, 420]], ms: 3240 },
+    // squat: Aya squats the whole slide (looping GIF); Adam stands with his arms crossed
+    squat:  { w: ["squat-w", [0, 232, 315, 420]], m: ["adam-arms", [890, 262, 248, 372]], loopW: true },
     situp:  { w: ["situp-w", [50, 292, 285, 380]], m: ["situp-m", [830, 292, 285, 380]], ms: 1680 },
     pushup: { w: ["pushup-w", [85, 440, 330, 186]], m: ["pushup-m", [790, 440, 330, 186]], ms: 2200 },
     plank:  { w: ["aya-plank", [78, 398, 315, 210]], m: ["adam-plank", [820, 398, 315, 210]] },   // centred on the two mats
@@ -413,8 +414,8 @@
     const both = f => ["w", "m"].forEach(k => f(figs[k], k));
     // the characters' movement after a row
     const animate = (rowOk, nCorrect) => {
-      // squat, push-ups: a repetition only after a correctly answered item
-      if (s.ex === "squat" || s.ex === "pushup") { if (rowOk) both((img, k) => playOnce(img, ex[k][0], ex.ms)); }
+      // push-ups: a repetition only after a correctly answered item (squat: Aya squats all along)
+      if (s.ex === "pushup") { if (rowOk) both((img, k) => playOnce(img, ex[k][0], ex.ms)); }
       else if (s.ex === "situp") { if (nCorrect) both((img, k) => playOnce(img, ex[k][0], ex.ms)); }
       else if (s.ex === "plank") {
         // after each item both show its result pose ("פלאנק נכון" thumbs-up / "פלאנק לא נכון" fallen), then back to the plank
@@ -462,6 +463,7 @@
       }, 200);
     }
     if (s.ex === "sprint") { gifUrl(ex.run + ".gif"); new Image().src = IMG + ex.ready + ".png"; }
+    if (ex.loopW) gifUrl(ex.w[0] + ".gif").then(u => { if (figs.w.isConnected) figs.w.src = u; });
     const rowHtml = (r, i) => r.items.map((t, j) => `<button type="button" class="st-item" ${s.drag ? "data-chip" : ""} data-j="${j}">${money(t)}</button>`).join("");
     async function playRow(i, myRun) {
       const r = s.rows[i], picks = [];
@@ -527,7 +529,15 @@
     $("[data-start]", scr).addEventListener("click", start);
     // "סיום התרגיל": the current row closes and the station ends – the remaining rows earn nothing
     const stopBtn = $("[data-stop]", scr); if (stopBtn) stopBtn.addEventListener("click", () => { abort = true; if (timer) timer.stop(); });
-    $("[data-again]", scr).addEventListener("click", () => { delete state.answers[s.id]; save(); updateChrome(s); $("[data-stepper]", scr).innerHTML = stepperHtml(s); start(); });
+    // "תרגול חוזר": at most twice per station – after the second retry the button is gone
+    const MAX_RETRY = 2, retries = () => (state.retries || {})[s.id] || 0;
+    const againBtn = $("[data-again]", scr), syncAgain = () => { againBtn.hidden = retries() >= MAX_RETRY; };
+    syncAgain();
+    againBtn.addEventListener("click", () => {
+      if (retries() >= MAX_RETRY) return;
+      state.retries = Object.assign({}, state.retries, { [s.id]: retries() + 1 });
+      delete state.answers[s.id]; save(); updateChrome(s); $("[data-stepper]", scr).innerHTML = stepperHtml(s); syncAgain(); start();
+    });
     $("[data-showrev]", scr).addEventListener("click", e => { const rv = $("[data-review]", scr); rv.hidden = !rv.hidden; card.classList.toggle("rev-open", !rv.hidden); e.currentTarget.textContent = rv.hidden ? "לצפייה בתשובות" : "הסתרת התשובות"; });
     if (isDone(s.id)) renderDone(false);
     scr._leave = () => { run++; if (timer) timer.stop(); };
