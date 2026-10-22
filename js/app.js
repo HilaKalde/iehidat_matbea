@@ -349,8 +349,9 @@
   /* ------------------------------------------------ functional: stations */
   // Adam and Aya on the two mats of bg-mats (feet on y ≈ 640). still = frame 1 of each GIF, same canvas.
   const EX = {
-    // squat: Aya squats the whole slide (looping GIF); Adam stands with his arms crossed
-    squat:  { w: ["squat-w", [0, 232, 315, 420]], m: ["adam-arms", [890, 262, 248, 372]], loopW: true },
+    // squat – on the station's opening card only: Aya squats (looping GIF) and Adam stands with his arms crossed;
+    // once the practice starts both are back to the squat figures (a repetition after each correct item)
+    squat:  { w: ["squat-w", [0, 232, 315, 420]], m: ["squat-m", [885, 232, 315, 420]], ms: 3240, intro: { m: ["adam-arms", [890, 262, 248, 372]] } },
     situp:  { w: ["situp-w", [50, 292, 285, 380]], m: ["situp-m", [830, 292, 285, 380]], ms: 1680 },
     pushup: { w: ["pushup-w", [85, 440, 330, 186]], m: ["pushup-m", [790, 440, 330, 186]], ms: 2200 },
     plank:  { w: ["aya-plank", [78, 398, 315, 210]], m: ["adam-plank", [820, 398, 315, 210]] },   // centred on the two mats
@@ -414,8 +415,8 @@
     const both = f => ["w", "m"].forEach(k => f(figs[k], k));
     // the characters' movement after a row
     const animate = (rowOk, nCorrect) => {
-      // push-ups: a repetition only after a correctly answered item (squat: Aya squats all along)
-      if (s.ex === "pushup") { if (rowOk) both((img, k) => playOnce(img, ex[k][0], ex.ms)); }
+      // squat, push-ups: a repetition only after a correctly answered item
+      if (s.ex === "squat" || s.ex === "pushup") { if (rowOk) both((img, k) => playOnce(img, ex[k][0], ex.ms)); }
       else if (s.ex === "situp") { if (nCorrect) both((img, k) => playOnce(img, ex[k][0], ex.ms)); }
       else if (s.ex === "plank") {
         // after each item both show its result pose ("פלאנק נכון" thumbs-up / "פלאנק לא נכון" fallen), then back to the plank
@@ -463,7 +464,14 @@
       }, 200);
     }
     if (s.ex === "sprint") { gifUrl(ex.run + ".gif"); new Image().src = IMG + ex.ready + ".png"; }
-    if (ex.loopW) gifUrl(ex.w[0] + ".gif").then(u => { if (figs.w.isConnected) figs.w.src = u; });
+    // the opening card (squat): Aya squats non-stop, Adam stands with his arms crossed; leaveIntro() puts the practice figures back
+    const setFig = (img, [base, box]) => { img.src = IMG + base + ".png"; Object.assign(img.style, { left: box[0] + "px", top: box[1] + "px", width: box[2] + "px", height: box[3] + "px" }); };
+    let introLoop = !!ex.intro && !isDone(s.id);
+    if (introLoop) {
+      setFig(figs.m, ex.intro.m);
+      gifUrl(ex.w[0] + ".gif").then(u => { if (introLoop && figs.w.isConnected) figs.w.src = u; });
+    }
+    const leaveIntro = () => { if (!introLoop) return; introLoop = false; setFig(figs.w, ex.w); setFig(figs.m, ex.m); };
     const rowHtml = (r, i) => r.items.map((t, j) => `<button type="button" class="st-item" ${s.drag ? "data-chip" : ""} data-j="${j}">${money(t)}</button>`).join("");
     async function playRow(i, myRun) {
       const r = s.rows[i], picks = [];
@@ -498,6 +506,7 @@
     }
     let abort = false;
     async function start() {
+      leaveIntro();
       const myRun = ++run; results = []; points = 0; lungeStep = 0; abort = false; ptsEl.textContent = 0;
       both(img => { img.style.removeProperty("--step"); img.classList.remove("stepping"); });
       if (s.ex === "sprint") sprintReady();                // the practice starts: Aya gets ready (she runs only on a correct answer)
