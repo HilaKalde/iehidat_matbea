@@ -786,3 +786,4 @@
 .ex-fig.ex-wide { pointer-events: none; }
 .ex-fig.ex-nohit { pointer-events: none; }
 .ex-fig.ex-flip { scale: -1 1; }
+.sum-bonus { margin-top: 4px; font-size: 15px; font-weight: 700; color: var(--teal); }

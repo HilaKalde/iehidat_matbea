@@ -13,7 +13,7 @@ const LINKS = {
 };
 
 const SETS = {
-  functional: { title: "אימון פונקציונלי", sub: "התפתחות אמצעי התשלום", total: 48 },
+  functional: { title: "אימון פונקציונלי", sub: "התפתחות אמצעי התשלום", total: 100 },   // 48 items × 2 + 4 bonus
   ladder:     { title: "סולם ערכים",       sub: "דמויות וסמלים על השטרות", total: 28 },
   pulley:     { title: "פולי הביטחון",     sub: "זיהוי סימני ביטחון",   total: 70 },
   wall:       { title: "קיר טיפוס",        sub: "מעגל החיים שטרות ומעות", total: 100 }

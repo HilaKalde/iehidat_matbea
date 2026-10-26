@@ -22,7 +22,10 @@
   const ans = id => state.answers[id];
   const isDone = id => !!(ans(id) && ans(id).completed);
   const setAns = (id, a) => { state.answers[id] = a; save(); };
-  const setScore = set => DATA.screens.filter(s => s.set === set).reduce((sum, s) => sum + ((ans(s.id) && ans(s.id).points) || 0), 0);
+  // functional set: 2 points for every correct item (48 items = 96) + 4 bonus points once all six stations are done = 100
+  const FN_PT = 2, FN_BONUS = 4;
+  const fnBonus = () => DATA.screens.filter(x => x.type === "station").every(x => isDone(x.id)) ? FN_BONUS : 0;
+  const setScore = set => DATA.screens.filter(s => s.set === set).reduce((sum, s) => sum + ((ans(s.id) && ans(s.id).points) || 0), 0) + (set === "functional" ? fnBonus() : 0);
   // stretching: 1,000 ₪, 100 ₪ off for every wrong answer (and, at the end, for every unanswered one)
   const STRETCH = DATA.screens.filter(s => s.mode === "stretch");
   const bank = (final) => 1000 - 100 * STRETCH.filter(s => isDone(s.id) ? !ans(s.id).correct : !!final).length;
@@ -498,7 +501,7 @@
         const j = +btn.dataset.j; picks.push(j); btn.disabled = true;
         const ok = r.correct.includes(j);
         btn.classList.add(ok ? "ok" : "bad"); btn.setAttribute("aria-label", btn.textContent + (ok ? " – נכון" : " – לא נכון"));
-        if (ok) { points++; ptsEl.textContent = points; bumpEl(ptsEl.parentElement); }
+        if (ok) { points += FN_PT; ptsEl.textContent = points; bumpEl(ptsEl.parentElement); }
         if (picks.length >= k) timer.stop();
       };
       if (s.drag) dragKit(scr, (chip, tgt) => pick(chip));
@@ -534,15 +537,15 @@
     function finish() {
       run++; if (timer) timer.stop();
       for (let i = 0; i < s.rows.length; i++) if (!results[i]) results[i] = [];
-      setAns(s.id, { completed: true, points, results: results.slice() });
+      setAns(s.id, { completed: true, points, correct: points / FN_PT, results: results.slice() });
       updateChrome(s); $("[data-stepper]", scr).innerHTML = stepperHtml(s);
       renderDone(true);
     }
     function renderDone(focus) {
-      const a = ans(s.id), max = maxPoints(s);
+      const a = ans(s.id), max = maxPoints(s), n = a.correct != null ? a.correct : a.points;   // n = correct items (2 points each)
       show("done");
-      const head = s.fb.replace("{n}", a.points).replace("{t}", max);
-      showFb($("[data-inline-fb]", scr), a.points >= max * .5, fbHtml(a.points >= max * .5, head, s.explain, a.points), focus);
+      const head = s.fb.replace("{n}", n).replace("{t}", max);
+      showFb($("[data-inline-fb]", scr), n >= max * .5, fbHtml(n >= max * .5, head, s.explain, a.points), focus);
       $("[data-review]", scr).innerHTML = s.rows.map((r, i) => `<div class="rv-row">${r.q ? `<span class="rv-q">${r.q}</span>` : ""}${r.items.map((t, j) => {
         const picked = (a.results[i] || []).includes(j), c = r.correct.includes(j);
         return `<span class="rv-it ${picked ? (c ? "ok" : "bad") : (c ? "should" : "")}">${t}</span>`; }).join("")}</div>`).join("");
@@ -1203,6 +1206,7 @@
       <div class="card sum-card ${A("fly-b", 0)}">
         <div class="h-title" style="font-size:27px">${s.title}</div>
         <div class="score-line ${A("pop", 500)}"><span class="coin"></span>צברתם <span class="big">${score}</span> מתוך ${SETS[s.set].total} נקודות</div>
+        ${s.set === "functional" && fnBonus() ? `<p class="sum-bonus ${A("fade", 700)}">כולל ${FN_BONUS} נקודות בונוס על השלמת כל שש התחנות</p>` : ""}
         <p class="h-sub" style="margin-top:8px">מה למדנו בסט?</p>
         <p class="txt" style="font-size:17.5px">${s.learned}</p>
         <ul class="bul">${s.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
