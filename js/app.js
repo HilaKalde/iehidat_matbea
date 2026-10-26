@@ -175,13 +175,13 @@
   }
 
   /* banknote image or a placeholder card (a banknote still missing from the assets) */
-  const BN_NAT = { "szold-5": [540, 315], "shazar-200": [540, 280], "leah-100": [820, 403], "montefiore-1": [540, 302], "sharett-20": [540, 278], "agnon-50": [540, 278], "alterman-200": [819, 386], "bengurion-50": [519, 258], "einstein-5": [519, 256], "eshkol-5000": [516, 283],
+  const BN_NAT = { "szold-5": [540, 315], "shazar-200": [820, 448], "leah-100": [820, 403], "montefiore-1": [540, 302], "sharett-20": [820, 448], "agnon-50": [820, 451], "alterman-200": [819, 386], "bengurion-50": [519, 258], "einstein-5": [519, 256], "eshkol-5000": [516, 283],
     "golda-10000": [517, 286], "herzl-10": [519, 265], "rachel-20": [820, 447], "rambam-1000": [518, 282], "rothschild-500": [519, 288],
-    "tchernichovsky-50": [817, 421] };
+    "tchernichovsky-50": [428, 222] };
   // centre of the portrait on each note (x, y as a fraction) and the width of the crop (fraction of the note)
-  const PORTRAIT = { "szold-5": [.74, .5, .38], "shazar-200": [.45, .5, .42], "leah-100": [.74, .42, .25], "montefiore-1": [.72, .52, .34], "sharett-20": [.55, .45, .36], "agnon-50": [.57, .52, .38], "alterman-200": [.65, .42, .36], "bengurion-50": [.63, .48, .4], "einstein-5": [.79, .55, .3], "eshkol-5000": [.8, .42, .36],
+  const PORTRAIT = { "szold-5": [.74, .5, .38], "shazar-200": [.73, .52, .38], "leah-100": [.74, .42, .25], "montefiore-1": [.72, .52, .34], "sharett-20": [.72, .5, .38], "agnon-50": [.73, .5, .4], "alterman-200": [.65, .42, .36], "bengurion-50": [.63, .48, .4], "einstein-5": [.79, .55, .3], "eshkol-5000": [.8, .42, .36],
     "golda-10000": [.79, .45, .36], "herzl-10": [.5, .52, .34], "rachel-20": [.64, .45, .34], "rambam-1000": [.74, .47, .4],
-    "rothschild-500": [.67, .48, .4], "tchernichovsky-50": [.66, .5, .34] };
+    "rothschild-500": [.67, .48, .4], "tchernichovsky-50": [.76, .55, .34] };
   const bnImg = (bn, alt, cls = "") => bn ? `<img class="bn ${cls}" src="${BN + bn}.jpg" alt="${alt}">`
     : `<span class="bn bn-missing ${cls}" role="img" aria-label="${alt}"><span>תמונת השטר<br>תתווסף בהמשך</span></span>`;
   function portraitHtml(bn, name, w, h) {
@@ -1458,7 +1458,7 @@
     C("home").classList.toggle("hidden", !inChapter);
     const gated = !!s.gate && !allVisited(s);
     // the values ladder moves on by its own buttons and the ladder rungs only – no "הבא" arrow there (client)
-    C("next").classList.toggle("hidden", !inChapter || !byId[s.next] || gated || (s.set === "ladder" && s.type !== "boost" && s.type !== "summary"));
+    C("next").classList.toggle("hidden", !inChapter || !byId[s.next] || gated || (s.set === "ladder" && s.type !== "boost" && s.type !== "summary" && !s.showNext));
     C("prev").classList.toggle("hidden", !inChapter || !byId[s.prev]);
     const showCoins = s.set && POINT_TYPES.includes(s.type);
     const cc = C("coins");
