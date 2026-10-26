@@ -1,0 +1,19 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{margin:0;background:#888;font:12px sans-serif}canvas{display:block}</style></head><body>
+<canvas id="c" width="1200" height="675"></canvas>
+<script>
+/* Dev tool: a contact sheet of a video – 12 frames, evenly spaced (or the times in #t=a,b,c), with their time */
+const v = document.createElement("video"); v.muted = true; v.src = "../_src/" + (new URLSearchParams(location.search).get("f") || "ladder-climb.mp4");
+const c = document.getElementById("c"), g = c.getContext("2d");
+v.addEventListener("loadedmetadata", async () => {
+  const D = v.duration, ts = location.hash ? location.hash.slice(1).split(",").map(Number) : [...Array(12)].map((_, i) => D * i / 11 - (i === 11 ? .05 : 0));
+  const cols = 4, rows = Math.ceil(ts.length / cols), w = 1200 / cols, h = 675 / rows;
+  g.fillStyle = "#000"; g.fillText(`${v.videoWidth}x${v.videoHeight} ${D.toFixed(2)}s`, 4, 670);
+  for (let i = 0; i < ts.length; i++) {
+    await new Promise(r => { v.onseeked = r; v.currentTime = ts[i]; });
+    const s = Math.min(w / v.videoWidth, (h - 14) / v.videoHeight);
+    g.drawImage(v, (i % cols) * w, Math.floor(i / cols) * h, v.videoWidth * s, v.videoHeight * s);
+    g.fillStyle = "#ff0"; g.fillText(ts[i].toFixed(2) + "s", (i % cols) * w + 4, Math.floor(i / cols) * h + 12);
+  }
+  document.title = "done";
+});
+</script></body></html>

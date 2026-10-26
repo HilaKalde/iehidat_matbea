@@ -787,3 +787,9 @@
 .ex-fig.ex-nohit { pointer-events: none; }
 .ex-fig.ex-flip { scale: -1 1; }
 .sum-bonus { margin-top: 4px; font-size: 15px; font-weight: 700; color: var(--teal); }
+
+/* values ladder: Adam climbing (lclimb-*.png / -seg*.gif on the GIF's 1280×720 canvas, scaled ×0.72) – only the ladder part
+   of the canvas is shown; the ladder stands at x ≈ 10–206 of the .ladder box, its top at stage y ≈ 160 */
+.ladder-anim { position: absolute; left: 0; top: 0; width: 212px; height: 560px; overflow: hidden; pointer-events: none; }
+.ladder-anim .ladder-img { position: absolute; left: -357px; top: 38px; width: 922px; height: 518px; max-width: none; transition: none; animation: none; filter: drop-shadow(0 10px 12px rgba(0,0,0,.35)); }
+.ladder.ladder-sum { left: 40px; top: 100px; }

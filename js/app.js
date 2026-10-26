@@ -577,12 +577,17 @@
     { n: 4, name: "הצבעים", go: "l4-intro", quiz: "l4-quiz" }
   ];
   const stagesDone = () => STAGES.filter(st => isDone(st.quiz)).length;
-  // Adam's frame = the stage the learner is on ("אדם מטפס על סולם תחנה 1–4"); opening screen = 1, summary = 4
-  const ladderFrame = stage => Math.max(1, Math.min(4, stage || 1));
+  // Adam on the ladder: "סרטון אדם מטפס על סולם רקע שקוף.gif" (1280×720, transparent) cut at the frames where he rests –
+  // lclimb-0..4.png are the five rest positions (bottom → top), lclimb-seg1..4.gif the climbs between them (played once).
+  // A stage's screens show him where the previous stages brought him: opening + stage 1 = 0, stage 2 = 1 … ; finishing
+  // stage k plays seg k and leaves him at position k (4 = the top, also on the summary).
+  const ladderPos = stage => Math.max(0, Math.min(4, (stage || 1) - 1));
+  const CLIMB_MS = [0, 1720, 1000, 1120, 1320];                       // seg1..4: 43 / 25 / 28 / 33 frames × 40ms
+  const ladderPic = (p, alt) => `<div class="ladder-anim"><img class="ladder-img" data-ladder-img src="${IMG}lclimb-${p}.png" alt="${alt}"></div>`;
   function ladderHtml(cur) {
-    const fr = ladderFrame(cur);
+    if (cur >= 1 && cur <= 4) gifUrl("lclimb-seg" + cur + ".gif");   // preload the climb that ends this stage
     return `<div class="ladder ${A("fly-l", 150)}" data-ladder>
-      <img class="ladder-img" data-ladder-img src="${IMG}ladder-${fr}.png" alt="אדם מטפס בסולם הערכים – ${stagesDone()} מתוך 4 שלבים הושלמו">
+      ${ladderPic(ladderPos(cur), `אדם מטפס בסולם הערכים – ${stagesDone()} מתוך 4 שלבים הושלמו`)}
       ${stagesDone() === 4 ? `<span class="ladder-top" aria-hidden="true"><img src="${ICON}star.gif" alt=""></span>` : ""}
       <ol class="ladder-steps" aria-label="שלבי הסולם – לחצו כדי לעבור לשלב">
         ${STAGES.slice().reverse().map(st => {
@@ -593,13 +598,15 @@
       </ol>
     </div>`;
   }
-  // after a stage is completed: Adam climbs to the next stage's rung
+  // after a stage is completed: Adam climbs (the GIF segment) up to the next rest position
   function climb(scr, stage) {
     const img = $("[data-ladder-img]", scr); if (!img) return;
-    const fr = ladderFrame((stage || 0) + 1);
-    img.classList.add("climbing");
-    setTimeout(() => { if (img.isConnected) { img.src = IMG + "ladder-" + fr + ".png"; } }, 350);
-    setTimeout(() => { if (img.isConnected) img.classList.remove("climbing"); }, 900);
+    const k = Math.max(1, Math.min(4, stage || 1));
+    gifUrl("lclimb-seg" + k + ".gif").then(u => {
+      if (!img.isConnected) return;
+      img.src = u; clearTimeout(img._climb);
+      img._climb = setTimeout(() => { if (img.isConnected) img.src = IMG + "lclimb-" + k + ".png"; }, CLIMB_MS[k]);
+    });
     $$(".lstep", scr).forEach(b => { const st = STAGES.find(x => x.go === b.dataset.go); if (isDone(st.quiz)) { b.classList.add("done"); $(".ls-n", b).textContent = "✓"; } });
   }
   const ladderBg = () => `<img class="bg" src="${IMG}bg-hall.jpg" alt=""><div class="q-scrim strong" aria-hidden="true"></div>`;
@@ -1199,7 +1206,7 @@
   R.summary = s => {
     const score = setScore(s.set);
     const heroes = { "adam-flex": hero("adam-flex", 40, 200, 460, A("fly-l", 300)), "aya-flex": hero("aya-flex", 40, 200, 460, A("fly-l", 300)) };
-    const left = s.ladderTop ? `<img class="char ${A("fly-l", 300)}" src="${IMG}ladder-4.png" alt="אדם בראש הסולם" style="${pos(10, 190, 304, 456)}">` : heroes[s.hero];
+    const left = s.ladderTop ? `<div class="ladder ladder-sum ${A("fly-l", 300)}">${ladderPic(4, "אדם בראש הסולם")}</div>` : heroes[s.hero];
     return `
       <img class="bg ${s.ladderTop ? "flip-bg" : ""}" src="${IMG}bg-clean.jpg" alt="">
       ${left}
