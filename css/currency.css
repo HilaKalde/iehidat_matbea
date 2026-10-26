@@ -862,3 +862,5 @@
   background-color: #EEF3F5; background-repeat: no-repeat; background-size: 420% auto; background-position: 100% 50%; filter: grayscale(1) contrast(1.25); flex: none; }
 .coin-mag::after { content: ""; position: absolute; right: -16px; bottom: -14px; width: 22px; height: 8px; background: #3B4A55; border-radius: 4px; transform: rotate(45deg); }
 .dm.coins .coin-t .coin-edge { display: none; }
+.coin-mag.big { width: 96px; height: 96px; border-width: 6px; background-size: 360% auto; }
+.coin-t.by-edge, .coin-t.by-dia { justify-content: flex-end; }

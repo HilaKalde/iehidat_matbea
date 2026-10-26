@@ -868,8 +868,8 @@
   R.dragmatch = s => {
     const coins = s.kind === "coins";
     const target = (t, i) => coins
-      // the coin as a black silhouette at its true relative size, its diameter, and a magnifier on its rim (only the edge – not the face, which would give the value away)
-      ? `<div class="dm-t coin-t" data-drop="${i}"><span class="coin-sil ${t.coin === "5" ? "dodeca" : ""}" style="--d:${t.d}"></span><span class="coin-dia">קוטר ${String(t.d).replace(".", ",")} מ"מ</span><span class="coin-mag" style="background-image:url(${IMG}coin-${t.coin}-edge.png)" role="img" aria-label="תקריב של שולי המטבע"></span><span class="dm-slot" data-slot>?</span></div>`
+      // by the rim (10 / 5 / 2 ₪): a magnifier on the edge only; by the diameter (smooth rims): a silhouette at its true relative size + the diameter
+      ? `<div class="dm-t coin-t by-${t.by}" data-drop="${i}">${t.by === "edge" ? `<span class="coin-mag big" style="background-image:url(${IMG}coin-${t.coin}-edge.png)" role="img" aria-label="תקריב של שולי המעה"></span><span class="coin-dia">השוליים בהגדלה</span>` : `<span class="coin-sil" style="--d:${t.d}"></span><span class="coin-dia">קוטר ${String(t.d).replace(".", ",")} מ"מ</span>`}<span class="dm-slot" data-slot>?</span></div>`
       : `<div class="dm-t note-t" data-drop="${i}"><img src="${BN + t.img}.jpg" alt="שטר כפי שאדם עם לקות ראייה עשוי לראות אותו"><span class="dm-slot" data-slot>?</span></div>`;
     return `
       ${ladderBg()}
