@@ -813,3 +813,16 @@
 .adv-card .thumb { height: 50px; }
 .adv-card .thumb svg { width: 40px; height: 40px; }
 .adv-outro { top: 552px; }
+
+/* slide 21: picture tiles with their names; a click opens the picture large with the explanation */
+.vis-hint { margin-top: 6px; font-size: 17px; font-weight: 800; color: var(--teal); }
+.vis-grid { margin-top: 10px; }
+.vis-btn { position: relative; background: rgba(255,255,255,.96); color: var(--navy); border: 1px solid #CFE3EA; border-radius: 16px; padding: 8px; cursor: pointer; font: inherit; display: flex; flex-direction: column; align-items: center; gap: 6px; box-shadow: var(--btn-shadow); transition: transform .15s ease; }
+.vis-btn:hover { transform: translateY(-3px); }
+.vis-btn img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; display: block; }
+.vis-btn b { font-size: 15px; line-height: 1.2; text-align: center; }
+.vis-btn .tick { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; border-radius: 50%; background: var(--green, #2E7D32); color: #fff; font-size: 14px; display: none; align-items: center; justify-content: center; }
+.vis-btn.seen .tick { display: flex; }
+.vis-modal { left: 300px; top: 70px; width: 600px; padding: 24px 30px 26px; }
+.vis-modal .h-title { padding-left: 48px; font-size: 26px; }
+.vis-big { margin-top: 12px; width: 100%; max-height: 380px; object-fit: contain; border-radius: 14px; display: block; }

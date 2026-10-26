@@ -799,16 +799,28 @@
   }
 
   /* stage 3 – vision, accessibility features, drag exercises */
+  // four impairment tiles (picture + name); a click opens the picture large with its explanation
   R.vision = s => `
     ${ladderBg()}
     ${ladderHtml(s.stage)}
     <div class="lad-content ${A("fade", 0)}">
       <div class="h-title">${s.title}</div>
       <p class="txt lc-lead">${s.lead}</p>
-      <div class="vis-grid">${s.list.map((v, i) => `<figure class="${A("pop", 200 + i * 120)}"><img src="${IMG + v.img}" alt="הדמיה: ${v.name}"><figcaption><b>${v.name}</b> – ${v.text}</figcaption></figure>`).join("")}</div>
+      <p class="vis-hint">${s.hint}</p>
+      <div class="vis-grid">${s.list.map((v, i) => `<button type="button" class="vis-btn ${visited(s).includes("v" + i) ? "seen" : ""} ${A("pop", 200 + i * 120)}" data-vis="${i}" aria-label="${v.name} – לחצו להגדלה ולהסבר"><img src="${IMG + v.img}" alt=""><b>${v.name}</b><span class="tick" aria-hidden="true">✓</span></button>`).join("")}</div>
       <p class="lc-after strong">${s.outro}</p>
       <div class="wall-actions"><button class="btn practice-btn" data-go="${s.next}">המשך</button></div>
-    </div>`;
+    </div>
+    ${s.list.map((v, i) => layerHtml("vis-" + i, `
+      <div class="modal card vis-modal" role="dialog" aria-label="${v.name}">
+        <button class="close-x" data-close="1" aria-label="סגירה">${CLOSE_X}</button>
+        <div class="h-title">${v.name}</div>
+        <p class="exm-p">${v.text}</p>
+        <img class="vis-big" src="${IMG + v.img}" alt="הדמיה: ${v.name}">
+      </div>`)).join("")}`;
+  function bindVision(scr, s) {
+    $$("[data-vis]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, "v" + b.dataset.vis); b.classList.add("seen"); showLayer(scr, "vis-" + b.dataset.vis); }));
+  }
   R.access = s => {
     if (s.kind === "notes") return `
       ${ladderBg()}
@@ -1342,7 +1354,7 @@
     </div>
     <p class="adv-outro ${A("fade", 1000)}">${s.outro}</p>`;
 
-  const BIND = { boost: bindBoost, timeline: bindTimeline, station: bindStation, figures: bindFigures, series: bindSeries, match: bindMatch,
+  const BIND = { boost: bindBoost, timeline: bindTimeline, station: bindStation, figures: bindFigures, series: bindSeries, vision: bindVision, match: bindMatch,
     access: bindAccess, dragmatch: bindDragmatch, security: bindSecurity, pulley: bindPulley, wall: bindWall, mcq: bindMcq };
 
   /* ------------------------------------------------------------ building */
