@@ -357,7 +357,8 @@
     situp:  { w: ["situp-w", [50, 292, 285, 380]], m: ["situp-m", [830, 292, 285, 380]], ms: 1680, intro: { does: "w", how: "gif" } },
     pushup: { w: ["pushup-w", [85, 440, 330, 186]], m: ["pushup-m", [790, 440, 330, 186]], ms: 2200, intro: { does: "m", how: "gif" } },
     plank:  { w: ["aya-plank", [78, 398, 315, 210]], m: ["adam-plank", [820, 398, 315, 210]], intro: { does: "m", how: "still" } },   // centred on the two mats
-    lunge:  { w: ["aya-lunge", [95, 284, 220, 330]], m: ["adam-lunge", [885, 284, 220, 330]], intro: { does: "m", how: "bob" } },
+    lunge:  { w: ["aya-lunge", [95, 284, 220, 330]], m: ["adam-lunge", [885, 284, 220, 330]], // opening card: Aya lunges (לאנגים.gif – a 1280×720 transparent canvas, her feet at y ≈ 690) while Adam stands
+            intro: { does: "w", how: "gif", gif: ["lunge-w", [-186, 218, 768, 432]] } },
     // sprint: Adam stands with his arms crossed; Aya crouches (ספרינט אישה) → gets ready (אישה מתכוננת לרוץ) → runs out to the left
     sprint: { w: ["sprint-w", [40, 372, 390, 260]], m: ["adam-arms", [850, 268, 248, 372]], ready: "sprint-ready", run: "sprint-run" }
   };
@@ -472,10 +473,11 @@
     if (introLoop) {
       const d = ex.intro.does, other = d === "w" ? "m" : "w", img = figs[d];
       setFig(figs[other], STAND[other]);
-      if (ex.intro.how === "gif") gifUrl(ex[d][0] + ".gif").then(u => { if (introLoop && img.isConnected) img.src = u; });
+      if (ex.intro.gif) { const b = ex.intro.gif[1]; Object.assign(img.style, { left: b[0] + "px", top: b[1] + "px", width: b[2] + "px", height: b[3] + "px" }); img.classList.add("ex-wide"); img.style.visibility = "hidden"; }
+      if (ex.intro.how === "gif") gifUrl((ex.intro.gif ? ex.intro.gif[0] : ex[d][0]) + ".gif").then(u => { if (introLoop && img.isConnected) { img.src = u; img.style.visibility = ""; } });
       if (ex.intro.how === "bob") img.classList.add("ex-bob");
     }
-    const leaveIntro = () => { if (!introLoop) return; introLoop = false; both(img => img.classList.remove("ex-bob")); setFig(figs.w, ex.w); setFig(figs.m, ex.m); };
+    const leaveIntro = () => { if (!introLoop) return; introLoop = false; both(img => { img.classList.remove("ex-bob", "ex-wide"); img.style.visibility = ""; }); setFig(figs.w, ex.w); setFig(figs.m, ex.m); };
     const rowHtml = (r, i) => r.items.map((t, j) => `<button type="button" class="st-item" ${s.drag ? "data-chip" : ""} data-j="${j}">${money(t)}</button>`).join("");
     async function playRow(i, myRun) {
       const r = s.rows[i], picks = [];

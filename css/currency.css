@@ -781,3 +781,6 @@
 /* station opening card: a lunge done as a gentle dip up and down (the lunge figure is a still pose) */
 @keyframes ex-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 18px; } }
 .ex-fig.ex-bob { animation: ex-bob 1.6s ease-in-out infinite; }
+
+/* the lunge GIF's wide transparent canvas reaches under the card – it must not catch clicks */
+.ex-fig.ex-wide { pointer-events: none; }
