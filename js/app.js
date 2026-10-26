@@ -97,7 +97,7 @@
   function hideLayer(L) { L.classList.remove("show"); modalMode(false); $$("iframe", L).forEach(f => f.remove()); }
 
   function fbHtml(ok, head, body, points, action) {
-    return `<div class="ifb-row"><p class="ifb-head">${head}</p>${points ? `<span class="ifb-coins"><span class="coin sm"></span>+${points} נקודות</span>` : ""}</div>` +
+    return `<div class="ifb-row"><p class="ifb-head">${head}</p>${points ? `<span class="ifb-coins"><span class="coin sm"></span>+${points} מטבעות</span>` : ""}</div>` +
       (body ? `<div class="ifb-body">${money(body)}</div>` : "") + (action || "");
   }
   function showFb(box, ok, html, focus = true) {
@@ -366,13 +366,14 @@
     lunge:  { w: ["lunge-w", [-154, 250, 704, 396]], m: ["lunge-m", [577, 194, 813, 457]], ms: 5080, wide: true, flipM: true,
             intro: { does: "w", how: "gif" } },
     // sprint: Adam stands with his arms crossed; Aya crouches (ספרינט אישה) → gets ready (אישה מתכוננת לרוץ) → runs out to the left
-    sprint: { w: ["sprint-w", [40, 372, 390, 260]], m: ["adam-arms", [850, 268, 248, 372]], ready: "sprint-ready", run: "sprint-run" }
+    sprint: { w: ["sprint-w", [40, 372, 390, 260]], m: ["adam-arms", [850, 268, 248, 372]], ready: "sprint-ready", run: "sprint-run",
+              playBox: [60, 398, 351, 234] }   // in the questions Aya ~10% smaller (same feet line and centre)
   };
   function stepperHtml(cur) {
     const steps = stations().map((x, i) => {
       const a = ans(x.id), done = !!(a && a.completed), here = x.id === cur.id;
       return `<button type="button" class="stp ${done ? "done" : ""} ${here ? "here" : ""}" data-go="${x.id}" ${here ? 'aria-current="step"' : ""}
-          aria-label="תחנה ${i + 1} – ${x.exName}, ${x.topic}${done ? `, הושלמה (${a.points} נקודות)` : ""}">
+          aria-label="תחנה ${i + 1} – ${x.exName}, ${x.topic}${done ? `, הושלמה (${a.points} מטבעות)` : ""}">
         <span class="stp-dot"><img src="${IMG + ERA_IMG[i]}" alt="">${done ? `<span class="stp-ok" aria-hidden="true">✓</span>` : ""}</span>
         <span class="stp-lbl">${i + 1}. ${x.exName}</span>
       </button>`;
@@ -443,7 +444,7 @@
        frame to the left; she comes back in the ready pose for the next item */
     // the running GIF draws Aya smaller on its 1280×720 canvas – its box is enlarged (×1.32, same bottom line) so she
     // runs at the size of the ready pose
-    const box0 = ex.w[1], RUN_K = 1.6;
+    const box0 = ex.playBox || ex.w[1], RUN_K = 1.6;
     const pos0 = img => Object.assign(img.style, { left: box0[0] + "px", top: box0[1] + "px", width: box0[2] + "px", height: box0[3] + "px" });
     const posRun = img => { const w = box0[2] * RUN_K, h = box0[3] * RUN_K;
       Object.assign(img.style, { left: (box0[0] - (w - box0[2]) / 2) + "px", top: (box0[1] + box0[3] - h) + "px", width: w + "px", height: h + "px" }); };
@@ -1205,8 +1206,8 @@
       <div class="star-badge ${A("pop", 900)}" style="${pos(272, 114, 90, 90)}"><img src="${ICON}star.gif" alt=""></div>
       <div class="card sum-card ${A("fly-b", 0)}">
         <div class="h-title" style="font-size:27px">${s.title}</div>
-        <div class="score-line ${A("pop", 500)}"><span class="coin"></span>צברתם <span class="big">${score}</span> מתוך ${SETS[s.set].total} נקודות</div>
-        ${s.set === "functional" && fnBonus() ? `<p class="sum-bonus ${A("fade", 700)}">כולל ${FN_BONUS} נקודות בונוס על השלמת כל שש התחנות</p>` : ""}
+        <div class="score-line ${A("pop", 500)}"><span class="coin"></span>צברתם <span class="big">${score}</span> מתוך ${SETS[s.set].total} מטבעות</div>
+        ${s.set === "functional" && fnBonus() ? `<p class="sum-bonus ${A("fade", 700)}">כולל ${FN_BONUS} מטבעות בונוס על השלמת כל שש התחנות</p>` : ""}
         <p class="h-sub" style="margin-top:8px">מה למדנו בסט?</p>
         <p class="txt" style="font-size:17.5px">${s.learned}</p>
         <ul class="bul">${s.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
@@ -1421,7 +1422,7 @@
   chrome.innerHTML = `
     <div class="chapter-tag hidden" data-c="tag"><img src="${UI}chapter-tag.png" alt=""><span></span></div>
     <button class="btn-img home-btn hidden" data-c="home" title="חזרה למסך הבית"><img src="${UI}btn-home.png" alt="בית"></button>
-    <div class="coin-counter hidden" data-c="coins"><span class="coin"></span><span data-c="coins-v">0</span><span class="lbl">נקודות</span></div>
+    <div class="coin-counter hidden" data-c="coins"><span class="coin"></span><span data-c="coins-v">0</span><span class="lbl">מטבעות</span></div>
     <button type="button" class="nav-btn next-btn hidden" data-c="next" aria-label="הבא" title="הבא"><img src="${UI}nav-arrow.png" alt=""></button>
     <button type="button" class="nav-btn prev-btn hidden" data-c="prev" aria-label="הקודם" title="הקודם"><img src="${UI}nav-arrow.png" alt=""></button>
     <button class="btn-img sound-btn" data-c="sound" title="סאונד"><img alt="סאונד"></button>
