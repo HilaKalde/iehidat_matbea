@@ -865,3 +865,7 @@
 .coin-mag.big { width: 96px; height: 96px; border-width: 6px; background-size: 360% auto; }
 .coin-t.by-edge, .coin-t.by-dia { justify-content: flex-end; }
 .dm.coins .coin-dia.rim { font-size: 12.5px; line-height: 1.25; text-align: center; }
+/* slide 25: the client's coin photos (מטבעות) in a slimmer magnifier, the rim definitions in regular weight */
+.coin-mag.big { width: 84px; height: 84px; border-width: 3px; filter: none; background-color: #FFFFFF; }
+.coin-mag.big::after { right: -13px; bottom: -11px; width: 18px; height: 6px; }
+.dm.coins .coin-dia.rim { font-weight: 400; }

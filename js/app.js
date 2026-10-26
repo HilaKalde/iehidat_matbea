@@ -869,7 +869,7 @@
     const coins = s.kind === "coins";
     const target = (t, i) => coins
       // by the rim (10 / 5 / 2 ₪): a magnifier on the edge only; by the diameter (smooth rims): a silhouette at its true relative size + the diameter
-      ? `<div class="dm-t coin-t by-${t.by}" data-drop="${i}">${t.by === "edge" ? `<span class="coin-mag big" style="background-image:url(${IMG}coin-${t.coin}-edge.png)" role="img" aria-label="תקריב של שולי המעה"></span><span class="coin-dia rim">${t.rim}</span>` : `<span class="coin-sil" style="--d:${t.d}"></span><span class="coin-dia">קוטר ${String(t.d).replace(".", ",")} מ"מ</span>`}<span class="dm-slot" data-slot>?</span></div>`
+      ? `<div class="dm-t coin-t by-${t.by}" data-drop="${i}">${t.by === "edge" ? `<span class="coin-mag big" style="background-image:url(${IMG}rim-${t.coin}.png);background-size:${t.mag[0]} auto;background-position:${t.mag[1]}" role="img" aria-label="תקריב של שולי המעה"></span><span class="coin-dia rim">${t.rim}</span>` : `<span class="coin-sil" style="--d:${t.d}"></span><span class="coin-dia">קוטר ${String(t.d).replace(".", ",")} מ"מ</span>`}<span class="dm-slot" data-slot>?</span></div>`
       : `<div class="dm-t note-t" data-drop="${i}"><img src="${BN + t.img}.jpg" alt="שטר כפי שאדם עם לקות ראייה עשוי לראות אותו"><span class="dm-slot" data-slot>?</span></div>`;
     return `
       ${ladderBg()}
