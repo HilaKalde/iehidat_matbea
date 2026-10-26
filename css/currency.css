@@ -869,3 +869,11 @@
 .coin-mag.big { width: 84px; height: 84px; border-width: 3px; filter: none; background-color: #FFFFFF; }
 .coin-mag.big::after { right: -13px; bottom: -11px; width: 18px; height: 6px; }
 .dm.coins .coin-dia.rim { font-weight: 400; }
+/* slide 25: a plain circle (no handle); every coin's line starts at the same height, regular weight.
+   The picture area has one fixed height (the ½ ₪ silhouette, 26 × 3.6 = 94px), each picture centred in it */
+.coin-mag::after { display: none; }
+.dm.coins .coin-t { justify-content: flex-start; }
+.dm.coins .coin-t .coin-sil, .dm.coins .coin-t .coin-mag { margin-block: calc((94px - var(--h, 84px)) / 2); }
+.dm.coins .coin-t .coin-sil { --h: calc(var(--d) * 3.6px); }
+.dm.coins .coin-dia { font-weight: 400; min-height: 52px; text-align: center; line-height: 1.25; }
+.dm.coins .dm-slot { margin-top: auto; }
