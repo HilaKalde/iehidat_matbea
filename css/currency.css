@@ -826,3 +826,32 @@
 .vis-modal { left: 300px; top: 70px; width: 600px; padding: 24px 30px 26px; }
 .vis-modal .h-title { padding-left: 48px; font-size: 26px; }
 .vis-big { margin-top: 12px; width: 100%; max-height: 380px; object-fit: contain; border-radius: 14px; display: block; }
+
+/* slide 22: the four accessibility marks as buttons; each opens its explanation with an illustration (Storyline 3.30) */
+.acc-marks { margin-top: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.acc-mark { position: relative; min-height: 150px; background: rgba(255,255,255,.96); color: var(--navy); border: 1px solid #CFE3EA; border-radius: 16px; padding: 12px 10px; cursor: pointer; font: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; box-shadow: var(--btn-shadow); transition: transform .15s ease; }
+.acc-mark:hover { transform: translateY(-3px); }
+.acc-mark .am-n { position: absolute; top: 8px; left: 10px; width: 26px; height: 26px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.acc-mark .am-ic { font-size: 30px; font-weight: 900; line-height: 1; color: var(--teal); }
+.acc-mark b { font-size: 17px; line-height: 1.2; }
+.acc-mark .am-go { font-size: 13px; color: var(--teal); font-weight: 700; }
+.acc-mark .tick { position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%; background: #2E7D32; color: #fff; font-size: 14px; display: none; align-items: center; justify-content: center; }
+.acc-mark.seen .tick { display: flex; }
+.acc-modal { left: 210px; top: 60px; width: 780px; padding: 22px 30px 24px; }
+.acc-modal .h-title { padding-left: 48px; font-size: 26px; }
+.acc-ill { margin-top: 12px; }
+.ai-pics { display: flex; gap: 14px; justify-content: center; }
+.ai-pics figure { margin: 0; flex: 1; max-width: 400px; }
+.ai-pics.n1 figure { max-width: 470px; }
+.ai-pics img { width: 100%; border-radius: 12px; display: block; box-shadow: 0 4px 12px rgba(0,0,0,.18); }
+.ai-pics figcaption, .ai-notes figcaption { margin-top: 6px; font-size: 15px; font-weight: 700; text-align: center; color: var(--navy); }
+.ai-notes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.ai-notes figure { margin: 0; }
+.ai-notes .bn { width: 100%; display: block; border-radius: 6px; box-shadow: 0 3px 8px rgba(0,0,0,.2); }
+.ai-notes .sw { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-left: 5px; vertical-align: middle; }
+.ai-len { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; direction: ltr; padding: 4px 30px; }
+.al-row { display: flex; align-items: center; gap: 12px; }
+.al-bar { height: 44px; border-radius: 6px; display: flex; align-items: center; padding-left: 12px; color: #fff; font-size: 22px; box-shadow: 0 3px 8px rgba(0,0,0,.2); }
+.al-mm { font-size: 17px; font-weight: 800; color: var(--navy); direction: rtl; }
+.acc-tip { margin-top: 12px; background: #FFF3D6; border-radius: 12px; padding: 8px 14px; font-size: 16px; color: var(--navy); }
+.acc-modal, .vis-modal { background: #FFFFFF; }

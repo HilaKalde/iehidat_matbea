@@ -828,14 +828,19 @@
       <div class="lad-content ${A("fade", 0)}">
         <div class="h-title">${s.title}</div>
         <p class="txt lc-lead">${s.lead}</p>
-        <div class="acc-wrap">
-          <ol class="acc-list">${s.list.map((x, i) => `<li class="${A("rise", 200 + i * 120)}"><b>${i + 1}. ${x.name}</b><span>${money(x.text)}</span></li>`).join("")}</ol>
-          <div class="acc-notes">${s.notes.map((bn, i) => `<button type="button" class="zoom-bn ${A("fly-l", 300 + i * 120)}" data-zoom="${bn}" style="width:${[172, 186, 200, 214][i]}px" aria-label="הגדלת השטר">${bnImg(bn, "שטר")}</button>`).join("")}
-            <p class="acc-cap">השטרות בקנה מידה יחסי – כל שטר ארוך ב-7 מ"מ מקודמו</p></div>
-        </div>
+        <p class="vis-hint">${s.hint}</p>
+        <div class="acc-marks">${s.list.map((x, i) => `<button type="button" class="acc-mark ${visited(s).includes(x.key) ? "seen" : ""} ${A("pop", 200 + i * 120)}" data-acc="${x.key}">
+          <span class="am-n">${i + 1}</span><span class="am-ic" aria-hidden="true">${x.icon}</span><b>${x.name}</b><span class="am-go">לחצו להסבר</span><span class="tick" aria-hidden="true">✓</span></button>`).join("")}</div>
         <div class="wall-actions"><button class="btn practice-btn" data-go="${s.next}">המשך</button></div>
       </div>
-      ${layerHtml("zoom", `<div class="modal zoom-modal" role="dialog" aria-label="שטר מוגדל"><button class="close-x" data-close="1" aria-label="סגירה">${CLOSE_X}</button><img data-zoom-img alt="שטר מוגדל"></div>`)}`;
+      ${s.list.map((x, i) => layerHtml("acc-" + x.key, `
+        <div class="modal card acc-modal" role="dialog" aria-label="${x.name}">
+          <button class="close-x" data-close="1" aria-label="סגירה">${CLOSE_X}</button>
+          <div class="h-title">${i + 1}. ${x.name}</div>
+          <p class="exm-p">${money(x.text)}</p>
+          <div class="acc-ill">${accIllustration(s, x)}</div>
+          ${x.tip ? `<p class="acc-tip">${x.tip}</p>` : ""}
+        </div>`)).join("")}`;
     return `
       ${ladderBg()}
       ${ladderHtml(s.stage)}
@@ -850,8 +855,15 @@
         <div class="wall-actions"><button class="btn practice-btn" data-go="${s.next}">לתרגול</button></div>
       </div>`;
   };
-  function bindAccess(scr) {
-    $$("[data-zoom]", scr).forEach(b => b.addEventListener("click", () => { $("[data-zoom-img]", scr).src = BN + b.dataset.zoom + ".jpg"; showLayer(scr, "zoom"); }));
+  // the illustration inside each accessibility mark's window (after the Storyline slide 3.30)
+  function accIllustration(s, x) {
+    if (x.pics) return `<div class="ai-pics n${x.pics.length}">${x.pics.map(p => `<figure><img src="${IMG + p.img}" alt="${p.cap}"><figcaption>${p.cap}</figcaption></figure>`).join("")}</div>`;
+    if (x.key === "color") return `<div class="ai-notes">${s.notes.map(n => `<figure>${bnImg(n.bn, "שטר " + n.v + " ₪")}<figcaption><span class="sw" style="background:${n.hex}"></span>${n.v} ₪ – צבע ${n.warm ? "חם" : "קר"}</figcaption></figure>`).join("")}</div>`;
+    if (x.key === "length") return `<div class="ai-len">${s.notes.map(n => `<div class="al-row"><span class="al-bar" style="width:${(n.mm - 100) * 9}px;background:${n.hex}"><b>${n.v}</b></span><span class="al-mm">${n.mm} מ"מ</span></div>`).join("")}</div>`;
+    return "";
+  }
+  function bindAccess(scr, s) {
+    $$("[data-acc]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, b.dataset.acc); b.classList.add("seen"); showLayer(scr, "acc-" + b.dataset.acc); }));
   }
   R.dragmatch = s => {
     const coins = s.kind === "coins";
