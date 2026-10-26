@@ -793,3 +793,9 @@
 .ladder-anim { position: absolute; left: 0; top: 0; width: 216px; height: 560px; overflow: hidden; pointer-events: none; }
 .ladder-anim .ladder-img { position: absolute; left: 0; top: 38px; width: 216px; height: 518px; max-width: none; transition: none; animation: none; filter: drop-shadow(0 10px 12px rgba(0,0,0,.35)); }
 .ladder.ladder-sum { left: 40px; top: 100px; }
+
+/* the ladder and Adam 20% smaller (feet line kept); the stage buttons follow it */
+.ladder-anim { width: 175px; }
+.ladder-anim .ladder-img { top: 142px; width: 173px; height: 414px; }
+.ladder-steps { left: 176px; top: 150px; gap: 30px; }
+.ladder-top { left: 58px; top: 82px; }   /* the star above the (smaller) ladder once all four stages are done */
