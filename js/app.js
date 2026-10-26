@@ -577,8 +577,8 @@
     { n: 4, name: "הצבעים", go: "l4-intro", quiz: "l4-quiz" }
   ];
   const stagesDone = () => STAGES.filter(st => isDone(st.quiz)).length;
-  // Adam on the ladder: "סרטון אדם מטפס על סולם רקע שקוף.gif" (1280×720, transparent) cut at the frames where he rests –
-  // cropped to the ladder and re-encoded as WebP with soft edges (_tools/ladder-webp.html): lclimb-0..4.webp are the five
+  // Adam on the ladder: "סרטון אדם מטפס על סולם.mp4" (1280×720, green screen) cut at the frames where he rests –
+  // cropped to the ladder, the green keyed out with soft edges, as WebP (_tools/ladder-key.html): lclimb-0..4.webp are the five
   // rest positions (bottom → top), lclimb-seg1..4.webp the climbs between them (played once).
   // A stage's screens show him where the previous stages brought him: opening + stage 1 = 0, stage 2 = 1 … ; finishing
   // stage k plays seg k and leaves him at position k (4 = the top, also on the summary).
