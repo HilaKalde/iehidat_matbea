@@ -804,3 +804,12 @@
 .ladder-anim .ladder-img { top: 82px; }
 .ladder-steps { top: 90px; }
 .ladder-top { top: 22px; }
+
+/* slide 18: "מתחילים בתרגול" at the left end of the white card */
+.ser-actions { justify-content: flex-end; }
+/* advanced: four cards (the BOI banknotes link moved here from slide 18) – a 2×2 grid, the outro below it */
+.adv-cards { left: 340px; top: 218px; width: 520px; gap: 12px; }
+.adv-card { width: 254px; height: 150px; padding: 10px 12px; }
+.adv-card .thumb { height: 50px; }
+.adv-card .thumb svg { width: 40px; height: 40px; }
+.adv-outro { top: 552px; }

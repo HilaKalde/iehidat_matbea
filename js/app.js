@@ -658,8 +658,8 @@
           ${bnImg(x.bn, "שטר לדוגמה – " + x.name)}<span class="sb-name">${x.name}</span><span class="tick" aria-hidden="true">✓</span></button>`).join("")}
       </div>
       ${s.after ? `<p class="lc-after">${s.after}</p>` : ""}
-      <div class="wall-actions"><button class="btn practice-btn" data-go="${s.next}">${s.button}</button>
-        <button type="button" class="link-btn" data-link="${s.link}">${s.linkLabel} ↗</button></div>
+      <div class="wall-actions ser-actions"><button class="btn practice-btn" data-go="${s.next}">${s.button}</button>
+        ${s.link ? `<button type="button" class="link-btn" data-link="${s.link}">${s.linkLabel} ↗</button>` : ""}</div>
     </div>
     ${s.list.map(x => layerHtml("ser-" + x.key, `
       <div class="modal card bn-modal" role="dialog" aria-label="${x.name}">
