@@ -864,3 +864,4 @@
 .dm.coins .coin-t .coin-edge { display: none; }
 .coin-mag.big { width: 96px; height: 96px; border-width: 6px; background-size: 360% auto; }
 .coin-t.by-edge, .coin-t.by-dia { justify-content: flex-end; }
+.dm.coins .coin-dia.rim { font-size: 12.5px; line-height: 1.25; text-align: center; }
