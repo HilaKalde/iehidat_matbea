@@ -358,7 +358,7 @@
     pushup: { w: ["pushup-w", [85, 440, 330, 186]], m: ["pushup-m", [790, 440, 330, 186]], ms: 2200, intro: { does: "m", how: "gif" } },
     plank:  { w: ["aya-plank", [78, 398, 315, 210]], m: ["adam-plank", [820, 398, 315, 210]], intro: { does: "m", how: "still" } },   // centred on the two mats
     // lunges – both GIFs on a 1280×720 transparent canvas (לאנגים.gif: Aya, feet at y ≈ 690; בחור עושה לאנגים.gif: Adam,
-    // feet at y ≈ 684, mirrored so he faces left); the stills are their first frames. Opening card: Aya lunges, Adam stands;
+    // feet at y ≈ 684, mirrored so he faces left); both GIFs rotated to start (and end) standing, the stills = their first frames. Opening card: Aya lunges, Adam stands;
     // the practice: both still, one lunge round after a correct answer
     lunge:  { w: ["lunge-w", [-154, 250, 704, 396]], m: ["lunge-m", [577, 194, 813, 457]], ms: 5080, wide: true, flipM: true,
             intro: { does: "w", how: "gif" } },
