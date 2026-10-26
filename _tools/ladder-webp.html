@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>ladder climb → WebP</title></head>
+<body>
+<pre id="log"></pre>
+<script>
+/* Dev tool (not part of the lomda): "סרטון אדם מטפס על סולם רקע שקוף.gif" (_src/ladder-climb.gif) → the values-ladder climber.
+   The GIF has 1-bit transparency (jagged, dark-fringed edges), so every frame is cropped to the ladder, its mask eroded by
+   1px (drops the fringe) and feathered (3×3), then encoded as WebP with alpha. Output (PUT to /_out/):
+   lclimb-0..4.webp – the rest positions (stills); lclimb-seg1..4.webp – the climbs between them, each played once. */
+const log = m => (document.getElementById("log").textContent += m + "\n");
+const fourcc = s => [...s].map(c => c.charCodeAt(0));
+const u24 = v => [v & 255, (v >> 8) & 255, (v >> 16) & 255];
+const u32 = v => [v & 255, (v >> 8) & 255, (v >> 16) & 255, (v >>> 24) & 255];
+function chunk(tag, data) { const out = new Uint8Array(8 + data.length + (data.length & 1)); out.set(fourcc(tag), 0); out.set(u32(data.length), 4); out.set(data, 8); return out; }
+function concat(parts) { const n = parts.reduce((s, p) => s + p.length, 0), out = new Uint8Array(n); let o = 0; for (const p of parts) { out.set(p, o); o += p.length; } return out; }
+function frameChunks(buf) {
+  const b = new Uint8Array(buf), parts = [];
+  for (let o = 12; o + 8 <= b.length;) {
+    const tag = String.fromCharCode(b[o], b[o + 1], b[o + 2], b[o + 3]);
+    const size = b[o + 4] | (b[o + 5] << 8) | (b[o + 6] << 16) | (b[o + 7] << 24), total = 8 + size + (size & 1);
+    if (tag === "ALPH" || tag === "VP8 " || tag === "VP8L") parts.push(b.slice(o, o + total));
+    o += total;
+  }
+  return concat(parts);
+}
+const CROP = { x: 496, y: 0, w: 300, h: 720 }, CUTS = [0, 42, 66, 93, 125];
+function clean(g) {
+  const { w: W, h: H } = CROP, id = g.getImageData(0, 0, W, H), d = id.data, m = new Uint8Array(W * H), e = new Uint8Array(W * H);
+  for (let i = 0; i < W * H; i++) m[i] = d[i * 4 + 3] > 127 ? 1 : 0;
+  for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) { const i = y * W + x; e[i] = m[i] & m[i - 1] & m[i + 1] & m[i - W] & m[i + W]; }
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    let s = 0, n = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const yy = y + dy, xx = x + dx; if (yy < 0 || xx < 0 || yy >= H || xx >= W) continue; s += e[yy * W + xx]; n++; }
+    d[(y * W + x) * 4 + 3] = Math.round(255 * s / n);
+  }
+  g.putImageData(id, 0, 0);
+}
+async function run(quality = 0.9) {
+  const buf = await (await fetch("/_src/ladder-climb.gif", { cache: "no-store" })).arrayBuffer();
+  const dec = new ImageDecoder({ data: buf, type: "image/gif" }); await dec.tracks.ready;
+  const cv = new OffscreenCanvas(CROP.w, CROP.h), g = cv.getContext("2d", { willReadFrequently: true });
+  const frames = [];                                 // per frame: { data (webp chunks), dur }
+  for (let i = 0; i <= CUTS[CUTS.length - 1]; i++) {
+    const { image } = await dec.decode({ frameIndex: i });
+    g.clearRect(0, 0, CROP.w, CROP.h); g.drawImage(image, CROP.x, CROP.y, CROP.w, CROP.h, 0, 0, CROP.w, CROP.h);
+    const dur = Math.max(10, Math.round((image.duration || 40000) / 1000)); image.close();
+    clean(g);
+    frames.push({ data: frameChunks(await (await cv.convertToBlob({ type: "image/webp", quality })).arrayBuffer()), dur });
+    const k = CUTS.indexOf(i);
+    if (k >= 0) { const r = await fetch(`/_out/lclimb-${k}.webp`, { method: "PUT", body: await cv.convertToBlob({ type: "image/webp", quality: .95 }) }); log(`lclimb-${k}.webp (${r.status})`); }
+  }
+  for (let k = 1; k < CUTS.length; k++) {
+    const fr = frames.slice(CUTS[k - 1], CUTS[k] + 1);
+    const anmf = fr.map(f => chunk("ANMF", concat([new Uint8Array([...u24(0), ...u24(0), ...u24(CROP.w - 1), ...u24(CROP.h - 1), ...u24(f.dur), 0x02]), f.data])));
+    const vp8x = chunk("VP8X", new Uint8Array([0x12, 0, 0, 0, ...u24(CROP.w - 1), ...u24(CROP.h - 1)]));
+    const anim = chunk("ANIM", new Uint8Array([0, 0, 0, 0, 1, 0]));                 // loop count 1: played once
+    const body = concat([new Uint8Array(fourcc("WEBP")), vp8x, anim, ...anmf]);
+    const file = concat([new Uint8Array(fourcc("RIFF")), new Uint8Array(u32(body.length)), body]);
+    const r = await fetch(`/_out/lclimb-seg${k}.webp`, { method: "PUT", body: file });
+    log(`lclimb-seg${k}.webp ${fr.length} frames ${fr.reduce((s, f) => s + f.dur, 0)}ms ${(file.length / 1024).toFixed(0)}KB (${r.status})`);
+  }
+  document.title = "DONE";
+}
+window.addEventListener("load", run);
+</script>
+</body></html>

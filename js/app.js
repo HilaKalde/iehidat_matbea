@@ -578,14 +578,15 @@
   ];
   const stagesDone = () => STAGES.filter(st => isDone(st.quiz)).length;
   // Adam on the ladder: "סרטון אדם מטפס על סולם רקע שקוף.gif" (1280×720, transparent) cut at the frames where he rests –
-  // lclimb-0..4.png are the five rest positions (bottom → top), lclimb-seg1..4.gif the climbs between them (played once).
+  // cropped to the ladder and re-encoded as WebP with soft edges (_tools/ladder-webp.html): lclimb-0..4.webp are the five
+  // rest positions (bottom → top), lclimb-seg1..4.webp the climbs between them (played once).
   // A stage's screens show him where the previous stages brought him: opening + stage 1 = 0, stage 2 = 1 … ; finishing
   // stage k plays seg k and leaves him at position k (4 = the top, also on the summary).
   const ladderPos = stage => Math.max(0, Math.min(4, (stage || 1) - 1));
   const CLIMB_MS = [0, 1720, 1000, 1120, 1320];                       // seg1..4: 43 / 25 / 28 / 33 frames × 40ms
-  const ladderPic = (p, alt) => `<div class="ladder-anim"><img class="ladder-img" data-ladder-img src="${IMG}lclimb-${p}.png" alt="${alt}"></div>`;
+  const ladderPic = (p, alt) => `<div class="ladder-anim"><img class="ladder-img" data-ladder-img src="${IMG}lclimb-${p}.webp" alt="${alt}"></div>`;
   function ladderHtml(cur) {
-    if (cur >= 1 && cur <= 4) gifUrl("lclimb-seg" + cur + ".gif");   // preload the climb that ends this stage
+    if (cur >= 1 && cur <= 4) gifUrl("lclimb-seg" + cur + ".webp");   // preload the climb that ends this stage
     return `<div class="ladder ${A("fly-l", 150)}" data-ladder>
       ${ladderPic(ladderPos(cur), `אדם מטפס בסולם הערכים – ${stagesDone()} מתוך 4 שלבים הושלמו`)}
       ${stagesDone() === 4 ? `<span class="ladder-top" aria-hidden="true"><img src="${ICON}star.gif" alt=""></span>` : ""}
@@ -602,10 +603,10 @@
   function climb(scr, stage) {
     const img = $("[data-ladder-img]", scr); if (!img) return;
     const k = Math.max(1, Math.min(4, stage || 1));
-    gifUrl("lclimb-seg" + k + ".gif").then(u => {
+    gifUrl("lclimb-seg" + k + ".webp").then(u => {
       if (!img.isConnected) return;
       img.src = u; clearTimeout(img._climb);
-      img._climb = setTimeout(() => { if (img.isConnected) img.src = IMG + "lclimb-" + k + ".png"; }, CLIMB_MS[k]);
+      img._climb = setTimeout(() => { if (img.isConnected) img.src = IMG + "lclimb-" + k + ".webp"; }, CLIMB_MS[k]);
     });
     $$(".lstep", scr).forEach(b => { const st = STAGES.find(x => x.go === b.dataset.go); if (isDone(st.quiz)) { b.classList.add("done"); $(".ls-n", b).textContent = "✓"; } });
   }
