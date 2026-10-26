@@ -855,3 +855,10 @@
 .al-mm { font-size: 17px; font-weight: 800; color: var(--navy); direction: rtl; }
 .acc-tip { margin-top: 12px; background: #FFF3D6; border-radius: 12px; padding: 8px 14px; font-size: 16px; color: var(--navy); }
 .acc-modal, .vis-modal { background: #FFFFFF; }
+
+/* slide 25: silhouette (true relative size) + its diameter + a magnifier on the rim only */
+.dm.coins .coin-dia { font-size: 13.5px; font-weight: 800; color: var(--navy); }
+.coin-mag { position: relative; width: 66px; height: 66px; border-radius: 50%; border: 5px solid #3B4A55; box-shadow: 0 3px 8px rgba(0,0,0,.3), inset 0 0 0 2px #FFFFFF;
+  background-color: #EEF3F5; background-repeat: no-repeat; background-size: 420% auto; background-position: 100% 50%; filter: grayscale(1) contrast(1.25); flex: none; }
+.coin-mag::after { content: ""; position: absolute; right: -16px; bottom: -14px; width: 22px; height: 8px; background: #3B4A55; border-radius: 4px; transform: rotate(45deg); }
+.dm.coins .coin-t .coin-edge { display: none; }
