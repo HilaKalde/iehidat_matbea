@@ -353,12 +353,14 @@
   // once the practice starts both are back to the practice figures. Sprint: no intro change.
   const STAND = { m: ["adam-arms", [872, 226, 274, 410]], w: ["aya-hips", [54, 226, 274, 410]] };
   const EX = {
-    squat:  { w: ["squat-w", [0, 232, 315, 420]], m: ["squat-m", [885, 232, 315, 420]], ms: 3240, intro: { does: "w", how: "gif" } },
+    squat:  { w: ["squat-w", [0, 232, 315, 420]], m: ["squat-m", [885, 232, 315, 420]], ms: 3240, intro: { does: "w", how: "gif", gif: ["squat-w", [45, 232, 315, 420]] } },   // on the opening card Aya a little right, on the mat
     situp:  { w: ["situp-w", [50, 292, 285, 380]], m: ["situp-m", [830, 292, 285, 380]], ms: 1680, intro: { does: "w", how: "gif" } },
     pushup: { w: ["pushup-w", [85, 440, 330, 186]], m: ["pushup-m", [790, 440, 330, 186]], ms: 2200, intro: { does: "m", how: "gif" } },
     plank:  { w: ["aya-plank", [78, 398, 315, 210]], m: ["adam-plank", [820, 398, 315, 210]], intro: { does: "m", how: "still" } },   // centred on the two mats
     lunge:  { w: ["aya-lunge", [95, 284, 220, 330]], m: ["adam-lunge", [885, 284, 220, 330]], // opening card: Aya lunges (לאנגים.gif – a 1280×720 transparent canvas, her feet at y ≈ 690) while Adam stands
-            intro: { does: "w", how: "gif", gif: ["lunge-w", [-154, 250, 704, 396]] } },
+            intro: { does: "w", how: "gif", gif: ["lunge-w", [-154, 250, 704, 396]] },
+            // the practice: Adam lunges non-stop (בחור עושה לאנגים.gif, 1280×720 canvas, feet at y ≈ 684); Aya keeps her lunge pose
+            play: { m: ["lunge-m", [628, 194, 813, 457]] } },
     // sprint: Adam stands with his arms crossed; Aya crouches (ספרינט אישה) → gets ready (אישה מתכוננת לרוץ) → runs out to the left
     sprint: { w: ["sprint-w", [40, 372, 390, 260]], m: ["adam-arms", [850, 268, 248, 372]], ready: "sprint-ready", run: "sprint-run" }
   };
@@ -477,7 +479,14 @@
       if (ex.intro.how === "gif") gifUrl((ex.intro.gif ? ex.intro.gif[0] : ex[d][0]) + ".gif").then(u => { if (introLoop && img.isConnected) { img.src = u; img.style.visibility = ""; } });
       if (ex.intro.how === "bob") img.classList.add("ex-bob");
     }
-    const leaveIntro = () => { if (!introLoop) return; introLoop = false; both(img => { img.classList.remove("ex-bob", "ex-wide"); img.style.visibility = ""; }); setFig(figs.w, ex.w); setFig(figs.m, ex.m); };
+    // EX.play: during the questions (and on the result) a figure does the exercise non-stop on its own GIF canvas
+    const playFigs = () => Object.entries(ex.play || {}).forEach(([k, [base, b]]) => {
+      const img = figs[k]; Object.assign(img.style, { left: b[0] + "px", top: b[1] + "px", width: b[2] + "px", height: b[3] + "px", visibility: "hidden" });
+      img.classList.add("ex-wide");
+      gifUrl(base + ".gif").then(u => { if (!introLoop && img.isConnected) { img.src = u; img.style.visibility = ""; } });
+    });
+    if (!introLoop) playFigs();
+    const leaveIntro = () => { if (!introLoop) return; introLoop = false; both(img => { img.classList.remove("ex-bob", "ex-wide"); img.style.visibility = ""; }); setFig(figs.w, ex.w); setFig(figs.m, ex.m); playFigs(); };
     const rowHtml = (r, i) => r.items.map((t, j) => `<button type="button" class="st-item" ${s.drag ? "data-chip" : ""} data-j="${j}">${money(t)}</button>`).join("");
     async function playRow(i, myRun) {
       const r = s.rows[i], picks = [];
