@@ -773,7 +773,10 @@
     function renderDone(focus) {
       const a = ans(s.id); show("done");
       const n = a.points, t = m.items.length;
-      showFb($("[data-inline-fb]", scr), n >= t / 2, fbHtml(n >= t / 2, `התאמתם נכון ${n} מתוך ${t}. ${s.done}`, "", n), focus);
+      // s.fbGood / s.fbBad (from s.passAt right answers): separate texts for a good and a weak result
+      const good = n >= (s.passAt || t / 2);
+      const head = s.fbGood ? (good ? s.fbGood : s.fbBad).replace("{n}", n).replace("{t}", t) : `התאמתם נכון ${n} מתוך ${t}. ${s.done}`;
+      showFb($("[data-inline-fb]", scr), good, fbHtml(good, head, "", n), focus);
       $("[data-results]", scr).innerHTML = m.items.map(it => {
         const p = a.picks[it.key], ok = p === it.ans;
         const picked = p == null ? "לא נענה" : (m.options.find(o => o.key === p) || {}).label;
@@ -783,7 +786,14 @@
     }
     $("[data-start]", scr).addEventListener("click", start);
     const stopBtn = $("[data-stop]", scr); if (stopBtn) stopBtn.addEventListener("click", () => { if (timer) timer.stop(); });
-    $("[data-again]", scr).addEventListener("click", () => { start(); });
+    // "תרגול חוזר": with s.maxRetry, only that many times – then the button is gone and the last score stays
+    const retries = () => (state.retries || {})[s.id] || 0, againBtn = $("[data-again]", scr);
+    const syncAgain = () => { if (s.maxRetry) againBtn.hidden = retries() >= s.maxRetry; };
+    syncAgain();
+    againBtn.addEventListener("click", () => {
+      if (s.maxRetry) { if (retries() >= s.maxRetry) return; state.retries = Object.assign({}, state.retries, { [s.id]: retries() + 1 }); save(); syncAgain(); }
+      start();
+    });
     if (isDone(s.id)) renderDone(false);
     scr._leave = () => { run++; if (timer) timer.stop(); };
   }
@@ -1457,8 +1467,6 @@
 
   const TOP_LEVEL = ["intro", "menu"];
   const POINT_TYPES = ["station", "timeline", "fhowto", "figures", "series", "match", "ladderText", "vision", "access", "dragmatch", "pulley", "wall"];
-  // the next stage of the ladder, for the "skip this stage" button
-  const nextStageOf = s => { const st = STAGES.find(x => x.n === s.stage + 1); return st ? st.go : "l-sum"; };
   function updateChrome(s) {
     C("tag").classList.toggle("hidden", !s.tag);
     if (s.tag) $("span", C("tag")).textContent = s.mode === "stretch" ? `שאלה ${s.num}` : s.tag;
@@ -1472,10 +1480,9 @@
     const cc = C("coins");
     cc.classList.toggle("hidden", !showCoins);
     C("boi").classList.toggle("hidden", s.type === "menu");
-    // "דלגו לתרגול" before a set's exercises; in the ladder: "לשלב הבא" skips the current stage (even mid-exercise)
+    // "דלגו לתרגול" before a set's exercises (in the ladder: up to its opening screen only – no stage skipping, client)
     const sk = C("skip");
     let to = s.skip && byId[s.skip] ? s.skip : "", label = "דלגו לתרגול";
-    if (s.set === "ladder" && s.stage >= 1) { to = nextStageOf(s); label = s.stage === 4 ? "דלגו לסיכום" : "דלגו לשלב הבא"; }
     sk.classList.toggle("hidden", !to); sk.dataset.go = to; C("skip-t").textContent = label;
     sk.classList.toggle("wide", label !== "דלגו לתרגול");
     if (showCoins) {

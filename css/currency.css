@@ -799,3 +799,8 @@
 .ladder-anim .ladder-img { top: 142px; width: 173px; height: 414px; }
 .ladder-steps { left: 176px; top: 150px; gap: 30px; }
 .ladder-top { left: 58px; top: 82px; }   /* the star above the (smaller) ladder once all four stages are done */
+
+/* the ladder raised so its foot clears the "דלגו לתרגול" button */
+.ladder-anim .ladder-img { top: 82px; }
+.ladder-steps { top: 90px; }
+.ladder-top { top: 22px; }
