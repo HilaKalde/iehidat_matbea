@@ -358,7 +358,7 @@
     pushup: { w: ["pushup-w", [85, 440, 330, 186]], m: ["pushup-m", [790, 440, 330, 186]], ms: 2200, intro: { does: "m", how: "gif" } },
     plank:  { w: ["aya-plank", [78, 398, 315, 210]], m: ["adam-plank", [820, 398, 315, 210]], intro: { does: "m", how: "still" } },   // centred on the two mats
     lunge:  { w: ["aya-lunge", [95, 284, 220, 330]], m: ["adam-lunge", [885, 284, 220, 330]], // opening card: Aya lunges (לאנגים.gif – a 1280×720 transparent canvas, her feet at y ≈ 690) while Adam stands
-            intro: { does: "w", how: "gif", gif: ["lunge-w", [-186, 218, 768, 432]] } },
+            intro: { does: "w", how: "gif", gif: ["lunge-w", [-154, 250, 704, 396]] } },
     // sprint: Adam stands with his arms crossed; Aya crouches (ספרינט אישה) → gets ready (אישה מתכוננת לרוץ) → runs out to the left
     sprint: { w: ["sprint-w", [40, 372, 390, 260]], m: ["adam-arms", [850, 268, 248, 372]], ready: "sprint-ready", run: "sprint-run" }
   };
