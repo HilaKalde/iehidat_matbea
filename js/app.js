@@ -767,14 +767,14 @@
       run++; if (timer) timer.stop(); bar.hidden = true;
       const n = m.items.filter(it => picks[it.key] === it.ans).length;
       const before = stagesDone();
-      setAns(s.id, { completed: true, points: n, picks });
+      setAns(s.id, { completed: true, points: n * (s.pts || 1), correct: n, picks });   // s.pts coins per right answer
       updateChrome(s);
       renderDone(true);
       if (stagesDone() > before) climb(scr, s.stage);
     }
     function renderDone(focus) {
       const a = ans(s.id); show("done");
-      const n = a.points, t = m.items.length;
+      const n = a.correct != null ? a.correct : a.points, t = m.items.length;
       // s.fbGood / s.fbBad (from s.passAt right answers): separate texts for a good and a weak result
       const good = n >= (s.passAt || t / 2);
       const head = s.fbGood ? (good ? s.fbGood : s.fbBad).replace("{n}", n).replace("{t}", t) : `התאמתם נכון ${n} מתוך ${t}. ${s.done}`;
@@ -968,7 +968,7 @@
       lock(); mark(); check.hidden = true; $(".dm-chips", scr).hidden = true;
       const n = s.targets.filter((t, i) => placed[i] === t.ans).length;
       const before = stagesDone();
-      setAns(s.id, { completed: true, points: n, placed: Object.assign({}, placed) });
+      setAns(s.id, { completed: true, points: n * (s.pts || 1), correct: n, placed: Object.assign({}, placed) });
       updateChrome(s); playFeedbackSound(n === s.targets.length);
       ph("play").hidden = false; ph("done").hidden = false; ph("intro").hidden = true;
       showFb($("[data-inline-fb]", scr), n === s.targets.length, fbHtml(n === s.targets.length, `זיהיתם נכון ${n} מתוך ${s.targets.length}.${s.done ? " " + s.done : ""}`, "", n), true);
@@ -993,7 +993,8 @@
       placed = Object.assign({}, a.placed); ph("intro").hidden = true; ph("play").hidden = false; ph("done").hidden = false;
       sync();
       lock(); mark(); check.hidden = true; $(".dm-chips", scr).hidden = true;
-      showFb($("[data-inline-fb]", scr), a.points === s.targets.length, fbHtml(a.points === s.targets.length, `זיהיתם נכון ${a.points} מתוך ${s.targets.length}.${s.done ? " " + s.done : ""}`, "", a.points), false);
+      const nRight = a => (a.correct != null ? a.correct : a.points);
+      showFb($("[data-inline-fb]", scr), nRight(a) === s.targets.length, fbHtml(nRight(a) === s.targets.length, `זיהיתם נכון ${nRight(a)} מתוך ${s.targets.length}.${s.done ? " " + s.done : ""}`, "", a.points), false);
     }
     scr._leave = () => { run++; if (timer) timer.stop(); };
   }
