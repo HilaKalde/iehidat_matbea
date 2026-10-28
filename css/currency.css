@@ -883,3 +883,14 @@
 .mq-hint .mh-l { font-weight: 800; color: var(--teal); }
 .mq-hint-btn { margin-top: 6px; background: #FFF3D6; border: 1px dashed #E0A93A; border-radius: 12px; padding: 4px 14px; font: inherit; font-size: 15px; font-weight: 800; color: var(--navy); cursor: pointer; }
 .mq-hint-btn:hover { background: #FFE7AE; }
+
+/* slide 30: front and back of the 200 ₪ note, one above the other; mark 5 outlines the line pairs in the margins */
+.sec-note { left: 640px; width: 440px; }
+.sec-note.front { top: 196px; }
+.sec-note.back { top: 418px; }
+.sec-note .sec-cap { bottom: auto; top: -21px; right: 4px; font-size: 13px; }
+.sec-note .sec-dot { width: 30px; height: 30px; margin: -15px 0 0 -15px; font-size: 14px; }
+.sec-zone { position: absolute; border: 2px dashed #FFFFFF; border-radius: 4px; box-shadow: 0 0 0 2px rgba(181,101,29,.85); background: rgba(181,101,29,.18); pointer-events: none; }
+.sec-note { left: 660px; width: 400px; }
+.sec-note.front { top: 200px; }
+.sec-note.back { top: 420px; }

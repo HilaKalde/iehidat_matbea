@@ -1004,16 +1004,17 @@
     <img class="bg" src="${IMG}bg-clean.jpg" alt="">
     <div class="q-scrim" aria-hidden="true"></div>
     <div class="sec-head ${A("fade", 0)}"><div class="h-title">${s.title}</div><p class="txt">${s.lead}</p></div>
-    <div class="sec-note ${A("fly-r", 200)}">
-      <img src="${BN}alterman-200.jpg" alt="שטר 200 ₪ – צד קדמי">
-      ${s.list.filter(x => x.pos).map(x => `<button type="button" class="sec-dot ${x.g} ${visited(s).includes("m" + x.n) ? "seen" : ""}" style="left:${x.pos[0]}%;top:${x.pos[1]}%" data-mark="${x.n}" aria-label="${x.n}. ${x.name}">${x.n}</button>`).join("")}
-      <span class="sec-cap">צד קדמי</span>
-    </div>
+    ${[["front", "alterman-200", "צד קדמי"], ["back", "alterman-200-back", "צד אחורי"]].map(([side, img, cap], k) => `
+    <div class="sec-note ${side} ${A("fly-r", 200 + k * 150)}">
+      <img src="${BN + img}.jpg" alt="שטר 200 ₪ – ${cap}">
+      ${s.list.filter(x => x.pos && !!x.back === (side === "back")).map(x => (x.zones || []).map(z => `<span class="sec-zone ${x.g}" style="left:${z[0]}%;top:${z[1]}%;width:${z[2]}%;height:${z[3]}%" aria-hidden="true"></span>`).join("") +
+        `<button type="button" class="sec-dot ${x.g} ${visited(s).includes("m" + x.n) ? "seen" : ""}" style="left:${x.pos[0]}%;top:${x.pos[1]}%" data-mark="${x.n}" aria-label="${x.n}. ${x.name}">${x.n}</button>`).join("")}
+      <span class="sec-cap">${cap}</span>
+    </div>`).join("")}
     <div class="sec-groups ${A("rise", 300)}">
       ${s.groups.map(([gn, gk]) => `<section class="sg ${gk}"><h3>${gn}</h3>${s.list.filter(x => x.g === gk).map(x => `
         <button type="button" class="sg-it ${visited(s).includes("m" + x.n) ? "seen" : ""}" data-mark="${x.n}"><span class="sg-n">${x.n}</span>${x.name}<span class="tick" aria-hidden="true">✓</span></button>`).join("")}</section>`).join("")}
     </div>
-    <button type="button" class="link-btn sec-link ${A("fade", 600)}" data-link="${s.link}">לאתר בנק ישראל – הכסף שלי ↗</button>
     ${s.list.map(x => layerHtml("mark-" + x.n, `
       <div class="modal card sec-modal ${x.yt ? "has-video" : ""}" role="dialog" aria-label="${x.name}">
         <button class="close-x" data-close="1" aria-label="סגירה">${CLOSE_X}</button>
@@ -1027,12 +1028,18 @@
       const n = b.dataset.mark; markVisited(s, "m" + n);
       $$(`[data-mark="${n}"]`, scr).forEach(x => x.classList.add("seen"));
       showLayer(scr, "mark-" + n);
+      // the demo film starts as soon as its window opens (no PLAY click)
+      const box = $(`[data-layer="mark-${n}"] [data-yt]`, scr);
+      if (box) play(box);
     }));
     const playBtn = `<button type="button" class="tv-play" data-ytplay aria-label="הפעלת סרטון ההדגמה"><img src="${UI}play.png" alt=""><span>צפו בסרטון ההדגמה</span></button>`;
+    const play = box => {
+      const origin = location.protocol === "file:" ? "" : "&origin=" + encodeURIComponent(location.origin);
+      box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${box.dataset.yt}?autoplay=1&mute=0&rel=0&modestbranding=1&playsinline=1${origin}" title="סרטון הדגמה" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+    };
     scr.addEventListener("click", e => {
       const b = e.target.closest("[data-ytplay]"); if (!b) return;
-      const box = b.closest("[data-yt]");
-      box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${box.dataset.yt}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="סרטון הדגמה" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+      play(b.closest("[data-yt]"));
     });
     // closing a layer stops its film (the iframe is removed) – the PLAY button comes back
     scr._onLayerClose = () => $$("[data-yt]", scr).forEach(box => { if (!$("[data-ytplay]", box)) box.innerHTML = playBtn; });
