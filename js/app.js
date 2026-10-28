@@ -1054,7 +1054,7 @@
       <p class="h-sub ph-sub">${s.sub}</p>
       <p class="txt wall-lead">${s.lead}</p>
       <p class="wall-tip">${s.tip}</p>
-      <p class="wall-success"><b class="t">${s.success}</b></p>
+      ${s.success ? `<p class="wall-success"><b class="t">${s.success}</b></p>` : ""}
       <div class="wall-actions"><button class="btn practice-btn" data-go="${s.next}">${s.button}</button></div>
     </div>`;
 
