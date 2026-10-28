@@ -1062,7 +1062,6 @@
   const pulleyQs = () => DATA.screens.filter(x => x.type === "pulley");
   R.pulley = s => {
     const first = s.num === 1 && firstVisit;
-    const lifted = pulleyQs().filter(x => isDone(x.id) && ans(x.id).correct).length;
     const note = side => {
       const real = s.realSide === side;
       return `<button type="button" class="pl-note ${side}" data-side="${side}" aria-label="השטר ${side === "right" ? "העליון" : "התחתון"}"><span class="pl-letter" aria-hidden="true">${side === "right" ? "א" : "ב"}</span>
@@ -1075,13 +1074,13 @@
       <div class="pl-q ${first ? A("fly-t", 0) : ""}">
         <span class="num-chip">תרגיל ${s.num} מתוך ${pulleyQs().length}</span>
         <div class="pl-title">אמיתי או מזויף?<br>בדקו את <b>${s.mark}</b> (${s.look})</div>
-        <p class="pl-hint" data-hint>לחצו על השטר האמיתי מבין השניים שמימין.</p>
+        <p class="pl-hint" data-hint>לחצו על השטר האמיתי מבין השניים</p>
       </div>
       ${note("right")}${note("left")}
       <div class="pl-rig ${first ? A("fade", 300) : ""}" data-rig>
         <img class="pl-aya" data-aya src="${IMG}aya-pulley-still.png" alt="איה במכשיר הפולי">
       </div>
-      <div class="pl-weights" aria-label="משקולות שהורמו: ${lifted}"><span class="pl-wl">משקל שהורם</span>${pulleyQs().map((x, i) => `<i class="${i < lifted ? "on" : ""}"></i>`).join("")}</div>
+      <div class="pl-weights" aria-label="מעקב תשובות">${pulleyQs().map((x, i) => { const a = ans(x.id), st = a && a.completed ? (a.correct ? "ok" : "bad") : ""; return `<i class="${st} ${x.id === s.id ? "here" : ""}" data-track="${x.id}" aria-label="תרגיל ${i + 1}${st === "ok" ? " – נכון" : st === "bad" ? " – לא נכון" : ""}">${i + 1}</i>`; }).join("")}</div>
       <div class="inline-fb pl-fb" data-inline-fb role="status" aria-live="polite" tabindex="-1" hidden></div>`;
   };
   function bindPulley(scr, s) {
@@ -1100,8 +1099,9 @@
       // Aya pulls the handles only on a correct answer; she is never mirrored (always faces the same way)
       // a correct answer: one pass of "איה עושה מתיחות במכשיר" (5s), then back to the still (its first frame)
       if (ok && animate) { playWebp(aya, "aya-pulley-pull"); clearTimeout(aya._t); aya._t = setTimeout(() => { if (aya.isConnected) aya.src = IMG + "aya-pulley-still.png"; }, 5080); }
-      const head = ok ? "זיהיתם נכון! מרימים עוד משקל." : "הפעם משכתם את המזויף.";
-      const fill = () => showFb(fb, ok, fbHtml(ok, head, s.explain, ok ? 10 : 0, `<div class="ifb-actions"><button type="button" class="btn" data-go="${s.next}">${nextLbl}</button></div>`), animate);
+      const head = ok ? "זיהיתם נכון!" : "הפעם משכתם את המזויף.";
+      scr.classList.add("pl-answered");
+      const fill = () => showFb(fb, ok, fbHtml(ok, head, s.explain, ok ? (s.pts || 10) : 0, `<div class="ifb-actions"><button type="button" class="btn" data-go="${s.next}">${nextLbl}</button></div>`), animate);
       if (animate) setTimeout(fill, 800); else fill();
     };
     const a = ans(s.id);
@@ -1109,9 +1109,10 @@
     btns.forEach(b => b.addEventListener("click", () => {
       if (isDone(s.id)) return;
       const side = b.dataset.side, ok = side === s.realSide;
-      setAns(s.id, { completed: true, answer: side, correct: ok, points: ok ? 10 : 0 });
+      setAns(s.id, { completed: true, answer: side, correct: ok, points: ok ? (s.pts || 10) : 0 });
       updateChrome(s); playFeedbackSound(ok);
-      if (ok) { const lit = $$(".pl-weights i", scr).find(i => !i.classList.contains("on")); if (lit) setTimeout(() => lit.classList.add("on", "a", "pop"), 600); }
+      // the tracker: a green light for a right answer, a red one for a wrong one (skipped exercises stay empty)
+      const lit = $(`[data-track="${s.id}"]`, scr); if (lit) setTimeout(() => lit.classList.add(ok ? "ok" : "bad", "a", "pop"), 600);
       finish(side, true);
     }));
   }

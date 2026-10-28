@@ -896,3 +896,16 @@
 .sec-note.back { top: 420px; }
 .sec-groups { width: 360px; }
 .sec-note { left: 560px; }
+
+/* slide 32+: note א on the right, note ב on the left, Aya between them; the feedback replaces the question box once
+   answered; the tracker – one light per exercise: green right, red wrong, empty skipped */
+.pl-note.right { left: 900px; top: 272px; }
+.pl-note.left  { left: 32px; top: 272px; }
+.pl-rig { left: 390px; }
+.pl-fb { left: 300px; top: 84px; width: 600px; max-height: 300px; }
+.screen.pl-answered .pl-q { visibility: hidden; }
+.pl-weights { left: 32px; top: 200px; display: flex; gap: 6px; padding: 8px 10px; }
+.pl-weights i { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.18); border: 2px solid rgba(255,255,255,.55); color: #FFFFFF; font-style: normal; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.pl-weights i.here { border-color: var(--orange); }
+.pl-weights i.ok { background: #3FB54B; border-color: #BDF5C2; box-shadow: 0 0 10px #57D964; }
+.pl-weights i.bad { background: #D33A3A; border-color: #F6B8B8; box-shadow: 0 0 10px #F05A5A; }
