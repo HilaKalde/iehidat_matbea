@@ -1127,21 +1127,12 @@
       ${s.paras.map(p => `<p class="txt wall-lead">${p.replace("✔", '<span class="ic-ok" aria-hidden="true">✔</span>').replace("✖", '<span class="ic-bad" aria-hidden="true">✖</span>')}</p>`).join("")}
       <div class="wall-actions"><button class="btn practice-btn" data-go="${s.next}">${s.button}</button></div>
     </div>`;
-  /* the life cycle of banknotes and coins, before the climbing wall: the 12 steps around a loop (clockwise from the top, arrows from step to step),
+  /* the life cycle of banknotes and coins, before the climbing wall: the 12 steps around a loop (clockwise from the top, numbered; no lines or arrows – kept light),
      each opens its explanation in the middle on a click; the steps are taken from the wall's correct holds */
   R.cycle = s => {
     const wall = byId[s.from], steps = wall.rows.map(row => row.find(x => x[1]));
     const n = steps.length, CX = 600, CY = 398, RX = 420, RY = 212;
     const ang = i => (-90 + i * 360 / n) * Math.PI / 180, at = a => [CX + RX * Math.cos(a), CY + RY * Math.sin(a)];
-    // an arrow along the loop from each step to the next – none from the last step back to the first. Each arrow is the
-    // part of the ellipse between the two boxes (a margin around each box left out)
-    const box = i => { const [x, y] = at(ang(i)); return { l: x - 76 - 4, r: x + 76 + 4, t: y - 25 - 4, b: y + 27 + 4 }; };
-    const inBox = ([x, y], q) => x > q.l && x < q.r && y > q.t && y < q.b;
-    const arrows = steps.slice(0, -1).map((st, i) => {
-      const A = box(i), B = box(i + 1), pts = [];
-      for (let k = 0; k <= 60; k++) { const p = at(ang(i) + (ang(i + 1) - ang(i)) * k / 60); if (!inBox(p, A) && !inBox(p, B)) pts.push(p); }
-      return pts.length > 1 ? `<path d="M${pts.map(p => p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" L")}" marker-end="url(#cy-head)" />` : "";
-    }).join("");
     const nodes = steps.map((st, i) => {
       const [x, y] = at(ang(i));
       return `<button type="button" class="cy-node" data-step="${i}" style="left:${Math.round(x - 76)}px;top:${Math.round(y - 25)}px" aria-pressed="false"><span class="cy-num">${i + 1}</span><span class="cy-name">${st[0]}</span></button>`;
@@ -1150,7 +1141,6 @@
       <img class="bg" src="${IMG}bg-wall.jpg" alt="">
       <div class="q-scrim strong" aria-hidden="true"></div>
       <div class="cy-head ${A("fly-t", 0)}"><div class="h-title">${s.title}</div><p class="cy-sub">${s.sub}</p></div>
-      <svg class="cy-loop" viewBox="0 0 1200 675" aria-hidden="true"><defs><marker id="cy-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" /></marker></defs>${arrows}</svg>
       <div class="cy-nodes ${A("fade", 200)}">${nodes}</div>
       <div class="cy-card" data-card aria-live="polite">
         <p class="cy-hint" data-hint>לחצו על כל אחד מהשלבים כדי לקרוא עליו</p>
