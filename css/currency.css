@@ -1018,3 +1018,5 @@
 .cy-loop marker path { fill: rgba(255,255,255,.95); stroke: none; }
 
 .cy-node { width: 152px; font-size: 13.5px; }
+
+.chips.two { display: grid; grid-template-columns: repeat(2, max-content); }

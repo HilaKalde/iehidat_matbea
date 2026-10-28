@@ -26,9 +26,10 @@
   const FN_PT = 2, FN_BONUS = 4;
   const fnBonus = () => DATA.screens.filter(x => x.type === "station").every(x => isDone(x.id)) ? FN_BONUS : 0;
   const setScore = set => DATA.screens.filter(s => s.set === set).reduce((sum, s) => sum + ((ans(s.id) && ans(s.id).points) || 0), 0) + (set === "functional" ? fnBonus() : 0);
-  // stretching: 1,000 ₪, 100 ₪ off for every wrong answer (and, at the end, for every unanswered one)
+  // stretching: 100 coins, 10 off for every wrong answer (and, at the end, for every unanswered one)
   const STRETCH = DATA.screens.filter(s => s.mode === "stretch");
-  const bank = (final) => 1000 - 100 * STRETCH.filter(s => isDone(s.id) ? !ans(s.id).correct : !!final).length;
+  // the stretches: a till of 100 coins, 10 off for every wrong answer (unanswered questions count as wrong at the end)
+  const bank = (final) => 100 - 10 * STRETCH.filter(s => isDone(s.id) ? !ans(s.id).correct : !!final).length;
 
   /* feedback sound – a quiet extra layer on top of the visual feedback */
   const SFX = { correct: { src: AUDIO + "fb-correct.mp3", vol: .14 }, wrong: { src: AUDIO + "fb-wrong.wav", vol: .21 } };
@@ -1351,10 +1352,10 @@
       <div class="h-title" style="font-size:29px">${s.title}</div>
       <p class="txt" style="margin-top:8px;font-size:19px">${s.lead}</p>
       <p class="h-sub" style="margin-top:10px;font-size:20px">איך זה יעבוד?</p>
-      <p class="txt" style="font-size:18px">${money(s.how)}</p>
-      <div class="chips" style="margin-top:6px">${s.topics.map(t => `<span>${t}</span>`).join("")}</div>
+      <p class="txt" style="font-size:18px">${s.how}</p>
+      <div class="chips two" style="margin-top:6px">${(s.topics === "sets" ? Object.values(SETS).map(x => x.sub) : s.topics).map(t => `<span>${t}</span>`).join("")}</div>
       <div style="display:flex;gap:10px;margin-top:12px">
-        ${s.rules.map(r => `<div class="rule ${r.good ? "good" : "badr"}">${money(r.text)}</div>`).join("")}
+        ${s.rules.map(r => `<div class="rule ${r.good ? "good" : "badr"}">${r.text}</div>`).join("")}
       </div>
       <p class="txt" style="font-size:18px;margin-top:10px"><b>${s.goal}</b></p>
       <div style="margin-top:12px;text-align:center"><button class="btn practice-btn" data-go="${s.next}">${s.button}</button></div>
@@ -1371,7 +1372,7 @@
       <img class="bg" src="${IMG}bg-clean.jpg" alt="">
       <div class="q-scrim" aria-hidden="true"></div>
       <img class="char ${first ? A("fly-l", 150) : ""}" data-hero="${g.file}" src="${IMG + g.file}.png" alt="" style="${pos(...g.box)}">
-      <div class="bank ${first ? A("fly-t", 100) : ""}" data-bank><span class="coin"></span><span class="t">יש לכם:</span><span class="v" data-bank-v>${bank().toLocaleString("en-US")}</span><span class="t">₪ בקופה</span></div>
+      <div class="bank ${first ? A("fly-t", 100) : ""}" data-bank><span class="coin"></span><span class="t">יש לכם:</span><span class="v" data-bank-v>${bank()}</span><span class="t">מטבעות בקופה</span></div>
       <div class="q-wall wide-opts">
         <p class="qw-question">${s.question}</p>
         <p class="qw-hint">בחרו בתשובה הנכונה</p>
@@ -1384,7 +1385,7 @@
   function bindMcq(scr, s) {
     const opts = $$("[data-opt]", scr), fb = $("[data-inline-fb]", scr);
     const showFinal = chosen => opts.forEach((o, i) => { o.disabled = true; if (i === s.correct) o.classList.add("ok"); else if (i === chosen) o.classList.add("bad"); });
-    const fbFor = ok => `<div class="ifb-row"><p class="ifb-head">${ok ? "יפה מאוד! הכסף שלכם נשמר" : "לא נכון, ירדו לכם 100 ₪ מהקופה"}</p><span class="ifb-coins"><span class="coin sm"></span>יש לכם ${bank().toLocaleString("en-US")} ₪ בקופה</span></div><div class="ifb-body">${money(s.explain)}</div>`;
+    const fbFor = ok => `<div class="ifb-row"><p class="ifb-head">${ok ? "יפה מאוד! הכסף שלכם נשמר" : "לא נכון, יש לכם 10 מטבעות פחות בקופה"}</p><span class="ifb-coins"><span class="coin sm"></span>נשארו ${bank()} מטבעות</span></div><div class="ifb-body">${money(s.explain)}</div>`;
     const heroImg = $("[data-hero]", scr), train = () => playWebp(heroImg, heroImg.dataset.hero);
     const a = ans(s.id);
     if (a && a.completed) { showFinal(a.answer); showFb(fb, a.correct, fbFor(a.correct), false); if (a.correct) train(); }
@@ -1407,22 +1408,23 @@
       setTimeout(() => { c.style.transform = `translate(${-40 + Math.random() * 220}px, ${260 + Math.random() * 180}px) rotate(${Math.random() * 540}deg)`; c.style.opacity = 0; }, 60 + k * 70);
       setTimeout(() => c.remove(), 1400 + k * 70);
     }
-    setTimeout(() => { v.textContent = bank().toLocaleString("en-US"); }, 500);
+    setTimeout(() => { v.textContent = bank(); }, 500);
     bankEl.classList.add("shake"); setTimeout(() => bankEl.classList.remove("shake"), 600);
   }
   R.stretchEnd = s => {
     const b = bank(true), open = STRETCH.filter(x => !isDone(x.id)).length;
-    const band = b >= 800 ? "אלופי הכושר הפיננסי! 🏆" : b >= 500 ? "בכושר טוב, יש עוד לאן להשתפר!" : "צריך להמשיך להתאמן…";
+    const band = b >= 80 ? "אלופי הכושר הפיננסי! 🏆" : b >= 50 ? "בכושר טוב, יש עוד לאן להשתפר!" : "צריך להמשיך להתאמן…";
     return `
       <img class="bg" src="${IMG}bg-clean.jpg" alt="">
       ${hero("aya-adam-like", 60, 150, 520, A("fly-l", 300), "איה ואדם מחייכים ועושים לייק")}
       <div class="card sum-card narrow end-card ${A("fly-b", 0)}">
         <div class="h-title" style="font-size:25px">${s.title}</div>
-        <div class="score-line ${A("pop", 500)}"><span class="coin"></span>נשארו לכם <span class="big">${b.toLocaleString("en-US")} ₪</span> מתוך 1,000 ₪ בקופה</div>
+        <div class="score-line ${A("pop", 500)}"><span class="coin"></span>נשארו לכם <span class="big">${b}</span> מתוך 100 מטבעות בקופה</div>
         ${open ? `<p class="open-note">${open} שאלות לא נענו ונספרו כשגויות.</p>` : ""}
         <p class="h-sub" style="margin-top:6px">${band}</p>
         <p class="txt" style="font-size:17.5px;margin-top:4px">${s.learned}</p>
         <ul class="bul">${s.bullets.map(x => `<li>${x}</li>`).join("")}</ul>
+        ${s.closing ? `<p class="closing">${s.closing}</p>` : ""}
       </div>`;
   };
 
