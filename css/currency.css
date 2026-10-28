@@ -929,3 +929,11 @@
 .pl-fb { top: 428px; width: 370px; max-height: none; overflow: visible; padding: 10px 16px 12px; }
 .pl-fb.under-left { left: 40px; } .pl-fb.under-right { left: 790px; }
 .pl-fb p { font-size: 14px; line-height: 1.32; }
+
+/* life cycle wall: 12 rows; the panel lists each step with its explanation, scrolling inside itself */
+.wp-steps { max-height: 330px; overflow-y: auto; font-size: 12.5px; line-height: 1.3; padding-left: 4px; }
+.wp-steps li { margin-bottom: 4px; }
+.stone span { font-size: 12.5px; line-height: 1.15; }
+.wall-panel { top: 96px; }
+.wp-steps { max-height: 250px; }
+.wall-panel .wp-fb .ifb-head { font-size: 15px; }

@@ -1161,10 +1161,9 @@
       <img class="climb-board" src="${IMG}wall-empty.png" alt="" style="${pos(WALL.x - 14, WALL.y - 10, WALL.w + 28, WALL.h + 22)}">
       ${stones}
       ${s.rows.map((row, r) => `<span class="wall-num" style="top:${stonePos(r, 0).top + stonePos(r, 0).h / 2 - 13}px" aria-hidden="true">${r + 1}</span>`).join("")}
-          <button type="button" class="skip-practice wall-skip" data-stop><span>דילוג – הצגת המסלול</span><svg class="ic" viewBox="0 0 15 17" aria-hidden="true" focusable="false"><path d="M1.7 1.7 10 8.5 1.7 15.3Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="3.2" stroke-linejoin="round"></path><rect x="12" y="0" width="3" height="17" rx="1.5" fill="#FFFFFF"></rect></svg></button>
       <img class="char climber" data-climber hidden src="${IMG}aya-climb4.png" alt="איה מטפסת על קיר הטיפוס" style="${pos(WALL.x + 30, WALL.y + WALL.h + 14, 140, 196)}">
       <div class="wall-panel">
-        <div class="wp-title">שלבי ההנפקה</div>
+        <div class="wp-title">${s.panelTitle || "שלבי ההנפקה"}</div>
         <p class="wp-instr" data-instr>${s.first}</p>
         <ol class="wp-steps" data-steps></ol>
         <div class="inline-fb wp-fb" data-inline-fb role="status" aria-live="polite" tabindex="-1" hidden></div>
@@ -1213,22 +1212,23 @@
       const cols = [0, 1, 2];                                // the whole next row lights up
       cols.forEach(c => { const b = stone(level, c); if (b) { b.disabled = false; b.classList.add("option"); } });
     };
-    const addStep = r => { const li = document.createElement("li"); li.textContent = s.rows[r][correctCol(r)][0]; li.className = "a rise"; stepsEl.appendChild(li); };
+    // the panel lists every step climbed – its name and (when given) its explanation
+    const addStep = r => { const st = s.rows[r][correctCol(r)], li = document.createElement("li"); li.innerHTML = `<b>${st[0]}</b>${st[2] ? ` – ${st[2]}` : ""}`; li.className = "a rise"; stepsEl.appendChild(li); stepsEl.scrollTop = stepsEl.scrollHeight; };
     const done = (animate) => {
       instr.textContent = "הגעתם לפסגה!";
-      $("[data-stop]", scr).hidden = true; 
+      const stopB = $("[data-stop]", scr); if (stopB) stopB.hidden = true;
       const a = ans(s.id);
-      showFb(fb, true, fbHtml(true, "סידרתם נכון את כל שלבי ההנפקה והתפעול של שטר הכסף!", "בחרתם את השלב הנכון והתקדמתם אחיזה אחר אחיזה עד לפסגה.", a.points), animate);
+      showFb(fb, true, fbHtml(true, s.panelTitle ? "סידרתם נכון את כל שלבי מעגל החיים של השטרות והמעות!" : "סידרתם נכון את כל שלבי ההנפקה והתפעול של שטר הכסף!", "בחרתם את השלב הנכון והתקדמתם אחיזה אחר אחיזה עד לפסגה.", a.points), animate);
       // the two buttons below the green feedback box, not inside it
       if (!$(".wp-fb-actions", scr)) fb.insertAdjacentHTML("afterend", `<div class="wp-fb-actions"><button type="button" class="link-btn" data-again2>טיפוס חוזר</button><button type="button" class="btn" data-go="${s.next}">לסיכום הסט</button></div>`);
     };
-    const finish = () => { setAns(s.id, { completed: true, points }); updateChrome(s); done(true); };
+    const finish = () => { points += s.topBonus || 0; setAns(s.id, { completed: true, points }); updateChrome(s); done(true); };
     scr.addEventListener("click", e => {
       const b = e.target.closest(".stone"); if (!b || b.disabled || isDone(s.id)) return;
       const r = +b.dataset.r, c = +b.dataset.c;
       if (s.rows[r][c][1]) {
         b.classList.add("ok"); b.classList.remove("option"); playFeedbackSound(true);
-        if (!misses) points += 10; misses = 0; cur = c; level++;
+        if (!misses) points += s.stepPts || 10; misses = 0; cur = c; level++;
         updatePts(); moveClimber(r, c); addStep(r);
         instr.textContent = level < rows ? s.later : "";
         if (level >= rows) { light(); finish(); } else light();
@@ -1241,7 +1241,7 @@
     });
     const ptsBadge = () => { const cv = $('[data-c="coins-v"]', $("#chrome")); return cv; };
     const updatePts = () => { const cv = ptsBadge(); if (cv) cv.textContent = setScore("wall") + points; };
-    $("[data-stop]", scr).addEventListener("click", () => {
+    const stopEl = $("[data-stop]", scr); if (stopEl) stopEl.addEventListener("click", () => {
       // skip: the whole route is shown, the steps not climbed earn no points
       for (let r = level; r < rows; r++) { const c = correctCol(r); stone(r, c).classList.add("ok", "shown"); addStep(r); cur = c; }
       level = rows; moveClimber(rows - 1, cur); light(); finish();
