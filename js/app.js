@@ -1184,7 +1184,8 @@
     const track = $("[data-track]", scr), partEl = $("[data-part]", scr);
     const correctCol = r => s.rows[r].findIndex(x => x[1]);
     const stone = (r, c) => $(`.stone[data-r="${r}"][data-c="${c}"]`, scr);
-    let level = 0, cur = null, misses = 0, points = 0, panning = false, shift = 0;
+    let level = 0, cur = null, right = 0, points = 0, panning = false, shift = 0;
+    const wrong = {};                                         // row → the wrong hold chosen there
     // which part of the wall is in view: rows 1–6, then (panned down) rows 7–12
     const showPart = (k, animate) => {
       track.classList.toggle("pan", !!animate);
@@ -1224,41 +1225,55 @@
     });
     const done = (animate) => {
       instr.textContent = "הגעתם לפסגה!";
-      const a = ans(s.id);
-      showFb(fb, true, fbHtml(true, s.panelTitle ? "סידרתם נכון את כל שלבי מעגל החיים של השטרות והמעות!" : "סידרתם נכון את כל שלבי ההנפקה והתפעול של שטר הכסף!", "בחרתם את השלב הנכון והתקדמתם אחיזה אחר אחיזה עד לפסגה.", a.points), animate);
+      const a = ans(s.id), all = a.right == null || a.right >= rows;
+      const head = all ? (s.panelTitle ? "סידרתם נכון את כל שלבי מעגל החיים של השטרות והמעות!" : "סידרתם נכון את כל שלבי ההנפקה והתפעול של שטר הכסף!") : `הגעתם לפסגה! בחרתם נכון ${a.right} מתוך ${rows} שלבים.`;
+      const body = all ? "בחרתם את השלב הנכון והתקדמתם אחיזה אחר אחיזה עד לפסגה." : "בכל טעות הוצג השלב הנכון והמשכתם לטפס. כדאי לעבור שוב על השלבים ברשימה שבצד.";
+      showFb(fb, true, fbHtml(true, head, body, a.points), animate);
       // the green feedback box on the left of the wall, the two buttons below it
       if (!$(".wp-fb-actions", scr)) fb.insertAdjacentHTML("afterend", `<div class="wp-fb-actions"><button type="button" class="link-btn" data-again2>טיפוס חוזר</button><button type="button" class="btn" data-go="${s.next}">לסיכום הסט</button></div>`);
     };
-    const finish = () => { points += s.topBonus || 0; setAns(s.id, { completed: true, points }); updateChrome(s); done(true); };
+    const finish = () => { points += s.topBonus || 0; setAns(s.id, { completed: true, points, right, wrong }); updateChrome(s); done(true); };
+    // the step of row r is climbed (chosen right, or shown after a wrong choice): Aya climbs to it and the next row lights up
+    const advance = (r, c) => {
+      cur = c; level++;
+      updatePts(); moveClimber(r, c); addStep(r);
+      instr.textContent = level < rows ? s.later : "";
+      if (level >= rows) { light(); finish(); }
+      else if (level % VIEW === 0) {
+        // the first part is climbed: the wall moves on to the next floors – the same journey continues
+        panning = true; light();
+        instr.textContent = `ממשיכים לטפס – קומות ${level + 1}–${Math.min(rows, level + VIEW)}`;
+        setTimeout(() => { if (!scr.isConnected) return; showPart(level / VIEW, true); setTimeout(() => { panning = false; instr.textContent = s.later; light(); }, 1300); }, 1100);
+      } else light();
+    };
     scr.addEventListener("click", e => {
       const b = e.target.closest(".stone"); if (!b || b.disabled || panning || isDone(s.id)) return;
       const r = +b.dataset.r, c = +b.dataset.c;
       if (s.rows[r][c][1]) {
         b.classList.add("ok"); b.classList.remove("option"); playFeedbackSound(true);
-        if (!misses) points += s.stepPts || 10; misses = 0; cur = c; level++;
-        updatePts(); moveClimber(r, c); addStep(r);
-        instr.textContent = level < rows ? s.later : "";
-        if (level >= rows) { light(); finish(); }
-        else if (level % VIEW === 0) {
-          // the first part is climbed: the wall moves on to the next floors – the same journey continues
-          panning = true; light();
-          instr.textContent = `כל הכבוד! ממשיכים לטפס – קומות ${level + 1}–${Math.min(rows, level + VIEW)}`;
-          setTimeout(() => { if (!scr.isConnected) return; showPart(level / VIEW, true); setTimeout(() => { panning = false; instr.textContent = s.later; light(); }, 1300); }, 1100);
-        } else light();
+        points += s.stepPts || 10; right++;
+        advance(r, c);
       } else {
-        misses++; playFeedbackSound(false);
-        b.classList.remove("shake", "bad"); void b.offsetWidth; b.classList.add("shake", "bad");
-        setTimeout(() => b.classList.remove("bad"), 900);
-        toast("זה לא השלב הבא – נסו שוב");
+        // a wrong step: a red ✕ on it, and right away the correct step of the row is shown and Aya climbs to it
+        // (no coins for this step) – so it is clear that this was a mistake
+        playFeedbackSound(false); wrong[r] = c;
+        panning = true; $$(".stone", scr).forEach(x => { x.disabled = true; x.classList.remove("option"); });
+        b.classList.add("miss", "shake");
+        instr.textContent = "לא נכון – זה השלב הנכון";
+        setTimeout(() => {
+          if (!scr.isConnected) return;
+          const rc = correctCol(r); stone(r, rc).classList.add("ok", "shown");
+          panning = false; advance(r, rc);
+        }, 900);
       }
-    });
-    const ptsBadge = () => { const cv = $('[data-c="coins-v"]', $("#chrome")); return cv; };
+    });    const ptsBadge = () => { const cv = $('[data-c="coins-v"]', $("#chrome")); return cv; };
     const updatePts = () => { const cv = ptsBadge(); if (cv) cv.textContent = setScore("wall") + points; };
     const again = () => { delete state.answers[s.id]; save(); goTo(s.id); };
     $("[data-again]", scr).addEventListener("click", again);
     scr.addEventListener("click", e => { if (e.target.closest("[data-again2]")) again(); });
     if (isDone(s.id)) {
-      for (let r = 0; r < rows; r++) { const c = correctCol(r); stone(r, c).classList.add("ok"); addStep(r); cur = c; }
+      const w = ans(s.id).wrong || {};
+      for (let r = 0; r < rows; r++) { const c = correctCol(r); stone(r, c).classList.add("ok"); if (w[r] != null) { stone(r, w[r]).classList.add("miss"); stone(r, c).classList.add("shown"); } addStep(r); cur = c; }
       level = rows; moveClimber(rows - 1, cur); showPart(Math.ceil(rows / VIEW) - 1, false); done(false);
     } else { showPart(0, false); light(); }
   }

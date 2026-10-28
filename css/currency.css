@@ -970,3 +970,8 @@
 .wall-end .wp-fb-actions > * { flex: none; white-space: nowrap; }
 .wall-end .wp-fb-actions .btn { padding: 8px 22px; font-size: 18px; }
 .wall-end .wp-fb-actions .link-btn { padding: 6px 16px; font-size: 16px; background: #FFFFFF; }
+
+/* climbing wall: a wrong hold gets a red ✕ (and the correct one of the row is shown) */
+.stone.miss { opacity: 1; }
+.stone.miss img { filter: drop-shadow(0 0 5px #E33232) saturate(.35) brightness(.9); }
+.stone.miss::after { content: "✕"; position: absolute; left: -9px; top: -9px; width: 20px; height: 20px; border-radius: 50%; background: #A3262A; color: #FFFFFF; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 1.5px solid #FFFFFF; z-index: 3; }
