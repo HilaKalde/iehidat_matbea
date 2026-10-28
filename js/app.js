@@ -1166,7 +1166,6 @@
           ${stones}
           ${s.rows.map((row, r) => `<span class="wall-num" style="top:${stonePos(r, 0).top + stonePos(r, 0).h / 2 - 13}px" aria-hidden="true">${r + 1}</span>`).join("")}
           <img class="char climber" data-climber hidden src="${IMG}aya-climb4.png" alt="איה מטפסת על קיר הטיפוס">
-          <div class="stone-pop" data-pop role="tooltip" hidden></div>
         </div>
       </div>
       <div class="wall-panel">
@@ -1174,15 +1173,15 @@
         ${parts > 1 ? `<p class="wp-part" data-part></p>` : ""}
         <p class="wp-instr" data-instr>${s.first}</p>
         <ol class="wp-steps" data-steps></ol>
-        <div class="inline-fb wp-fb" data-inline-fb role="status" aria-live="polite" tabindex="-1" hidden></div>
         <div class="st-actions wp-actions">
           <button type="button" class="link-btn" data-again hidden>טיפוס חוזר</button>
         </div>
-      </div>`;
+      </div>
+      <div class="wall-end"><div class="inline-fb wp-fb" data-inline-fb role="status" aria-live="polite" tabindex="-1" hidden></div></div>`;
   };
   function bindWall(scr, s) {
     const rows = s.rows.length, climber = $("[data-climber]", scr), stepsEl = $("[data-steps]", scr), instr = $("[data-instr]", scr), fb = $("[data-inline-fb]", scr);
-    const track = $("[data-track]", scr), pop = $("[data-pop]", scr), partEl = $("[data-part]", scr);
+    const track = $("[data-track]", scr), partEl = $("[data-part]", scr);
     const correctCol = r => s.rows[r].findIndex(x => x[1]);
     const stone = (r, c) => $(`.stone[data-r="${r}"][data-c="${c}"]`, scr);
     let level = 0, cur = null, misses = 0, points = 0, panning = false, shift = 0;
@@ -1210,56 +1209,24 @@
       if (level >= rows || panning) return;
       [0, 1, 2].forEach(c => { const b = stone(level, c); if (b) { b.disabled = false; b.classList.add("option"); } });   // the whole next row lights up
     };
-    /* the explanation of a step climbed: on the stone only its name; the explanation shows when hovering over the climbed
-       stone, or with the small ⓘ button beside it (a separate button, so it is never mistaken for choosing an answer) */
-    const showPop = r => {
-      const st = s.rows[r][correctCol(r)], p = stonePos(r, correctCol(r));
-      if (!st[2]) return;
-      pop.innerHTML = `<b>${st[0]}</b><br>${st[2]}`; pop.hidden = false; pop.dataset.r = r;
-      // below the stone (over the rows already climbed, never over the next choice) – above it only with no room below
-      const above = p.top + p.h + 8 + pop.offsetHeight + shift > WALL.y + WALL.h;
-      Object.assign(pop.style, { left: Math.max(WALL.x - 30, Math.min(p.left + p.w / 2 - 130, WALL.x + WALL.w - 240)) + "px", top: (above ? p.top - 8 : p.top + p.h + 8) + "px" });
-      pop.classList.toggle("up", above);
-    };
-    const hidePop = () => { pop.hidden = true; delete pop.dataset.r; };
-    const addInfo = r => {
-      const c = correctCol(r), p = stonePos(r, c);
-      if (!s.rows[r][c][2] || $(`[data-info="${r}"]`, scr)) return;
-      track.insertAdjacentHTML("beforeend", `<button type="button" class="stone-info" data-info="${r}" style="left:${p.left + p.w - 14}px;top:${p.top - 8}px" aria-label="הסבר על השלב: ${s.rows[r][c][0]}">i</button>`);
-    };
-    track.addEventListener("click", e => {
-      const ib = e.target.closest("[data-info]"); if (!ib) return;
-      e.stopPropagation();
-      if (pop.dataset.r === ib.dataset.info) hidePop(); else showPop(+ib.dataset.info);
-    });
-    track.addEventListener("focusin", e => { const ib = e.target.closest("[data-info]"); if (ib) showPop(+ib.dataset.info); });
-    track.addEventListener("focusout", e => { if (e.target.closest("[data-info]")) hidePop(); });
-    // hovering a climbed stone (the stones are disabled once climbed, so this is hit-tested on the wall itself)
-    let hoverR = null;
-    track.addEventListener("mousemove", e => {
-      const hit = $$(".stone.ok", scr).find(b => { const q = b.getBoundingClientRect(); return e.clientX >= q.left && e.clientX <= q.right && e.clientY >= q.top && e.clientY <= q.bottom; });
-      const r = hit ? +hit.dataset.r : null;
-      if (r === hoverR) return; hoverR = r;
-      if (r === null) hidePop(); else showPop(r);
-    });
-    track.addEventListener("mouseleave", () => { hoverR = null; hidePop(); });
-    // the panel lists the names of the steps climbed; each opens its explanation on a click
+    // the panel lists the names of the steps climbed; each opens its explanation on a click (the only place it is shown)
     const addStep = r => {
       const st = s.rows[r][correctCol(r)], li = document.createElement("li");
       li.innerHTML = st[2] ? `<button type="button" class="wp-step" aria-expanded="false"><b>${st[0]}</b><span class="wp-more" aria-hidden="true">+</span></button><div class="wp-exp" hidden>${st[2]}</div>` : `<b>${st[0]}</b>`;
       li.className = "a rise"; stepsEl.appendChild(li); stepsEl.scrollTop = stepsEl.scrollHeight;
-      addInfo(r);
     };
     stepsEl.addEventListener("click", e => {
       const b = e.target.closest(".wp-step"); if (!b) return;
       const ex = b.nextElementSibling, open = ex.hidden;
+      // one explanation open at a time, so the list always fits the panel (no scrolling)
+      $$(".wp-step[aria-expanded=true]", stepsEl).forEach(o => { if (o !== b) { o.nextElementSibling.hidden = true; o.setAttribute("aria-expanded", false); $(".wp-more", o).textContent = "+"; } });
       ex.hidden = !open; b.setAttribute("aria-expanded", open); $(".wp-more", b).textContent = open ? "−" : "+";
     });
     const done = (animate) => {
       instr.textContent = "הגעתם לפסגה!";
       const a = ans(s.id);
       showFb(fb, true, fbHtml(true, s.panelTitle ? "סידרתם נכון את כל שלבי מעגל החיים של השטרות והמעות!" : "סידרתם נכון את כל שלבי ההנפקה והתפעול של שטר הכסף!", "בחרתם את השלב הנכון והתקדמתם אחיזה אחר אחיזה עד לפסגה.", a.points), animate);
-      // the two buttons below the green feedback box, not inside it
+      // the green feedback box on the left of the wall, the two buttons below it
       if (!$(".wp-fb-actions", scr)) fb.insertAdjacentHTML("afterend", `<div class="wp-fb-actions"><button type="button" class="link-btn" data-again2>טיפוס חוזר</button><button type="button" class="btn" data-go="${s.next}">לסיכום הסט</button></div>`);
     };
     const finish = () => { points += s.topBonus || 0; setAns(s.id, { completed: true, points }); updateChrome(s); done(true); };
@@ -1274,7 +1241,7 @@
         if (level >= rows) { light(); finish(); }
         else if (level % VIEW === 0) {
           // the first part is climbed: the wall moves on to the next floors – the same journey continues
-          panning = true; light(); hidePop();
+          panning = true; light();
           instr.textContent = `כל הכבוד! ממשיכים לטפס – קומות ${level + 1}–${Math.min(rows, level + VIEW)}`;
           setTimeout(() => { if (!scr.isConnected) return; showPart(level / VIEW, true); setTimeout(() => { panning = false; instr.textContent = s.later; light(); }, 1300); }, 1100);
         } else light();
