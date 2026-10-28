@@ -1048,7 +1048,7 @@
   R.phowto = s => `
     <img class="bg" src="${IMG}bg-clean.jpg" alt="">
     <div class="q-scrim" aria-hidden="true"></div>
-    <img class="char ${A("fly-l", 300)}" src="${IMG}aya-cable-still.png" alt="איה במכשיר הפולי, אוחזת בשתי הידיות" style="${pos(20, 300, 430, 340)}">
+    <img class="char ${A("fly-l", 300)}" src="${IMG}aya-cable-still.webp" alt="איה במכשיר הפולי, אוחזת בשתי הידיות" style="${pos(20, 300, 430, 340)}">
     <div class="wall-content ph-wall ${A("rise", 150)}">
       <div class="h-title">${s.title}</div>
       <p class="h-sub ph-sub">${s.sub}</p>
@@ -1078,7 +1078,7 @@
       </div>
       ${note("right")}${note("left")}
       <div class="pl-rig ${first ? A("fade", 300) : ""}" data-rig>
-        <img class="pl-aya" data-aya src="${IMG}aya-cable-still.png" alt="איה במכשיר הפולי">
+        <img class="pl-aya" data-aya src="${IMG}aya-cable-still.webp" alt="איה במכשיר הפולי">
       </div>
       <div class="pl-weights" aria-label="מעקב תשובות">${pulleyQs().map((x, i) => { const a = ans(x.id), st = a && a.completed ? (a.correct ? "ok" : "bad") : ""; return `<i class="${st} ${x.id === s.id ? "here" : ""}" data-track="${x.id}" aria-label="תרגיל ${i + 1}${st === "ok" ? " – נכון" : st === "bad" ? " – לא נכון" : ""}">${i + 1}</i>`; }).join("")}</div>
       <div class="inline-fb pl-fb" data-inline-fb role="status" aria-live="polite" tabindex="-1" hidden></div>`;
@@ -1096,8 +1096,9 @@
         if (b.dataset.side === side) b.classList.add("chosen", ok ? "ok" : "bad");
       });
       $("[data-hint]", scr).hidden = true;
-      // a correct answer: Aya pulls the strap on the side of the note chosen – one pass (5s), then back to the still
-      if (ok && animate) { playWebp(aya, "aya-cable-" + (side === "left" ? "l" : "r")); clearTimeout(aya._t); aya._t = setTimeout(() => { if (aya.isConnected) aya.src = IMG + "aya-cable-still.png"; }, 5080); }
+      // right or wrong, Aya pulls the strap on the side of the note chosen – again and again (a looping film) until the
+      // learner moves on to the next exercise
+      if (animate) playWebp(aya, "aya-cable-" + (side === "left" ? "l" : "r"));
       const head = ok ? "זיהיתם נכון!" : "הפעם משכתם את המזויף.";
       fb.classList.toggle("under-left", side === "left"); fb.classList.toggle("under-right", side !== "left");   // the feedback under the chosen note
       const fill = () => showFb(fb, ok, fbHtml(ok, head, s.explain, ok ? (s.pts || 10) : 0, `<div class="ifb-actions"><button type="button" class="btn" data-go="${s.next}">${nextLbl}</button></div>`), animate);

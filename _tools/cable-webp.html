@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>cable crossover GIFs → WebP</title></head>
+<html><head><meta charset="utf-8"><title>cable crossover (green screen) → WebP</title></head>
 <body>
 <pre id="log"></pre>
+<canvas id="peek" width="444" height="352" style="background:#456"></canvas>
 <script>
-/* Dev tool (not part of the lomda): the pulley drill's Aya – "משיכה יד ימין/שמאל.gif" (_src/aya-cable-r/l.gif, 1280×720,
-   transparent) → animated WebP cropped to the machine. In both GIFs she pulls the strap on the screen's left, so the
-   right-note animation is mirrored to pull the strap on the right. Output (PUT to /_out/): aya-cable-l.webp,
-   aya-cable-r.webp (played once), aya-cable-still.png (frame 0 of the left GIF, the rest pose). */
+/* Dev tool (not part of the lomda): the pulley drill's Aya – the green-screen videos behind "משיכה יד ימין/שמאל.gif"
+   (_src/cable-4891.mp4, 1280×720, 25fps; the GIFs were only 256 colours, so they looked pixelated). Every frame is cropped
+   to the machine, the green keyed out (soft alpha from how much greener than red/blue a pixel is, plus despill) and encoded
+   as WebP with alpha. She pulls the strap on the screen's left, so the right-note animation is the same film mirrored.
+   Output (PUT to /_out/): aya-cable-l.webp, aya-cable-r.webp (looping), aya-cable-still.webp (frame 0, the rest pose). */
 const log = m => (document.getElementById("log").textContent += m + "\n");
 const fourcc = s => [...s].map(c => c.charCodeAt(0));
 const u24 = v => [v & 255, (v >> 8) & 255, (v >> 16) & 255];
@@ -23,35 +25,48 @@ function frameChunks(buf) {
   }
   return concat(parts);
 }
-const CROP = { x: 196, y: 6, w: 888, h: 704 };          // the machine (opaque bbox 212..1064 × 16..704) with a margin
-async function convert(src, out, mirror, still, quality = 0.85) {
-  const buf = await (await fetch("/_src/" + src + ".gif", { cache: "no-store" })).arrayBuffer();
-  const dec = new ImageDecoder({ data: buf, type: "image/gif" }); await dec.tracks.ready;
-  const n = dec.tracks.selectedTrack.frameCount, { w: W, h: H } = CROP;
-  const cv = new OffscreenCanvas(W, H), g = cv.getContext("2d");
-  const frames = []; let total = 0;
-  for (let i = 0; i < n; i++) {
-    const { image } = await dec.decode({ frameIndex: i });
-    g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H);
-    if (mirror) g.setTransform(-1, 0, 0, 1, W, 0);
-    g.drawImage(image, CROP.x, CROP.y, W, H, 0, 0, W, H);
-    const dur = Math.max(10, Math.round((image.duration || 40000) / 1000)); image.close();
-    if (i === 0 && still) { const r = await fetch(`/_out/${still}.png`, { method: "PUT", body: await cv.convertToBlob({ type: "image/png" }) }); log(`${still}.png (${r.status})`); }
-    frames.push(chunk("ANMF", concat([new Uint8Array([...u24(0), ...u24(0), ...u24(W - 1), ...u24(H - 1), ...u24(dur), 0x02]), frameChunks(await (await cv.convertToBlob({ type: "image/webp", quality })).arrayBuffer())])));
-    total += dur;
+const CROP = { x: 196, y: 6, w: 888, h: 704 }, FPS = 25;   // the machine with a margin
+const K0 = 50, K1 = 150;           // greenness (G − max(R,B)): ≤ K0 opaque, ≥ K1 transparent, soft in between (wide, so the thin cables survive)
+function key(g) {
+  const { w: W, h: H } = CROP, id = g.getImageData(0, 0, W, H), d = id.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const r = d[i], gg = d[i + 1], b = d[i + 2], m = Math.max(r, b), gr = gg - m;
+    const a = gr <= K0 ? 1 : gr >= K1 ? 0 : 1 - (gr - K0) / (K1 - K0);
+    if (gg > m) d[i + 1] = m;                                            // despill: no pixel greener than its red/blue
+    d[i + 3] = Math.round(255 * a);
   }
-  dec.close();
-  const vp8x = chunk("VP8X", new Uint8Array([0x12, 0, 0, 0, ...u24(W - 1), ...u24(H - 1)]));
-  const anim = chunk("ANIM", new Uint8Array([0, 0, 0, 0, 1, 0]));                 // loop count 1: played once
-  const body = concat([new Uint8Array(fourcc("WEBP")), vp8x, anim, ...frames]);
-  const file = concat([new Uint8Array(fourcc("RIFF")), new Uint8Array(u32(body.length)), body]);
-  const r = await fetch(`/_out/${out}.webp`, { method: "PUT", body: file });
-  log(`${out}.webp ${n} frames ${total}ms ${(file.length / 1048576).toFixed(1)}MB (${r.status})`);
+  g.putImageData(id, 0, 0);
 }
-window.addEventListener("load", async () => {
-  await convert("aya-cable-l", "aya-cable-l", false, "aya-cable-still");
-  await convert("aya-cable-r", "aya-cable-r", true);
+const animWebp = (frames, W, H) => {
+  const vp8x = chunk("VP8X", new Uint8Array([0x12, 0, 0, 0, ...u24(W - 1), ...u24(H - 1)]));
+  const anim = chunk("ANIM", new Uint8Array([0, 0, 0, 0, 0, 0]));                 // loop forever
+  const body = concat([new Uint8Array(fourcc("WEBP")), vp8x, anim, ...frames]);
+  return concat([new Uint8Array(fourcc("RIFF")), new Uint8Array(u32(body.length)), body]);
+};
+async function run(quality = 0.92) {
+  const blob = await (await fetch("/_src/cable-4891.mp4", { cache: "no-store" })).blob();
+  const v = document.createElement("video"); v.muted = true; v.src = URL.createObjectURL(blob);
+  await new Promise(r => v.addEventListener("loadeddata", r, { once: true }));
+  const { w: W, h: H } = CROP, n = Math.round(v.duration * FPS), dur = 1000 / FPS;
+  const cv = new OffscreenCanvas(W, H), g = cv.getContext("2d", { willReadFrequently: true });
+  const mv = new OffscreenCanvas(W, H), mg = mv.getContext("2d");
+  const peek = document.getElementById("peek").getContext("2d");
+  const L = [], R = [];
+  const anmf = async c => chunk("ANMF", concat([new Uint8Array([...u24(0), ...u24(0), ...u24(W - 1), ...u24(H - 1), ...u24(dur), 0x02]), frameChunks(await (await c.convertToBlob({ type: "image/webp", quality })).arrayBuffer())]));
+  for (let i = 0; i < n; i++) {
+    await new Promise(r => { v.onseeked = r; v.currentTime = Math.min(v.duration - 0.001, (i + 0.5) / FPS); });
+    g.clearRect(0, 0, W, H); g.drawImage(v, CROP.x, CROP.y, W, H, 0, 0, W, H); key(g);
+    mg.setTransform(1, 0, 0, 1, 0, 0); mg.clearRect(0, 0, W, H); mg.setTransform(-1, 0, 0, 1, W, 0); mg.drawImage(cv, 0, 0);
+    peek.clearRect(0, 0, 444, 352); peek.drawImage(cv, 0, 0, 444, 352);
+    if (i === 0) { const r = await fetch("/_out/aya-cable-still.webp", { method: "PUT", body: await cv.convertToBlob({ type: "image/webp", quality: .95 }) }); log(`aya-cable-still.webp (${r.status})`); }
+    L.push(await anmf(cv)); R.push(await anmf(mv));
+  }
+  for (const [name, fr] of [["aya-cable-l", L], ["aya-cable-r", R]]) {
+    const file = animWebp(fr, W, H), r = await fetch(`/_out/${name}.webp`, { method: "PUT", body: file });
+    log(`${name}.webp ${fr.length} frames ${(file.length / 1048576).toFixed(1)}MB (${r.status})`);
+  }
   document.title = "DONE";
-});
+}
+window.addEventListener("load", () => run());
 </script>
 </body></html>
