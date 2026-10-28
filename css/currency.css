@@ -986,3 +986,6 @@
 
 /* climbing wall: Aya hangs below the hold just chosen, in front of all the holds */
 .wall-track .climber { z-index: 10 !important; }
+
+/* climbing wall: the text on the holds less bold */
+.stone span { font-weight: 500; font-size: 13.5px; }
