@@ -1127,7 +1127,39 @@
       ${s.paras.map(p => `<p class="txt wall-lead">${p.replace("✔", '<span class="ic-ok" aria-hidden="true">✔</span>').replace("✖", '<span class="ic-bad" aria-hidden="true">✖</span>')}</p>`).join("")}
       <div class="wall-actions"><button class="btn practice-btn" data-go="${s.next}">${s.button}</button></div>
     </div>`;
-  /* the climbing wall: the empty wall board (מכשירים/קיר טיפוס בלי אבנים) with the holds placed on it – rows (bottom → top)
+  /* the life cycle of banknotes and coins, before the climbing wall: the 12 steps around a loop (clockwise from the top),
+     each opens its explanation in the middle on a click; the steps are taken from the wall's correct holds */
+  R.cycle = s => {
+    const wall = byId[s.from], steps = wall.rows.map(row => row.find(x => x[1]));
+    const n = steps.length, CX = 600, CY = 398, RX = 420, RY = 212;
+    const nodes = steps.map((st, i) => {
+      const a = (-90 + i * 360 / n) * Math.PI / 180, x = CX + RX * Math.cos(a), y = CY + RY * Math.sin(a);
+      return `<button type="button" class="cy-node" data-step="${i}" style="left:${Math.round(x - 82)}px;top:${Math.round(y - 25)}px" aria-pressed="false"><span class="cy-num">${i + 1}</span><span class="cy-name">${st[0]}</span></button>`;
+    }).join("");
+    return `
+      <img class="bg" src="${IMG}bg-wall.jpg" alt="">
+      <div class="q-scrim strong" aria-hidden="true"></div>
+      <div class="cy-head ${A("fly-t", 0)}"><div class="h-title">${s.title}</div><p class="cy-sub">${s.sub}</p></div>
+      <svg class="cy-loop" viewBox="0 0 1200 675" aria-hidden="true"><ellipse cx="${CX}" cy="${CY}" rx="${RX}" ry="${RY}" /></svg>
+      <div class="cy-nodes ${A("fade", 200)}">${nodes}</div>
+      <div class="cy-card" data-card aria-live="polite">
+        <p class="cy-hint" data-hint>לחצו על כל אחד מהשלבים כדי לקרוא עליו</p>
+        <div data-body hidden><div class="cy-card-head"><span class="cy-num" data-num></span><b data-title></b></div><p data-text></p></div>
+      </div>
+      <div class="cy-actions"><button class="btn practice-btn" data-go="${s.next}">${s.button}</button></div>`;
+  };
+  function bindCycle(scr, s) {
+    const steps = byId[s.from].rows.map(row => row.find(x => x[1])), body = $("[data-body]", scr);
+    scr.addEventListener("click", e => {
+      const b = e.target.closest("[data-step]"); if (!b) return;
+      const i = +b.dataset.step, st = steps[i];
+      $$("[data-step]", scr).forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", x === b); });
+      b.classList.add("seen");
+      $("[data-hint]", scr).hidden = true; body.hidden = false;
+      $("[data-num]", scr).textContent = i + 1; $("[data-title]", scr).textContent = st[0]; $("[data-text]", scr).textContent = st[2] || "";
+      body.classList.remove("a", "rise"); void body.offsetWidth; body.classList.add("a", "rise");
+    });
+  }  /* the climbing wall: the empty wall board (מכשירים/קיר טיפוס בלי אבנים) with the holds placed on it – rows (bottom → top)
      × 3 columns, each hold one of the three supplied colours. The 12 rows are climbed in two parts as one journey: the
      board shows rows 1–6 (and half of row 7 peeking above), and once row 6 is climbed the wall pans down to rows 7–12 */
   const WALL = { x: 360, y: 40, w: 450, h: 592 }, LANE = 0;   // LANE: a free strip on the left of the board where Aya climbs
@@ -1419,7 +1451,7 @@
     </div>
     <p class="adv-outro ${A("fade", 1000)}">${s.outro}</p>`;
 
-  const BIND = { boost: bindBoost, timeline: bindTimeline, station: bindStation, figures: bindFigures, series: bindSeries, vision: bindVision, match: bindMatch,
+  const BIND = { boost: bindBoost, cycle: bindCycle, timeline: bindTimeline, station: bindStation, figures: bindFigures, series: bindSeries, vision: bindVision, match: bindMatch,
     access: bindAccess, dragmatch: bindDragmatch, security: bindSecurity, pulley: bindPulley, wall: bindWall, mcq: bindMcq };
 
   /* ------------------------------------------------------------ building */

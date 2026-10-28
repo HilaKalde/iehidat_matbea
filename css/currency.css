@@ -992,3 +992,23 @@
 
 /* climbing wall: the holds of the current row are not lit (one hold is chosen in every row, bottom to top) */
 .stone.option img { filter: drop-shadow(0 3px 3px rgba(0,0,0,.3)) !important; }
+
+/* the life cycle slide before the climbing wall: 12 steps around a loop, each opens its explanation in the middle */
+.cy-head { position: absolute; left: 300px; top: 92px; width: 600px; text-align: center; color: #FFFFFF; }
+.cy-head .h-title { color: #FFFFFF; font-size: 30px; }
+.cy-sub { margin-top: 2px; font-size: 17px; color: #DDEFF3; }
+.cy-loop { position: absolute; inset: 0; width: 1200px; height: 675px; pointer-events: none; }
+.cy-loop ellipse { fill: none; stroke: rgba(255,255,255,.55); stroke-width: 3; stroke-dasharray: 10 9; }
+.cy-nodes { position: absolute; inset: 0; }
+.cy-node { position: absolute; width: 164px; min-height: 50px; padding: 5px 8px 5px 10px; border: 2px solid transparent; border-radius: 14px; background: #FFFFFF; color: var(--navy); font-family: inherit; font-size: 14px; font-weight: 600; line-height: 1.15; text-align: right; display: flex; align-items: center; gap: 7px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,.35); transition: transform .15s, border-color .15s; }
+.cy-node:is(:hover, :focus-visible) { transform: translateY(-2px); border-color: var(--orange); outline: none; }
+.cy-node.on { border-color: var(--orange); background: #FFF6E5; }
+.cy-num { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--teal); color: #FFFFFF; font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.cy-node.seen .cy-num { background: #2E6B1F; }
+.cy-node.on .cy-num { background: var(--orange); }
+.cy-card { position: absolute; left: 380px; top: 288px; width: 440px; min-height: 150px; padding: 16px 20px; border-radius: 18px; background: rgba(255,255,255,.97); color: var(--navy); box-shadow: 0 8px 24px rgba(0,0,0,.35); display: flex; flex-direction: column; justify-content: center; }
+.cy-hint { text-align: center; font-size: 18px; font-weight: 700; color: var(--teal); }
+.cy-card-head { display: flex; align-items: center; gap: 8px; font-size: 20px; }
+.cy-card-head .cy-num { background: var(--orange); }
+.cy-card p[data-text] { margin-top: 8px; font-size: 16.5px; line-height: 1.4; }
+.cy-actions { position: absolute; left: 520px; top: 466px; width: 160px; display: flex; justify-content: center; }
