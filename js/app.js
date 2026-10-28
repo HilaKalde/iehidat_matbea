@@ -1209,10 +1209,9 @@
     const moveClimber = (r, c) => {
       const pi = r % poses.length, CW = Math.round(CH / RATIO[pi]), p = stonePos(r, c);
       climber.hidden = false;
-      // her hands grip the lower edge of the hold and her body hangs below it; the hold itself is drawn above her hands
-      // (.grip), so the step just chosen – its name and ✓ – stays fully in view
-      $$(".stone.grip", scr).forEach(x => x.classList.remove("grip")); stone(r, c).classList.add("grip");
-      Object.assign(climber.style, { left: Math.round(p.left + p.w / 2 - CW / 2) + "px", top: Math.round(p.top + p.h * .55) + "px", width: CW + "px", height: CH + "px" });
+      // she is in front of the holds: her hands grip the lower edge of the hold just chosen and her body hangs below it,
+      // so the step just chosen – its name and ✓ – stays in view
+      Object.assign(climber.style, { left: Math.round(p.left + p.w / 2 - CW / 2) + "px", top: Math.round(p.top + p.h - 14) + "px", width: CW + "px", height: CH + "px" });
       climber.src = IMG + poses[pi] + ".png";
     };
     const light = () => {
