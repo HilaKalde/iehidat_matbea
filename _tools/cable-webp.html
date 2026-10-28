@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>cable crossover GIFs → WebP</title></head>
+<body>
+<pre id="log"></pre>
+<script>
+/* Dev tool (not part of the lomda): the pulley drill's Aya – "משיכה יד ימין/שמאל.gif" (_src/aya-cable-r/l.gif, 1280×720,
+   transparent) → animated WebP cropped to the machine. In both GIFs she pulls the strap on the screen's left, so the
+   right-note animation is mirrored to pull the strap on the right. Output (PUT to /_out/): aya-cable-l.webp,
+   aya-cable-r.webp (played once), aya-cable-still.png (frame 0 of the left GIF, the rest pose). */
+const log = m => (document.getElementById("log").textContent += m + "\n");
+const fourcc = s => [...s].map(c => c.charCodeAt(0));
+const u24 = v => [v & 255, (v >> 8) & 255, (v >> 16) & 255];
+const u32 = v => [v & 255, (v >> 8) & 255, (v >> 16) & 255, (v >>> 24) & 255];
+function chunk(tag, data) { const out = new Uint8Array(8 + data.length + (data.length & 1)); out.set(fourcc(tag), 0); out.set(u32(data.length), 4); out.set(data, 8); return out; }
+function concat(parts) { const n = parts.reduce((s, p) => s + p.length, 0), out = new Uint8Array(n); let o = 0; for (const p of parts) { out.set(p, o); o += p.length; } return out; }
+function frameChunks(buf) {
+  const b = new Uint8Array(buf), parts = [];
+  for (let o = 12; o + 8 <= b.length;) {
+    const tag = String.fromCharCode(b[o], b[o + 1], b[o + 2], b[o + 3]);
+    const size = b[o + 4] | (b[o + 5] << 8) | (b[o + 6] << 16) | (b[o + 7] << 24), total = 8 + size + (size & 1);
+    if (tag === "ALPH" || tag === "VP8 " || tag === "VP8L") parts.push(b.slice(o, o + total));
+    o += total;
+  }
+  return concat(parts);
+}
+const CROP = { x: 196, y: 6, w: 888, h: 704 };          // the machine (opaque bbox 212..1064 × 16..704) with a margin
+async function convert(src, out, mirror, still, quality = 0.85) {
+  const buf = await (await fetch("/_src/" + src + ".gif", { cache: "no-store" })).arrayBuffer();
+  const dec = new ImageDecoder({ data: buf, type: "image/gif" }); await dec.tracks.ready;
+  const n = dec.tracks.selectedTrack.frameCount, { w: W, h: H } = CROP;
+  const cv = new OffscreenCanvas(W, H), g = cv.getContext("2d");
+  const frames = []; let total = 0;
+  for (let i = 0; i < n; i++) {
+    const { image } = await dec.decode({ frameIndex: i });
+    g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H);
+    if (mirror) g.setTransform(-1, 0, 0, 1, W, 0);
+    g.drawImage(image, CROP.x, CROP.y, W, H, 0, 0, W, H);
+    const dur = Math.max(10, Math.round((image.duration || 40000) / 1000)); image.close();
+    if (i === 0 && still) { const r = await fetch(`/_out/${still}.png`, { method: "PUT", body: await cv.convertToBlob({ type: "image/png" }) }); log(`${still}.png (${r.status})`); }
+    frames.push(chunk("ANMF", concat([new Uint8Array([...u24(0), ...u24(0), ...u24(W - 1), ...u24(H - 1), ...u24(dur), 0x02]), frameChunks(await (await cv.convertToBlob({ type: "image/webp", quality })).arrayBuffer())])));
+    total += dur;
+  }
+  dec.close();
+  const vp8x = chunk("VP8X", new Uint8Array([0x12, 0, 0, 0, ...u24(W - 1), ...u24(H - 1)]));
+  const anim = chunk("ANIM", new Uint8Array([0, 0, 0, 0, 1, 0]));                 // loop count 1: played once
+  const body = concat([new Uint8Array(fourcc("WEBP")), vp8x, anim, ...frames]);
+  const file = concat([new Uint8Array(fourcc("RIFF")), new Uint8Array(u32(body.length)), body]);
+  const r = await fetch(`/_out/${out}.webp`, { method: "PUT", body: file });
+  log(`${out}.webp ${n} frames ${total}ms ${(file.length / 1048576).toFixed(1)}MB (${r.status})`);
+}
+window.addEventListener("load", async () => {
+  await convert("aya-cable-l", "aya-cable-l", false, "aya-cable-still");
+  await convert("aya-cable-r", "aya-cable-r", true);
+  document.title = "DONE";
+});
+</script>
+</body></html>
