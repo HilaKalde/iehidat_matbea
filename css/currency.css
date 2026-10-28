@@ -975,3 +975,11 @@
 .stone.miss { opacity: 1; }
 .stone.miss img { filter: drop-shadow(0 0 5px #E33232) saturate(.35) brightness(.9); }
 .stone.miss::after { content: "✕"; position: absolute; left: -9px; top: -9px; width: 20px; height: 20px; border-radius: 50%; background: #A3262A; color: #FFFFFF; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 1.5px solid #FFFFFF; z-index: 3; }
+
+/* climbing wall: arrows beside the board to move between the parts already reached */
+.wall-pan { position: absolute; left: 834px; z-index: 6; width: 50px; padding: 6px 0; border: 0; border-radius: 14px; background: var(--navy); color: #FFFFFF; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 1px; box-shadow: 0 4px 10px rgba(0,0,0,.35); font-family: inherit; }
+.wall-pan[hidden] { display: none; }
+.wall-pan span { font-size: 18px; line-height: 1; }
+.wall-pan small { font-size: 12px; font-weight: 700; line-height: 1.1; }
+.wall-pan.up { top: 40px; } .wall-pan.down { top: 572px; }
+.wall-pan:is(:hover, :focus-visible) { background: var(--orange); outline: none; }

@@ -1168,6 +1168,8 @@
           <img class="char climber" data-climber hidden src="${IMG}aya-climb4.png" alt="איה מטפסת על קיר הטיפוס">
         </div>
       </div>
+      ${parts > 1 ? `<button type="button" class="wall-pan up" data-pan="1" hidden aria-label="למעלה – לקומות ${VIEW + 1}–${rows}"><span aria-hidden="true">▲</span><small dir="ltr">${VIEW + 1}–${rows}</small></button>
+        <button type="button" class="wall-pan down" data-pan="-1" hidden aria-label="למטה – לקומות 1–${VIEW}"><small dir="ltr">1–${VIEW}</small><span aria-hidden="true">▼</span></button>` : ""}
       <div class="wall-panel">
         <div class="wp-title">${s.panelTitle || "שלבי ההנפקה"}</div>
         ${parts > 1 ? `<p class="wp-part" data-part></p>` : ""}
@@ -1187,11 +1189,16 @@
     let level = 0, cur = null, right = 0, points = 0, panning = false, shift = 0;
     const wrong = {};                                         // row → the wrong hold chosen there
     // which part of the wall is in view: rows 1–6, then (panned down) rows 7–12
+    // the learner can move between the parts already reached (down to see the steps chosen at the start, and back up)
+    let view = 0;
+    const panUp = $(".wall-pan.up", scr), panDown = $(".wall-pan.down", scr);
     const showPart = (k, animate) => {
+      view = k;
+      if (panUp) { panUp.hidden = k >= Math.min(Math.ceil(rows / VIEW) - 1, Math.floor(level / VIEW)); panDown.hidden = k === 0; }
       track.classList.toggle("pan", !!animate);
       shift = k ? (k * VIEW - .5) * wallRowH : 0;              // half of the row just left stays in view below
       track.style.transform = shift ? `translateY(${shift}px)` : "";
-      if (partEl) partEl.textContent = `חלק ${k + 1} מתוך 2 · קומות ${k * VIEW + 1}–${Math.min(rows, (k + 1) * VIEW)}`;
+      if (partEl) partEl.innerHTML = `חלק ${k + 1} מתוך 2 · קומות <bdi dir="ltr">${k * VIEW + 1}–${Math.min(rows, (k + 1) * VIEW)}</bdi>`;
     };
     // Aya hangs from the hold just chosen: her raised hands on it, her body below it – a different grip pose each time.
     // She is simply put there (no sliding between the holds). The poses are cropped to the figure (…-crop.png) and all
@@ -1242,7 +1249,7 @@
       else if (level % VIEW === 0) {
         // the first part is climbed: the wall moves on to the next floors – the same journey continues
         panning = true; light();
-        instr.textContent = `ממשיכים לטפס – קומות ${level + 1}–${Math.min(rows, level + VIEW)}`;
+        instr.innerHTML = `ממשיכים לטפס – קומות <bdi dir="ltr">${level + 1}–${Math.min(rows, level + VIEW)}</bdi>`;
         setTimeout(() => { if (!scr.isConnected) return; showPart(level / VIEW, true); setTimeout(() => { panning = false; instr.textContent = s.later; light(); }, 1300); }, 1100);
       } else light();
     };
@@ -1266,7 +1273,8 @@
           panning = false; advance(r, rc);
         }, 900);
       }
-    });    const ptsBadge = () => { const cv = $('[data-c="coins-v"]', $("#chrome")); return cv; };
+    });    scr.addEventListener("click", e => { const pb = e.target.closest("[data-pan]"); if (pb && !panning) showPart(view + +pb.dataset.pan, true); });
+    const ptsBadge = () => { const cv = $('[data-c="coins-v"]', $("#chrome")); return cv; };
     const updatePts = () => { const cv = ptsBadge(); if (cv) cv.textContent = setScore("wall") + points; };
     const again = () => { delete state.answers[s.id]; save(); goTo(s.id); };
     $("[data-again]", scr).addEventListener("click", again);
