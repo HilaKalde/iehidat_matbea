@@ -983,3 +983,7 @@
 .wall-pan small { font-size: 12px; font-weight: 700; line-height: 1.1; }
 .wall-pan.up { top: 40px; } .wall-pan.down { top: 572px; }
 .wall-pan:is(:hover, :focus-visible) { background: var(--orange); outline: none; }
+
+/* climbing wall: Aya hangs below the hold just chosen – that hold is drawn above her hands */
+.wall-track .climber { z-index: 5 !important; }
+.wall-track .stone.grip { z-index: 6 !important; }

@@ -1205,11 +1205,14 @@
     // drawn at the same height; RATIO = height / width of each crop
     const poses = ["aya-climb1-crop", "aya-climb2-crop", "aya-climb3-crop", "aya-climb5-crop", "aya-climb6-crop"];
     const RATIO = [1.84, 1.74, 1.74, 1.99, 1.70];
-    const CH = 200;
+    const CH = 170;
     const moveClimber = (r, c) => {
       const pi = r % poses.length, CW = Math.round(CH / RATIO[pi]), p = stonePos(r, c);
       climber.hidden = false;
-      Object.assign(climber.style, { left: Math.round(p.left + p.w / 2 - CW / 2) + "px", top: Math.round(p.top - 16) + "px", width: CW + "px", height: CH + "px" });
+      // her hands grip the lower edge of the hold and her body hangs below it; the hold itself is drawn above her hands
+      // (.grip), so the step just chosen – its name and ✓ – stays fully in view
+      $$(".stone.grip", scr).forEach(x => x.classList.remove("grip")); stone(r, c).classList.add("grip");
+      Object.assign(climber.style, { left: Math.round(p.left + p.w / 2 - CW / 2) + "px", top: Math.round(p.top + p.h * .55) + "px", width: CW + "px", height: CH + "px" });
       climber.src = IMG + poses[pi] + ".png";
     };
     const light = () => {
