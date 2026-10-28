@@ -937,3 +937,24 @@
 .wall-panel { top: 96px; }
 .wp-steps { max-height: 250px; }
 .wall-panel .wp-fb .ifb-head { font-size: 15px; }
+
+/* climbing wall in two parts (rows 1–6, then panned to 7–12); Aya put on the hold chosen (no sliding); step explanations
+   on hover / the ⓘ button of a climbed stone, and in the panel on a click */
+.wall-clip { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.wall-track { position: absolute; inset: 0; pointer-events: auto; }
+.wall-track.pan { transition: transform 1.2s ease-in-out; }
+.wall-clip .stone, .wall-clip .wall-num, .wall-clip .climber, .stone-info, .stone-pop { position: absolute; }
+.climber, .wall-clip .climber { transition: none !important; }
+.wall-track .stone { z-index: 2; } .wall-track .stone.ok { z-index: 3 !important; }
+.wall-track .climber { z-index: 4; }
+.stone span { font-size: 13px; }
+.stone-info { z-index: 6; width: 22px; height: 22px; border-radius: 50%; border: 2px solid #FFFFFF; background: var(--navy); color: #FFFFFF; font: 800 13px/1 Georgia, serif; font-style: italic; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; box-shadow: 0 2px 4px rgba(0,0,0,.35); }
+.stone-info:is(:hover, :focus-visible) { background: var(--orange); outline: none; }
+.stone-pop { z-index: 7; width: 260px; padding: 9px 12px; border-radius: 12px; background: #FFFFFF; color: var(--navy); font-size: 13.5px; line-height: 1.35; box-shadow: 0 6px 18px rgba(0,0,0,.35); pointer-events: none; }
+.stone-pop.up { transform: translateY(-100%); }
+.stone-pop b { font-size: 14.5px; }
+.wp-part { margin-top: 2px; font-size: 13.5px; font-weight: 700; color: var(--navy); background: #E8F4F6; border-radius: 10px; padding: 2px 10px; display: inline-block; }
+.wp-step { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.wp-step:focus-visible { outline: 2px solid var(--teal); border-radius: 4px; }
+.wp-more { width: 16px; height: 16px; border-radius: 50%; background: var(--teal); color: #FFFFFF; font-size: 13px; font-weight: 800; line-height: 16px; text-align: center; flex: none; }
+.wp-exp { font-size: 12.5px; margin: 2px 0 4px; color: #33505E; }

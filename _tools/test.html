@@ -44,7 +44,7 @@ f.onload = async () => {
         for (let r = 0; r < s.rows.length; r++) {
           const c = s.rows[r].findIndex(x => x[1]);
           if (!good && r === 2) { const wrong = scr().querySelector(`.stone.option:not([data-c="${c}"])`); if (wrong) wrong.click(); await sleep(300); }
-          scr().querySelector(`.stone[data-r="${r}"][data-c="${c}"]`).click(); await sleep(250);
+          { const st = scr().querySelector(`.stone[data-r="${r}"][data-c="${c}"]`); for (let k = 0; k < 40 && st.disabled; k++) await sleep(100); st.click(); } await sleep(250);
         }
       }
     }

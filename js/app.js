@@ -1126,31 +1126,33 @@
       ${s.paras.map(p => `<p class="txt wall-lead">${p.replace("✔", '<span class="ic-ok" aria-hidden="true">✔</span>').replace("✖", '<span class="ic-bad" aria-hidden="true">✖</span>')}</p>`).join("")}
       <div class="wall-actions"><button class="btn practice-btn" data-go="${s.next}">${s.button}</button></div>
     </div>`;
-  /* the climbing wall: the empty wall board (מכשירים/קיר טיפוס בלי אבנים) with the holds placed on it – 10 rows (bottom → top)
-     × 3 columns, rows staggered, each hold one of the three supplied colours; a hold touches the holds of the next row
-     in columns c-1…c+1 */
+  /* the climbing wall: the empty wall board (מכשירים/קיר טיפוס בלי אבנים) with the holds placed on it – rows (bottom → top)
+     × 3 columns, each hold one of the three supplied colours. The 12 rows are climbed in two parts as one journey: the
+     board shows rows 1–6 (and half of row 7 peeking above), and once row 6 is climbed the wall pans down to rows 7–12 */
   const WALL = { x: 360, y: 40, w: 450, h: 592 }, LANE = 0;   // LANE: a free strip on the left of the board where Aya climbs
+  const VIEW = 6;                                              // rows in view at a time
   /* the holds of each row are laid out from the widths their texts need, never overlapping: every hold is as wide as its
      text (longer answers → wider holds), the spare room of the row is spread between them unevenly (a fixed pattern per
      row, so the wall looks natural rather than symmetric), and each hold sits a few pixels up or down inside its row */
   const holdW = t => t.length > 40 ? 140 : t.length > 28 ? 126 : t.length > 16 ? 114 : 104;
   const GAPS = [[.15, .5, .2, .15], [.35, .15, .3, .2], [.1, .3, .4, .2], [.3, .35, .1, .25], [.2, .2, .35, .25]];
   const NUDGE = [0, -3, 3, -2, 2, -4, 1, 4, -1, 3];
-  let wallRows = null;
+  let wallRows = null, wallRowH = 0;
   function layoutWall(rowsData) {
-    const rows = rowsData.length, rowH = WALL.h / rows, inner = WALL.w - LANE - 44;
+    const rows = rowsData.length, rowH = wallRowH = WALL.h / (rows > VIEW ? VIEW + .5 : rows), inner = WALL.w - LANE - 44;
+    const h = Math.min(rowH - 9, 64);
     wallRows = rowsData.map((row, r) => {
       const ws = row.map(st => holdW(st[0])), free = Math.max(0, inner - ws.reduce((a, b) => a + b, 0));
       const g = GAPS[r % GAPS.length];
       let x = WALL.x + LANE + 12 + free * g[0];
       return ws.map((w, c) => { const left = x; x += w + free * g[c + 1];
-        return { left, top: WALL.y + WALL.h - (r + 1) * rowH + 4 + NUDGE[(r + c) % NUDGE.length] * .6, w, h: rowH - 9 }; });
+        return { left, top: WALL.y + WALL.h - (r + 1) * rowH + (rowH - h) / 2 + NUDGE[(r + c) % NUDGE.length] * .6, w, h }; });
     });
   }
   const stonePos = (r, c) => wallRows[r][c];
   const HOLDS = ["orange", "blue", "purple"];
   R.wall = s => {
-    const rows = s.rows.length;
+    const rows = s.rows.length, parts = Math.ceil(rows / VIEW);
     layoutWall(s.rows);
     const stones = s.rows.map((row, r) => row.map((st, c) => { const p = stonePos(r, c);
       return `<button type="button" class="stone" data-r="${r}" data-c="${c}" style="${pos(p.left, p.top, p.w, p.h)}" disabled>
@@ -1158,11 +1160,17 @@
     return `
       <img class="bg" src="${IMG}bg-room.jpg" alt="">
       <img class="climb-board" src="${IMG}wall-empty.png" alt="" style="${pos(WALL.x - 14, WALL.y - 10, WALL.w + 28, WALL.h + 22)}">
-      ${stones}
-      ${s.rows.map((row, r) => `<span class="wall-num" style="top:${stonePos(r, 0).top + stonePos(r, 0).h / 2 - 13}px" aria-hidden="true">${r + 1}</span>`).join("")}
-      <img class="char climber" data-climber hidden src="${IMG}aya-climb4.png" alt="איה מטפסת על קיר הטיפוס" style="${pos(WALL.x + 30, WALL.y + WALL.h + 14, 140, 196)}">
+      <div class="wall-clip" style="clip-path: inset(${WALL.y - 6}px 0 ${675 - (WALL.y + WALL.h + 8)}px 0)">
+        <div class="wall-track" data-track>
+          ${stones}
+          ${s.rows.map((row, r) => `<span class="wall-num" style="top:${stonePos(r, 0).top + stonePos(r, 0).h / 2 - 13}px" aria-hidden="true">${r + 1}</span>`).join("")}
+          <img class="char climber" data-climber hidden src="${IMG}aya-climb4.png" alt="איה מטפסת על קיר הטיפוס">
+          <div class="stone-pop" data-pop role="tooltip" hidden></div>
+        </div>
+      </div>
       <div class="wall-panel">
         <div class="wp-title">${s.panelTitle || "שלבי ההנפקה"}</div>
+        ${parts > 1 ? `<p class="wp-part" data-part></p>` : ""}
         <p class="wp-instr" data-instr>${s.first}</p>
         <ol class="wp-steps" data-steps></ol>
         <div class="inline-fb wp-fb" data-inline-fb role="status" aria-live="polite" tabindex="-1" hidden></div>
@@ -1173,49 +1181,81 @@
   };
   function bindWall(scr, s) {
     const rows = s.rows.length, climber = $("[data-climber]", scr), stepsEl = $("[data-steps]", scr), instr = $("[data-instr]", scr), fb = $("[data-inline-fb]", scr);
+    const track = $("[data-track]", scr), pop = $("[data-pop]", scr), partEl = $("[data-part]", scr);
     const correctCol = r => s.rows[r].findIndex(x => x[1]);
     const stone = (r, c) => $(`.stone[data-r="${r}"][data-c="${c}"]`, scr);
-    let level = 0, cur = null, misses = 0, points = 0;
-    // Aya climbs the holds themselves: after each correct step her hands grip the hold just chosen and her body hangs
-    // below it (over the rows already climbed, never over the next choice) – a different grip pose each time
-    // the poses cropped to the figure (…-crop.png): every one is drawn at the same height, so she never changes size;
-    // RATIO = height / width of each crop
+    let level = 0, cur = null, misses = 0, points = 0, panning = false, shift = 0;
+    // which part of the wall is in view: rows 1–6, then (panned down) rows 7–12
+    const showPart = (k, animate) => {
+      track.classList.toggle("pan", !!animate);
+      shift = k ? (k * VIEW - .5) * wallRowH : 0;              // half of the row just left stays in view below
+      track.style.transform = shift ? `translateY(${shift}px)` : "";
+      if (partEl) partEl.textContent = `חלק ${k + 1} מתוך 2 · קומות ${k * VIEW + 1}–${Math.min(rows, (k + 1) * VIEW)}`;
+    };
+    // Aya hangs from the hold just chosen: her raised hands on it, her body below it – a different grip pose each time.
+    // She is simply put there (no sliding between the holds). The poses are cropped to the figure (…-crop.png) and all
+    // drawn at the same height; RATIO = height / width of each crop
     const poses = ["aya-climb1-crop", "aya-climb2-crop", "aya-climb3-crop", "aya-climb5-crop", "aya-climb6-crop"];
     const RATIO = [1.84, 1.74, 1.74, 1.99, 1.70];
-    /* where she hangs: her hands at the height of the hold just reached, her body below it. Of all the horizontal
-       spots, the one chosen covers none of the next row's holds (the next question) and as little as possible of the
-       holds already answered correctly – and is the nearest such spot to the hold she reached */
-    const CH = 190;
-    const overlap = (a, b) => Math.max(0, Math.min(a.left + a.w, b.left + b.w) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.top + a.h, b.top + b.h) - Math.max(a.top, b.top));
-    // only over the holds themselves (never beside the board); one size all the way up – low on the wall her legs are
-    // simply cut by the bottom of the frame
-    const ROW_L = Math.min(...wallRows.map(row => row[0].left)), ROW_R = Math.max(...wallRows.map(row => row[row.length - 1].left + row[row.length - 1].w));
+    const CH = 200;
     const moveClimber = (r, c) => {
-      // her raised hands reach just above the hold she took
-      const pi = r % poses.length, CW = Math.round(CH / RATIO[pi]), p = stonePos(r, c), top = p.top - 14;
-      const next = r + 1 < rows ? s.rows[r + 1].map((x, k) => stonePos(r + 1, k)) : [];
-      const done = []; for (let k = Math.max(0, r - 3); k <= r; k++) done.push(stonePos(k, correctCol(k)));
-      let best = null;
-      for (let x = ROW_L - 10; x <= ROW_R - CW + 10; x += 6) {
-        const me = { left: x + 10, top: top + 4, w: CW - 20, h: CH - 8 };
-        const score = next.reduce((n, b) => n + overlap(me, b) * 50, 0) + done.reduce((n, b) => n + overlap(me, b) * 4, 0) + Math.abs(x + CW / 2 - (p.left + p.w / 2));
-        if (!best || score < best.score) best = { x, score };
-      }
-      climber.hidden = false;                              // she appears with the first correct step
-      Object.assign(climber.style, { left: best.x + "px", top: top + "px", width: CW + "px", height: CH + "px" });
+      const pi = r % poses.length, CW = Math.round(CH / RATIO[pi]), p = stonePos(r, c);
+      climber.hidden = false;
+      Object.assign(climber.style, { left: Math.round(p.left + p.w / 2 - CW / 2) + "px", top: Math.round(p.top - 16) + "px", width: CW + "px", height: CH + "px" });
       climber.src = IMG + poses[pi] + ".png";
     };
     const light = () => {
       $$(".stone", scr).forEach(b => { b.disabled = true; b.classList.remove("option"); });
-      if (level >= rows) return;
-      const cols = [0, 1, 2];                                // the whole next row lights up
-      cols.forEach(c => { const b = stone(level, c); if (b) { b.disabled = false; b.classList.add("option"); } });
+      if (level >= rows || panning) return;
+      [0, 1, 2].forEach(c => { const b = stone(level, c); if (b) { b.disabled = false; b.classList.add("option"); } });   // the whole next row lights up
     };
-    // the panel lists every step climbed – its name and (when given) its explanation
-    const addStep = r => { const st = s.rows[r][correctCol(r)], li = document.createElement("li"); li.innerHTML = `<b>${st[0]}</b>${st[2] ? ` – ${st[2]}` : ""}`; li.className = "a rise"; stepsEl.appendChild(li); stepsEl.scrollTop = stepsEl.scrollHeight; };
+    /* the explanation of a step climbed: on the stone only its name; the explanation shows when hovering over the climbed
+       stone, or with the small ⓘ button beside it (a separate button, so it is never mistaken for choosing an answer) */
+    const showPop = r => {
+      const st = s.rows[r][correctCol(r)], p = stonePos(r, correctCol(r));
+      if (!st[2]) return;
+      pop.innerHTML = `<b>${st[0]}</b><br>${st[2]}`; pop.hidden = false; pop.dataset.r = r;
+      // below the stone (over the rows already climbed, never over the next choice) – above it only with no room below
+      const above = p.top + p.h + 8 + pop.offsetHeight + shift > WALL.y + WALL.h;
+      Object.assign(pop.style, { left: Math.max(WALL.x - 30, Math.min(p.left + p.w / 2 - 130, WALL.x + WALL.w - 240)) + "px", top: (above ? p.top - 8 : p.top + p.h + 8) + "px" });
+      pop.classList.toggle("up", above);
+    };
+    const hidePop = () => { pop.hidden = true; delete pop.dataset.r; };
+    const addInfo = r => {
+      const c = correctCol(r), p = stonePos(r, c);
+      if (!s.rows[r][c][2] || $(`[data-info="${r}"]`, scr)) return;
+      track.insertAdjacentHTML("beforeend", `<button type="button" class="stone-info" data-info="${r}" style="left:${p.left + p.w - 14}px;top:${p.top - 8}px" aria-label="הסבר על השלב: ${s.rows[r][c][0]}">i</button>`);
+    };
+    track.addEventListener("click", e => {
+      const ib = e.target.closest("[data-info]"); if (!ib) return;
+      e.stopPropagation();
+      if (pop.dataset.r === ib.dataset.info) hidePop(); else showPop(+ib.dataset.info);
+    });
+    track.addEventListener("focusin", e => { const ib = e.target.closest("[data-info]"); if (ib) showPop(+ib.dataset.info); });
+    track.addEventListener("focusout", e => { if (e.target.closest("[data-info]")) hidePop(); });
+    // hovering a climbed stone (the stones are disabled once climbed, so this is hit-tested on the wall itself)
+    let hoverR = null;
+    track.addEventListener("mousemove", e => {
+      const hit = $$(".stone.ok", scr).find(b => { const q = b.getBoundingClientRect(); return e.clientX >= q.left && e.clientX <= q.right && e.clientY >= q.top && e.clientY <= q.bottom; });
+      const r = hit ? +hit.dataset.r : null;
+      if (r === hoverR) return; hoverR = r;
+      if (r === null) hidePop(); else showPop(r);
+    });
+    track.addEventListener("mouseleave", () => { hoverR = null; hidePop(); });
+    // the panel lists the names of the steps climbed; each opens its explanation on a click
+    const addStep = r => {
+      const st = s.rows[r][correctCol(r)], li = document.createElement("li");
+      li.innerHTML = st[2] ? `<button type="button" class="wp-step" aria-expanded="false"><b>${st[0]}</b><span class="wp-more" aria-hidden="true">+</span></button><div class="wp-exp" hidden>${st[2]}</div>` : `<b>${st[0]}</b>`;
+      li.className = "a rise"; stepsEl.appendChild(li); stepsEl.scrollTop = stepsEl.scrollHeight;
+      addInfo(r);
+    };
+    stepsEl.addEventListener("click", e => {
+      const b = e.target.closest(".wp-step"); if (!b) return;
+      const ex = b.nextElementSibling, open = ex.hidden;
+      ex.hidden = !open; b.setAttribute("aria-expanded", open); $(".wp-more", b).textContent = open ? "−" : "+";
+    });
     const done = (animate) => {
       instr.textContent = "הגעתם לפסגה!";
-      const stopB = $("[data-stop]", scr); if (stopB) stopB.hidden = true;
       const a = ans(s.id);
       showFb(fb, true, fbHtml(true, s.panelTitle ? "סידרתם נכון את כל שלבי מעגל החיים של השטרות והמעות!" : "סידרתם נכון את כל שלבי ההנפקה והתפעול של שטר הכסף!", "בחרתם את השלב הנכון והתקדמתם אחיזה אחר אחיזה עד לפסגה.", a.points), animate);
       // the two buttons below the green feedback box, not inside it
@@ -1223,14 +1263,20 @@
     };
     const finish = () => { points += s.topBonus || 0; setAns(s.id, { completed: true, points }); updateChrome(s); done(true); };
     scr.addEventListener("click", e => {
-      const b = e.target.closest(".stone"); if (!b || b.disabled || isDone(s.id)) return;
+      const b = e.target.closest(".stone"); if (!b || b.disabled || panning || isDone(s.id)) return;
       const r = +b.dataset.r, c = +b.dataset.c;
       if (s.rows[r][c][1]) {
         b.classList.add("ok"); b.classList.remove("option"); playFeedbackSound(true);
         if (!misses) points += s.stepPts || 10; misses = 0; cur = c; level++;
         updatePts(); moveClimber(r, c); addStep(r);
         instr.textContent = level < rows ? s.later : "";
-        if (level >= rows) { light(); finish(); } else light();
+        if (level >= rows) { light(); finish(); }
+        else if (level % VIEW === 0) {
+          // the first part is climbed: the wall moves on to the next floors – the same journey continues
+          panning = true; light(); hidePop();
+          instr.textContent = `כל הכבוד! ממשיכים לטפס – קומות ${level + 1}–${Math.min(rows, level + VIEW)}`;
+          setTimeout(() => { if (!scr.isConnected) return; showPart(level / VIEW, true); setTimeout(() => { panning = false; instr.textContent = s.later; light(); }, 1300); }, 1100);
+        } else light();
       } else {
         misses++; playFeedbackSound(false);
         b.classList.remove("shake", "bad"); void b.offsetWidth; b.classList.add("shake", "bad");
@@ -1240,18 +1286,13 @@
     });
     const ptsBadge = () => { const cv = $('[data-c="coins-v"]', $("#chrome")); return cv; };
     const updatePts = () => { const cv = ptsBadge(); if (cv) cv.textContent = setScore("wall") + points; };
-    const stopEl = $("[data-stop]", scr); if (stopEl) stopEl.addEventListener("click", () => {
-      // skip: the whole route is shown, the steps not climbed earn no points
-      for (let r = level; r < rows; r++) { const c = correctCol(r); stone(r, c).classList.add("ok", "shown"); addStep(r); cur = c; }
-      level = rows; moveClimber(rows - 1, cur); light(); finish();
-    });
     const again = () => { delete state.answers[s.id]; save(); goTo(s.id); };
     $("[data-again]", scr).addEventListener("click", again);
     scr.addEventListener("click", e => { if (e.target.closest("[data-again2]")) again(); });
     if (isDone(s.id)) {
       for (let r = 0; r < rows; r++) { const c = correctCol(r); stone(r, c).classList.add("ok"); addStep(r); cur = c; }
-      level = rows; moveClimber(rows - 1, cur); done(false);
-    } else light();
+      level = rows; moveClimber(rows - 1, cur); showPart(Math.ceil(rows / VIEW) - 1, false); done(false);
+    } else { showPart(0, false); light(); }
   }
 
   /* ---------------------------------------------------- summaries */
