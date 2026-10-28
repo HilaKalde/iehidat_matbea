@@ -689,7 +689,7 @@
     };
     return {
       items: s.items.map((x, i) => ({ key: "c" + i, ans: x.ans, name: x.name, bn: x.bn, hint: x.hint })),
-      options: Object.keys(s.colors).map(k => ({ key: k, label: s.colors[k].name, swatch: s.colors[k].hex })),
+      options: shuffle(Object.keys(s.colors)).map(k => ({ key: k, label: s.colors[k].name, swatch: s.colors[k].hex })),
       visual: it => `${portraitHtml(it.bn, it.name, 190, 230)}<span class="mq-name">${it.name}</span>${it.hint ? `<button type="button" class="mq-hint-btn" data-hint aria-expanded="false">💡 רמז</button><span class="mq-hint" hidden><span class="mh-l">רמז:</span> ${it.hint}</span>` : ""}`,
       result: it => `${bnImg(it.bn, "השטר של " + it.name, "sm")}<b>${it.name} – ${s.colors[it.ans].name}</b><span>${s.colors[it.ans].text}</span>`
     };
