@@ -1100,7 +1100,7 @@
       // a correct answer: one pass of "איה עושה מתיחות במכשיר" (5s), then back to the still (its first frame)
       if (ok && animate) { playWebp(aya, "aya-pulley-pull"); clearTimeout(aya._t); aya._t = setTimeout(() => { if (aya.isConnected) aya.src = IMG + "aya-pulley-still.png"; }, 5080); }
       const head = ok ? "זיהיתם נכון!" : "הפעם משכתם את המזויף.";
-      scr.classList.add("pl-answered");
+      fb.classList.toggle("under-left", side === "left"); fb.classList.toggle("under-right", side !== "left");   // the feedback under the chosen note
       const fill = () => showFb(fb, ok, fbHtml(ok, head, s.explain, ok ? (s.pts || 10) : 0, `<div class="ifb-actions"><button type="button" class="btn" data-go="${s.next}">${nextLbl}</button></div>`), animate);
       if (animate) setTimeout(fill, 800); else fill();
     };

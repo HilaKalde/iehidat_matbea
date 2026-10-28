@@ -909,3 +909,19 @@
 .pl-weights i.here { border-color: var(--orange); }
 .pl-weights i.ok { background: #3FB54B; border-color: #BDF5C2; box-shadow: 0 0 10px #57D964; }
 .pl-weights i.bad { background: #D33A3A; border-color: #F6B8B8; box-shadow: 0 0 10px #F05A5A; }
+
+/* slide 32+: larger notes, a little closer to the centre; the feedback right under the chosen note (the question stays) */
+.pl-note { width: 310px; }
+.pl-note img { height: 165px; }
+.pl-note.right { left: 820px; top: 262px; }
+.pl-note.left  { left: 70px; top: 262px; }
+.pl-fb { top: 470px; width: 310px; max-height: 190px; overflow: auto; padding: 10px 14px; }
+.pl-fb.under-right { left: 820px; } .pl-fb.under-left { left: 70px; }
+.pl-fb .ifb-head { font-size: 16px; } .pl-fb p { font-size: 13.5px; line-height: 1.35; }
+.pl-fb .ifb-actions { margin-top: 6px; } .pl-fb .btn { padding: 6px 18px; font-size: 15px; }
+.pl-weights { top: 200px; }
+.pl-note.right, .pl-note.left { top: 248px; }
+.pl-note img { height: 150px; }
+.pl-weights { left: 465px; top: 246px; }
+.pl-fb { top: 436px; max-height: 196px; }
+.pl-fb.under-left { left: 70px; }
