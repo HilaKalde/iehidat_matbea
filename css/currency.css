@@ -925,3 +925,7 @@
 .pl-weights { left: 465px; top: 246px; }
 .pl-fb { top: 436px; max-height: 196px; }
 .pl-fb.under-left { left: 70px; }
+/* the pulley feedback a little larger, never scrolling */
+.pl-fb { top: 428px; width: 370px; max-height: none; overflow: visible; padding: 10px 16px 12px; }
+.pl-fb.under-left { left: 40px; } .pl-fb.under-right { left: 790px; }
+.pl-fb p { font-size: 14px; line-height: 1.32; }
