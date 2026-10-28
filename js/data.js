@@ -428,7 +428,7 @@ const DATA = {
       note: "לפי ההערות: שמות הקטגוריות – \"מטבעות עם שוליים ייחודיים\" ו\"מטבעות עם שוליים חלקים\"; נוסף הקוטר לשלושת המטבעות החלקים; \"חוש\" ולא \"חחוש\"."
     },
     {
-      id: "l3-quiz2", scene: "סולם ערכים", name: "שלב 3 – תרגיל: בעיניים עצומות (מטבעות)", type: "dragmatch", set: "ladder", stage: 3, kind: "coins",
+      id: "l3-quiz2", scene: "סולם ערכים", name: "שלב 3 – תרגיל: בעיניים עצומות (מטבעות)", type: "dragmatch", set: "ladder", stage: 3, kind: "coins", maxRetry: 2,
       tag: "סולם ערכים",
       title: "בעיניים עצומות – תרגיל זיהוי מעות",
       task: "לחלק מהמעות מוצג תקריב של השוליים בזכוכית מגדלת, ולחלק – צללית בגודל היחסי והקוטר.<br>גררו כל ערך למקום המתאים (או לחצו על ערך ואז על המעה). אין מגבלת זמן.",
@@ -438,13 +438,13 @@ const DATA = {
                  { coin: "2", ans: "2 ₪", by: "edge", mag: ["420%", "97% 52%"], rim: "שוליים מחורצים לסירוגין: 4 קטעים מחורצים ו-4 קטעים חלקים" },
                  { coin: "5", ans: "5 ₪", by: "edge", mag: ["290%", "100% 6%"], rim: "שוליים עם 12 צלעות" }, { coin: "10", ans: "10 ₪", by: "edge", mag: ["420%", "100% 50%"], rim: "שוליים מחורצים" } ],
       chips: ["10 אג'", "½ ₪", "1 ₪", "2 ₪", "5 ₪", "10 ₪"],
-      done: "עליתם שלב בסולם! השלב האחרון – משמעות הצבעים.",
+      done: "עליתם שלב בסולם!",
       prev: "l3-coins", next: "l4-intro",
       note: "לפי ההערות: ללא טיימר; כל המטבעות מופיעים ביחד, ריקים, וגוררים כל ערך למקום הנכון. כל מטבע מוצג כקוטר שחור בגודל יחסי אמיתי + השוליים האמיתיים מהצד (מוחשכים כדי שהספרה לא תיקרא). ⚠ קוטר 2 ₪ (21.6), 5 ₪ (24) ו-10 ₪ (23) מ\"מ – לא הופיעו בתסריט, לאשר."
     },
     /* stage 4 */
     {
-      id: "l4-intro", scene: "סולם ערכים", name: "שלב 4 – משמעות הצבעים", type: "ladderText", set: "ladder", stage: 4,
+      id: "l4-intro", scene: "סולם ערכים", name: "שלב 4 – משמעות הצבעים", type: "ladderText", set: "ladder", stage: 4, showNext: true,
       tag: "סולם ערכים",
       title: "שלב 4 – משמעות הצבעים",
       paras: [
@@ -471,12 +471,13 @@ const DATA = {
         light: { name: "תכלת", hex: "#6FB7E0", text: "מסמל את מוביל המים הארצי, שאשכול היה מיוזמיו." }
       },
       items: [
-        { name: "דוד בן גוריון", bn: "bengurion-50", ans: "brown" },
-        { name: "בנימין זאב הרצל", bn: "herzl-10", ans: "blue" },
-        { name: "הברון אדמונד דה רוטשילד", bn: "rothschild-500", ans: "red" },
-        { name: "הרמב\"ם", bn: "rambam-1000", ans: "green" },
-        { name: "גולדה מאיר", bn: "golda-10000", ans: "gold" },
-        { name: "לוי אשכול", bn: "eshkol-5000", ans: "light" }
+        // hint: a clue shown beside the figure during the question
+        { name: "דוד בן גוריון", bn: "bengurion-50", ans: "brown", hint: "מדבר" },
+        { name: "בנימין זאב הרצל", bn: "herzl-10", ans: "blue", hint: "דגל ישראל" },
+        { name: "הברון אדמונד דה רוטשילד", bn: "rothschild-500", ans: "red", hint: "יין" },
+        { name: "הרמב\"ם", bn: "rambam-1000", ans: "green", hint: "צמחי מרפא" },
+        { name: "גולדה מאיר", bn: "golda-10000", ans: "gold", hint: "<span dir=\"ltr\"><b>Gold</b>a</span>" },
+        { name: "לוי אשכול", bn: "eshkol-5000", ans: "light", hint: "מוביל המים הארצי" }
       ],
       done: "הגעתם לפסגת הסולם!",
       prev: "l4-intro", next: "l-sum",

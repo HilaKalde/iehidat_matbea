@@ -688,9 +688,9 @@
       result: it => `${bnImg(it.bn, "שטר", "sm")}<b>${SERIES().find(x => x.key === it.ans).name}</b>`
     };
     return {
-      items: s.items.map((x, i) => ({ key: "c" + i, ans: x.ans, name: x.name, bn: x.bn })),
+      items: s.items.map((x, i) => ({ key: "c" + i, ans: x.ans, name: x.name, bn: x.bn, hint: x.hint })),
       options: Object.keys(s.colors).map(k => ({ key: k, label: s.colors[k].name, swatch: s.colors[k].hex })),
-      visual: it => `${portraitHtml(it.bn, it.name, 190, 230)}<span class="mq-name">${it.name}</span>`,
+      visual: it => `${portraitHtml(it.bn, it.name, 190, 230)}<span class="mq-name">${it.name}</span>${it.hint ? `<span class="mq-hint"><span class="mh-l">רמז:</span> ${it.hint}</span>` : ""}`,
       result: it => `${bnImg(it.bn, "השטר של " + it.name, "sm")}<b>${it.name} – ${s.colors[it.ans].name}</b><span>${s.colors[it.ans].text}</span>`
     };
   }
@@ -979,7 +979,13 @@
       if (s.time) { bar.hidden = false; const my = ++run; timer = countdown(bar, s.time, $("[data-tsec]", scr)); timer.done.then(r => { if (r === "time" && my === run && alive(scr)) finish(); }); }
     });
     if (bar) bar.hidden = true;
-    $("[data-again]", scr).addEventListener("click", () => { delete state.answers[s.id]; save(); goTo(s.id); });
+    // "תרגול חוזר": with s.maxRetry, only that many times – then the button is gone and the last result stays
+    const retries = () => (state.retries || {})[s.id] || 0, againBtn = $("[data-again]", scr);
+    if (s.maxRetry && retries() >= s.maxRetry) againBtn.hidden = true;
+    againBtn.addEventListener("click", () => {
+      if (s.maxRetry) { if (retries() >= s.maxRetry) return; state.retries = Object.assign({}, state.retries, { [s.id]: retries() + 1 }); }
+      delete state.answers[s.id]; save(); goTo(s.id);
+    });
     const a = ans(s.id);
     if (a && a.completed) {
       placed = Object.assign({}, a.placed); ph("intro").hidden = true; ph("play").hidden = false; ph("done").hidden = false;

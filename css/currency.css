@@ -877,3 +877,7 @@
 .dm.coins .coin-t .coin-sil { --h: calc(var(--d) * 3.6px); }
 .dm.coins .coin-dia { font-weight: 400; min-height: 52px; text-align: center; line-height: 1.25; }
 .dm.coins .dm-slot { margin-top: auto; }
+
+/* slide 27: a clue beside the figure */
+.mq-hint { margin-top: 6px; display: inline-block; background: #FFF3D6; border: 1px solid #F1C76A; border-radius: 12px; padding: 4px 12px; font-size: 16px; color: var(--navy); }
+.mq-hint .mh-l { font-weight: 800; color: var(--teal); }
