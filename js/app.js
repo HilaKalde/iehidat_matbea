@@ -690,7 +690,7 @@
     return {
       items: s.items.map((x, i) => ({ key: "c" + i, ans: x.ans, name: x.name, bn: x.bn, hint: x.hint })),
       options: Object.keys(s.colors).map(k => ({ key: k, label: s.colors[k].name, swatch: s.colors[k].hex })),
-      visual: it => `${portraitHtml(it.bn, it.name, 190, 230)}<span class="mq-name">${it.name}</span>${it.hint ? `<span class="mq-hint"><span class="mh-l">רמז:</span> ${it.hint}</span>` : ""}`,
+      visual: it => `${portraitHtml(it.bn, it.name, 190, 230)}<span class="mq-name">${it.name}</span>${it.hint ? `<button type="button" class="mq-hint-btn" data-hint aria-expanded="false">💡 רמז</button><span class="mq-hint" hidden><span class="mh-l">רמז:</span> ${it.hint}</span>` : ""}`,
       result: it => `${bnImg(it.bn, "השטר של " + it.name, "sm")}<b>${it.name} – ${s.colors[it.ans].name}</b><span>${s.colors[it.ans].text}</span>`
     };
   }
@@ -724,6 +724,8 @@
     </div>`;
   };
   function bindMatch(scr, s) {
+    // slide 27: the clue opens only when the learner asks for it
+    scr.addEventListener("click", e => { const b = e.target.closest("[data-hint]"); if (!b) return; b.hidden = true; b.setAttribute("aria-expanded", "true"); b.nextElementSibling.hidden = false; });
     const m = matchModel(s), ph = k => $(`[data-phase="${k}"]`, scr), show = k => ["intro", "play", "done"].forEach(x => (ph(x).hidden = x !== k));
     const bar = $("[data-tbar]", scr), vis = $("[data-visual]", scr), opts = $$("[data-opt]", scr), dots = $$("[data-dot]", scr);
     let run = 0, timer = null;
@@ -959,7 +961,7 @@
       el.classList.add(ok ? "ok" : "bad");
       $("[data-slot]", el).innerHTML = `<span class="dm-ans" aria-label="${ok ? "נכון" : "לא נכון"}">${ok ? "✓" : "✗"}</span>${v != null ? label(v) : "לא נענה"}`;
       // every card gets the correction line (hidden when right), so all the answer boxes stay on one line
-      $("[data-slot]", el).insertAdjacentHTML("afterend", ok ? `<span class="dm-right empty" aria-hidden="true">&nbsp;</span>` : `<span class="dm-right">התשובה הנכונה: <b>${label(t.ans)}</b></span>`);
+      $("[data-slot]", el).insertAdjacentHTML("afterend", ok ? `<span class="dm-right empty" aria-hidden="true">&nbsp;</span>` : `<span class="dm-right">תשובה נכונה: <b>${label(t.ans)}</b></span>`);
     });
     function finish() {
       run++; if (timer) timer.stop(); if (bar) bar.hidden = true;
