@@ -989,3 +989,6 @@
 
 /* climbing wall: the text on the holds less bold */
 .stone span { font-weight: 500; font-size: 13.5px; }
+
+/* climbing wall: the holds of the current row are not lit (one hold is chosen in every row, bottom to top) */
+.stone.option img { filter: drop-shadow(0 3px 3px rgba(0,0,0,.3)) !important; }

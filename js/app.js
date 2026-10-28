@@ -1234,13 +1234,15 @@
     });
     const done = (animate) => {
       instr.textContent = "הגעתם לפסגה!";
-      const a = ans(s.id), all = a.right == null || a.right >= rows;
-      const head = all ? (s.panelTitle ? "סידרתם נכון את כל שלבי מעגל החיים של השטרות והמעות!" : "סידרתם נכון את כל שלבי ההנפקה והתפעול של שטר הכסף!") : `הגעתם לפסגה! בחרתם נכון ${a.right} מתוך ${rows} שלבים.`;
+      const a = ans(s.id), nRight = a.right == null ? rows : a.right, all = nRight >= rows;
+      const head = `סידרתם נכון ${nRight} מתוך ${rows} שלבים ${s.panelTitle ? "במעגל החיים של שטרות ומעות" : "בהנפקת שטר הכסף"}`;
       const body = all ? "בחרתם את השלב הנכון והתקדמתם אחיזה אחר אחיזה עד לפסגה." : "בכל טעות הוצג השלב הנכון והמשכתם לטפס. כדאי לעבור שוב על השלבים ברשימה שבצד.";
       showFb(fb, true, fbHtml(true, head, body, a.points), animate);
       // the green feedback box on the left of the wall, the two buttons below it
-      if (!$(".wp-fb-actions", scr)) fb.insertAdjacentHTML("afterend", `<div class="wp-fb-actions"><button type="button" class="link-btn" data-again2>טיפוס חוזר</button><button type="button" class="btn" data-go="${s.next}">לסיכום הסט</button></div>`);
+      if (!$(".wp-fb-actions", scr)) fb.insertAdjacentHTML("afterend", `<div class="wp-fb-actions">${retries() < MAX_CLIMBS ? `<button type="button" class="link-btn" data-again2>טיפוס חוזר</button>` : ""}<button type="button" class="btn" data-go="${s.next}">לסיכום הסט</button></div>`);
     };
+    // one more climb at most (טיפוס חוזר once)
+    const MAX_CLIMBS = s.maxRetry ?? 1, retries = () => (state.retries || {})[s.id] || 0;
     const finish = () => { points += s.topBonus || 0; setAns(s.id, { completed: true, points, right, wrong }); updateChrome(s); done(true); };
     // the step of row r is climbed (chosen right, or shown after a wrong choice): Aya climbs to it and the next row lights up
     const advance = (r, c) => {
@@ -1260,7 +1262,7 @@
       const r = +b.dataset.r, c = +b.dataset.c;
       if (s.rows[r][c][1]) {
         b.classList.add("ok"); b.classList.remove("option"); playFeedbackSound(true);
-        points += s.stepPts || 10; right++;
+        points += Array.isArray(s.stepPts) ? s.stepPts[r] : (s.stepPts || 10); right++;
         advance(r, c);
       } else {
         // a wrong step: a red ✕ on it, and right away the correct step of the row is shown and Aya climbs to it
@@ -1278,7 +1280,7 @@
     });    scr.addEventListener("click", e => { const pb = e.target.closest("[data-pan]"); if (pb && !panning) showPart(view + +pb.dataset.pan, true); });
     const ptsBadge = () => { const cv = $('[data-c="coins-v"]', $("#chrome")); return cv; };
     const updatePts = () => { const cv = ptsBadge(); if (cv) cv.textContent = setScore("wall") + points; };
-    const again = () => { delete state.answers[s.id]; save(); goTo(s.id); };
+    const again = () => { if (retries() >= MAX_CLIMBS) return; state.retries = Object.assign({}, state.retries, { [s.id]: retries() + 1 }); delete state.answers[s.id]; save(); goTo(s.id); };
     $("[data-again]", scr).addEventListener("click", again);
     scr.addEventListener("click", e => { if (e.target.closest("[data-again2]")) again(); });
     if (isDone(s.id)) {
