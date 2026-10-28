@@ -1012,3 +1012,9 @@
 .cy-card-head .cy-num { background: var(--orange); }
 .cy-card p[data-text] { margin-top: 8px; font-size: 16.5px; line-height: 1.4; }
 .cy-actions { position: absolute; left: 520px; top: 466px; width: 160px; display: flex; justify-content: center; }
+
+/* the life cycle slide: arrows from step to step instead of a closed loop */
+.cy-loop path { fill: none; stroke: rgba(255,255,255,.85); stroke-width: 3; stroke-linecap: round; }
+.cy-loop marker path { fill: rgba(255,255,255,.95); stroke: none; }
+
+.cy-node { width: 152px; font-size: 13.5px; }
