@@ -16,7 +16,7 @@ const SETS = {
   functional: { title: "אימון פונקציונלי", sub: "התפתחות אמצעי התשלום", total: 100 },   // 48 items × 2 + 4 bonus
   ladder:     { title: "סולם ערכים",       sub: "דמויות וסמלים על השטרות", total: 100 },   // figures 6×4, symbols 6×4, notes 4×2.5, coins 6×3, colours 6×4
   pulley:     { title: "פולי הביטחון",     sub: "זיהוי סימני ביטחון",   total: 100 },   // exercise 1: 12, exercises 2–7: 13 each
-  wall:       { title: "קיר טיפוס",        sub: "מעגל החיים שטרות ומעות", total: 100 }
+  wall:       { title: "קיר טיפוס",        sub: "מעגל החיים של השטרות והמעות", total: 100 }
 };
 
 /* the sets' films: TV screen, PLAY shows "סרטון יתווסף בהמשך" until there is a film. Scenes = [narration, what we see, caption] */
