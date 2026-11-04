@@ -1020,3 +1020,17 @@
 .cy-node { width: 152px; font-size: 13.5px; }
 
 .chips.two { display: grid; grid-template-columns: repeat(2, max-content); }
+
+/* slide 25: the coins told by their rim – both sides of the coin (the rim shows on each) instead of the magnifier */
+.coin-sides { display: flex; align-items: center; justify-content: center; gap: 2px; height: 84px; margin-block: 5px; }
+.coin-sides img { height: 80px; width: auto; max-width: 50%; object-fit: contain; mix-blend-mode: multiply; }
+.coin-sides { position: relative; }
+.coin-zoom { position: absolute; left: -6px; bottom: -6px; width: 28px; height: 28px; padding: 4px; border: 2px solid #FFFFFF; border-radius: 50%; background: var(--navy); color: #FFFFFF; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,.35); z-index: 2; }
+.coin-zoom svg { width: 100%; height: 100%; display: block; }
+.coin-zoom:is(:hover, :focus-visible) { background: var(--orange); outline: none; }
+.coin-modal { left: 220px; top: 100px; width: 760px; padding: 22px 28px 26px; text-align: center; }
+.coin-modal .h-title { font-size: 24px; }
+.cm-sides { display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 16px; }
+.cm-sides img { height: 300px; width: auto; mix-blend-mode: multiply; }
+
+.coin-modal { background: #FFFFFF; }

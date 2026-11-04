@@ -868,15 +868,23 @@
   function bindAccess(scr, s) {
     $$("[data-acc]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, b.dataset.acc); b.classList.add("seen"); showLayer(scr, "acc-" + b.dataset.acc); }));
   }
+  const ZOOM_IC = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M15 15l6 6M10 7v6M7 10h6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>`;
   R.dragmatch = s => {
     const coins = s.kind === "coins";
     const target = (t, i) => coins
-      // by the rim (10 / 5 / 2 ₪): a magnifier on the edge only; by the diameter (smooth rims): a silhouette at its true relative size + the diameter
-      ? `<div class="dm-t coin-t by-${t.by}" data-drop="${i}">${t.by === "edge" ? `<span class="coin-mag big" style="background-image:url(${IMG}rim-${t.coin}.png);background-size:${t.mag[0]} auto;background-position:${t.mag[1]}" role="img" aria-label="תקריב של שולי המעה"></span><span class="coin-dia rim">${t.rim}</span>` : `<span class="coin-sil" style="--d:${t.d}"></span><span class="coin-dia">קוטר ${String(t.d).replace(".", ",")} מ"מ</span>`}<span class="dm-slot" data-slot>?</span></div>`
+      // by the rim (10 / 5 / 2 ₪): both sides of the coin, tilted so the rim shows (coin-side-<coin>a/b); by the diameter
+      // (smooth rims): a silhouette at its true relative size + the diameter
+      ? `<div class="dm-t coin-t by-${t.by}" data-drop="${i}">${t.by === "edge" ? `<span class="coin-sides" role="img" aria-label="המעה משני צדדיה – רואים את השוליים"><img src="${IMG}coin-side-${t.coin}a.png" alt=""><img src="${IMG}coin-side-${t.coin}b.png" alt=""><button type="button" class="coin-zoom" data-zoom="${t.coin}" aria-label="הגדלת המעה משני צדדיה">${ZOOM_IC}</button></span><span class="coin-dia rim">${t.rim}</span>` : `<span class="coin-sil" style="--d:${t.d}"></span><span class="coin-dia">קוטר ${String(t.d).replace(".", ",")} מ"מ</span>`}<span class="dm-slot" data-slot>?</span></div>`
       : `<div class="dm-t note-t" data-drop="${i}"><img src="${BN + t.img}.jpg" alt="שטר כפי שאדם עם לקות ראייה עשוי לראות אותו"><span class="dm-slot" data-slot>?</span></div>`;
     return `
       ${ladderBg()}
       ${ladderHtml(s.stage)}
+      ${coins ? s.targets.filter(t => t.by === "edge").map(t => layerHtml("zoom-" + t.coin, `
+        <div class="modal card coin-modal" role="dialog" aria-label="המעה משני צדדיה">
+          <button class="close-x" data-close="1" aria-label="סגירה">${CLOSE_X}</button>
+          <div class="h-title">${t.rim}</div>
+          <div class="cm-sides"><img src="${IMG}coin-side-${t.coin}a.png" alt="צד אחד של המעה"><img src="${IMG}coin-side-${t.coin}b.png" alt="הצד השני של המעה"></div>
+        </div>`)).join("") : ""}
       <div class="lad-content dm ${coins ? "coins" : "notes"} ${A("fade", 0)}">
         <div class="mq-top"><div class="h-title">${s.title}</div>${s.time ? timerHtml("big") : ""}</div>
         ${taskBox(s.task, s.time)}
@@ -896,6 +904,8 @@
       </div>`;
   };
   function bindDragmatch(scr, s) {
+    // the coins told by their rim: the 🔍 opens both sides of the coin large (it never counts as choosing a slot)
+    scr.addEventListener("click", e => { const z = e.target.closest("[data-zoom]"); if (!z) return; e.stopPropagation(); showLayer(scr, "zoom-" + z.dataset.zoom); }, true);
     const ph = k => $(`[data-phase="${k}"]`, scr), check = $("[data-check]", scr), bar = $("[data-tbar]", scr);
     let timer = null, placed = {}, run = 0;
     const chipVal = c => c.dataset.val;

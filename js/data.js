@@ -431,7 +431,7 @@ const DATA = {
       id: "l3-quiz2", scene: "סולם ערכים", name: "שלב 3 – תרגיל: בעיניים עצומות (מעות)", type: "dragmatch", pts: 3, set: "ladder", stage: 3, showNext: true, kind: "coins", maxRetry: 2,
       tag: "סולם ערכים",
       title: "בעיניים עצומות – תרגיל זיהוי מעות",
-      task: "לחלק מהמעות מוצג תקריב של השוליים בזכוכית מגדלת, ולחלק – צללית בגודל היחסי והקוטר.<br>גררו כל ערך למקום המתאים (או לחצו על ערך ואז על המעה). אין מגבלת זמן.",
+      task: "לחלק מהמעות מוצגים שני צדי המעה (לחצו על 🔍 כדי להגדיל ולראות את השוליים), ולחלק – צללית בגודל היחסי והקוטר.<br>גררו כל ערך למקום המתאים (או לחצו על ערך ואז על המעה). אין מגבלת זמן.",
       time: 0,
       // as on slide 24: 10 / 5 / 2 ₪ are told by their rims (a magnifier, no size); ½ ₪, 10 אג' and 1 ₪ – smooth rims – by their diameter (a silhouette)
       targets: [ { coin: "10ag", ans: "10 אג'", d: 22, by: "dia" }, { coin: "half", ans: "½ ₪", d: 26, by: "dia" }, { coin: "1", ans: "1 ₪", d: 18, by: "dia" },
