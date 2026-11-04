@@ -1053,3 +1053,7 @@
 
 /* slide 25: only the edge itself (a narrow strip), never cut on the right – the border is outside the strip */
 .rim-mag { box-sizing: content-box; }
+
+/* life-cycle slide: an icon for every step */
+.cy-node { width: 168px; gap: 5px; padding-left: 8px; }
+.cy-ic { flex: none; font-size: 20px; line-height: 1; }

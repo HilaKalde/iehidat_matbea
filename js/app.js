@@ -1154,7 +1154,7 @@
     const ang = i => (-90 + i * 360 / n) * Math.PI / 180, at = a => [CX + RX * Math.cos(a), CY + RY * Math.sin(a)];
     const nodes = steps.map((st, i) => {
       const [x, y] = at(ang(i));
-      return `<button type="button" class="cy-node" data-step="${i}" style="left:${Math.round(x - 76)}px;top:${Math.round(y - 25)}px" aria-pressed="false"><span class="cy-num">${i + 1}</span><span class="cy-name">${st[0]}</span></button>`;
+      return `<button type="button" class="cy-node" data-step="${i}" style="left:${Math.round(x - 84)}px;top:${Math.round(y - 25)}px" aria-pressed="false"><span class="cy-num">${i + 1}</span>${s.icons ? `<span class="cy-ic" aria-hidden="true">${s.icons[i]}</span>` : ""}<span class="cy-name">${st[0]}</span></button>`;
     }).join("");
     return `
       <img class="bg" src="${IMG}bg-wall.jpg" alt="">
