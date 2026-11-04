@@ -1286,7 +1286,7 @@
     const done = (animate) => {
       instr.textContent = "הגעתם לפסגה!";
       const a = ans(s.id), nRight = a.right == null ? rows : a.right, all = nRight >= rows;
-      const head = `סידרתם נכון ${nRight} מתוך ${rows} שלבים ${s.panelTitle ? "במעגל החיים של שטרות ומעות" : "בהנפקת שטר הכסף"}`;
+      const head = `סידרתם נכון ${nRight} מתוך ${rows} שלבים ${s.panelTitle ? "בתחנות בחיי השטרות והמעות" : "בהנפקת שטר הכסף"}`;
       const body = all ? "בחרתם את השלב הנכון והתקדמתם אחיזה אחר אחיזה עד לפסגה." : "בכל טעות הוצג השלב הנכון והמשכתם לטפס. כדאי לעבור שוב על השלבים ברשימה שבצד.";
       showFb(fb, true, fbHtml(true, head, body, a.points), animate);
       // the green feedback box on the left of the wall, the two buttons below it
@@ -1390,7 +1390,7 @@
       <img class="bg" src="${IMG}bg-clean.jpg" alt="">
       <div class="q-scrim" aria-hidden="true"></div>
       <img class="char ${first ? A("fly-l", 150) : ""}" data-hero="${g.file}" src="${IMG + g.file}.png" alt="" style="${pos(...g.box)}">
-      <div class="bank ${first ? A("fly-t", 100) : ""}" data-bank><span class="coin"></span><span class="t">יש לכם:</span><span class="v" data-bank-v>${bank()}</span><span class="t">מטבעות בקופה</span></div>
+      <div class="bank ${first ? A("fly-t", 100) : ""}" data-bank title="מטבעות בקופה"><span class="coin"></span><span class="v" data-bank-v>${bank()}</span></div>
       <div class="q-wall wide-opts">
         <p class="qw-question">${s.question}</p>
         <p class="qw-hint">בחרו בתשובה הנכונה</p>
