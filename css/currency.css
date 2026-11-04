@@ -1057,3 +1057,6 @@
 /* life-cycle slide: an icon for every step */
 .cy-node { width: 168px; gap: 5px; padding-left: 8px; }
 .cy-ic { flex: none; font-size: 20px; line-height: 1; }
+
+/* the stretches: a short label – a narrower cyan tag */
+.chapter-tag.narrow { width: 190px; }

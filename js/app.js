@@ -1598,6 +1598,7 @@
   const POINT_TYPES = ["station", "timeline", "fhowto", "figures", "series", "match", "ladderText", "vision", "access", "dragmatch", "pulley", "wall"];
   function updateChrome(s) {
     C("tag").classList.toggle("hidden", !s.tag);
+    C("tag").classList.toggle("narrow", s.tag === "מתיחות");                 // a short label: a narrower tag
     if (s.tag) $("span", C("tag")).textContent = s.mode === "stretch" ? `שאלה ${s.num}` : s.tag;
     const inChapter = !TOP_LEVEL.includes(s.type);
     C("home").classList.toggle("hidden", !inChapter);
