@@ -268,10 +268,12 @@
   function openFilm(scr, v) {
     // YouTube refuses to play an embedded video without a referring site (error 153, "שגיאה בהגדרות של נגן הווידאו"),
     // which is the case when the lomda is opened straight from the disk (file://) – then the film opens on YouTube
-    if (location.protocol === "file:") { window.open("https://www.youtube.com/watch?v=" + v.yt, "_blank", "noopener"); return; }
+    if (!v.src && location.protocol === "file:") { window.open("https://www.youtube.com/watch?v=" + v.yt, "_blank", "noopener"); return; }
     const ov = document.createElement("div");
     ov.className = "film-full"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", v.title);
-    ov.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${v.yt}?autoplay=1&rel=0&modestbranding=1&playsinline=1&origin=${encodeURIComponent(location.origin)}" title="${v.title}"
+    // a film that ships with the lomda (assets/video) plays in a <video> – no YouTube, works from the disk too
+    ov.innerHTML = v.src ? `<video src="${VID}${v.src}" controls autoplay playsinline controlslist="nodownload" title="${v.title}"></video>
+      <button type="button" class="close-x film-close" aria-label="סגירת הסרטון">${CLOSE_X}</button>` : `<iframe src="https://www.youtube-nocookie.com/embed/${v.yt}?autoplay=1&rel=0&modestbranding=1&playsinline=1&origin=${encodeURIComponent(location.origin)}" title="${v.title}"
         referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>
       <button type="button" class="close-x film-close" aria-label="סגירת הסרטון">${CLOSE_X}</button>`;
     const close = () => { ov.remove(); modalMode(false); document.removeEventListener("keydown", esc); };

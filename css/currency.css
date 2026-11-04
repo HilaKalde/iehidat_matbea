@@ -1060,3 +1060,5 @@
 
 /* the stretches: a short label – a narrower cyan tag */
 .chapter-tag.narrow { width: 190px; }
+
+.film-full video { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: #000000; object-fit: contain; }
