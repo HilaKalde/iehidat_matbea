@@ -869,16 +869,19 @@
     $$("[data-acc]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, b.dataset.acc); b.classList.add("seen"); showLayer(scr, "acc-" + b.dataset.acc); }));
   }
   const ZOOM_IC = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M15 15l6 6M10 7v6M7 10h6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>`;
-  /* a magnifier on the rim only (never the face – that would give the value away): the photo of one side of the coin
-     (coin-side-<coin>a/b), the point t.rims[side] = [x%, y%, height px] of it in the middle of the circle; k = scale */
-  const rimMag = (t, side, k) => { const [cx, cy, h] = t.rims[side];
-    return `<span class="rim-mag${k > 1 ? " big" : ""}"><img src="${IMG}coin-side-${t.coin}${side}.png" alt="" style="height:${h * k}px;transform:translate(-${cx}%,-${cy}%)"></span>`; };
-  R.dragmatch = s => {
+  /* the rim only (never the face – that would give the value away): a tall strip along the edge of the photo of each
+     side of the coin (coin-side-<coin>a/b), so the whole rim shows from top to bottom (on 2 ₪: grooved and smooth
+     sections); t.rims[side] = [x1, y1, x2, y2] in % of the photo, h = the strip's height in px */
+  const COIN_AR = { "10a": 397 / 539, "10b": 387 / 539, "5a": 299 / 299, "5b": 297 / 295, "2a": 439 / 535, "2b": 405 / 535 };
+  const rimMag = (t, side, h) => {
+    const [x1, y1, x2, y2] = t.rims[side], ih = h * 100 / (y2 - y1), iw = ih * COIN_AR[t.coin + side];
+    return `<span class="rim-mag" style="width:${Math.round(iw * (x2 - x1) / 100)}px;height:${h}px"><img src="${IMG}coin-side-${t.coin}${side}.png" alt="" style="height:${ih.toFixed(1)}px;transform:translate(-${x1}%,-${y1}%)"></span>`;
+  };  R.dragmatch = s => {
     const coins = s.kind === "coins";
     const target = (t, i) => coins
-      // by the rim (10 / 5 / 2 ₪): two magnifiers on the rim, one from each side of the coin; by the diameter
+      // by the rim (10 / 5 / 2 ₪): a strip along the rim from each side of the coin; by the diameter
       // (smooth rims): a silhouette at its true relative size + the diameter
-      ? `<div class="dm-t coin-t by-${t.by}" data-drop="${i}">${t.by === "edge" ? `<span class="coin-sides" role="img" aria-label="תקריב של שולי המעה משני צדדיה">${rimMag(t, "a", 1)}${rimMag(t, "b", 1)}<button type="button" class="coin-zoom" data-zoom="${t.coin}" aria-label="הגדלת השוליים">${ZOOM_IC}</button></span><span class="coin-dia rim">${t.rim}</span>` : `<span class="coin-sil" style="--d:${t.d}"></span><span class="coin-dia">קוטר ${String(t.d).replace(".", ",")} מ"מ</span>`}<span class="dm-slot" data-slot>?</span></div>`
+      ? `<div class="dm-t coin-t by-${t.by}" data-drop="${i}">${t.by === "edge" ? `<span class="coin-sides" role="img" aria-label="תקריב של שולי המעה משני צדדיה">${rimMag(t, "a", 112)}${rimMag(t, "b", 112)}<button type="button" class="coin-zoom" data-zoom="${t.coin}" aria-label="הגדלת השוליים">${ZOOM_IC}</button></span><span class="coin-dia rim">${t.rim}</span>` : `<span class="coin-sil" style="--d:${t.d}"></span><span class="coin-dia">קוטר ${String(t.d).replace(".", ",")} מ"מ</span>`}<span class="dm-slot" data-slot>?</span></div>`
       : `<div class="dm-t note-t" data-drop="${i}"><img src="${BN + t.img}.jpg" alt="שטר כפי שאדם עם לקות ראייה עשוי לראות אותו"><span class="dm-slot" data-slot>?</span></div>`;
     return `
       ${ladderBg()}
@@ -887,7 +890,7 @@
         <div class="modal card coin-modal" role="dialog" aria-label="המעה משני צדדיה">
           <button class="close-x" data-close="1" aria-label="סגירה">${CLOSE_X}</button>
           <div class="h-title">${t.rim}</div>
-          <div class="cm-sides">${rimMag(t, "a", 3)}${rimMag(t, "b", 3)}</div>
+          <div class="cm-sides">${rimMag(t, "a", 400)}${rimMag(t, "b", 400)}</div>
           <p class="cm-cap">השוליים משני צדי המעה</p>
         </div>`)).join("") : ""}
       <div class="lad-content dm ${coins ? "coins" : "notes"} ${A("fade", 0)}">

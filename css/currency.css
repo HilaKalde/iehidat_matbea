@@ -1042,3 +1042,11 @@
 .rim-mag.big { width: 230px; height: 230px; border-width: 5px; }
 .cm-sides { gap: 40px; }
 .cm-cap { margin-top: 10px; font-size: 16px; color: #33505E; }
+
+/* slide 25: the rim as a tall strip (from each side of the coin) instead of a small round magnifier */
+.rim-mag { border-radius: 10px; border-width: 2px; }
+.rim-mag img { left: 0; top: 0; }
+.coin-sides { height: 118px; gap: 8px; }
+.coin-modal .rim-mag { border-width: 4px; border-radius: 16px; }
+.cm-sides { gap: 60px; margin-top: 12px; }
+.coin-modal { top: 40px; }
