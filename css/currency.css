@@ -1050,3 +1050,6 @@
 .coin-modal .rim-mag { border-width: 4px; border-radius: 16px; }
 .cm-sides { gap: 60px; margin-top: 12px; }
 .coin-modal { top: 40px; }
+
+/* slide 25: only the edge itself (a narrow strip), never cut on the right – the border is outside the strip */
+.rim-mag { box-sizing: content-box; }

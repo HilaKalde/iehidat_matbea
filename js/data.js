@@ -435,8 +435,8 @@ const DATA = {
       time: 0,
       // as on slide 24: 10 / 5 / 2 ₪ are told by their rims (a magnifier, no size); ½ ₪, 10 אג' and 1 ₪ – smooth rims – by their diameter (a silhouette)
       targets: [ { coin: "10ag", ans: "10 אג'", d: 22, by: "dia" }, { coin: "half", ans: "½ ₪", d: 26, by: "dia" }, { coin: "1", ans: "1 ₪", d: 18, by: "dia" },
-                 { coin: "2", ans: "2 ₪", by: "edge", rims: { a: [70, 4, 100, 96], b: [70, 4, 100, 96] }, rim: "שוליים מחורצים לסירוגין: 4 קטעים מחורצים ו-4 קטעים חלקים" },
-                 { coin: "5", ans: "5 ₪", by: "edge", rims: { a: [70, 4, 100, 96], b: [70, 4, 100, 96] }, rim: "שוליים עם 12 צלעות" }, { coin: "10", ans: "10 ₪", by: "edge", rims: { a: [70, 4, 100, 96], b: [70, 4, 100, 96] }, rim: "שוליים מחורצים" } ],
+                 { coin: "2", ans: "2 ₪", by: "edge", rims: { a: [88, 4, 104, 96], b: [88, 4, 104, 96] }, rim: "שוליים מחורצים לסירוגין: 4 קטעים מחורצים ו-4 קטעים חלקים" },
+                 { coin: "5", ans: "5 ₪", by: "edge", rims: { a: [88, 4, 104, 96], b: [88, 4, 104, 96] }, rim: "שוליים עם 12 צלעות" }, { coin: "10", ans: "10 ₪", by: "edge", rims: { a: [88, 4, 104, 96], b: [88, 4, 104, 96] }, rim: "שוליים מחורצים" } ],
       chips: ["10 אג'", "½ ₪", "1 ₪", "2 ₪", "5 ₪", "10 ₪"],
       done: "עליתם שלב בסולם!",
       prev: "l3-coins", next: "l4-intro",
