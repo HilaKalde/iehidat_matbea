@@ -16,7 +16,7 @@ const SETS = {
   functional: { title: "אימון פונקציונלי", sub: "התפתחות אמצעי התשלום", total: 100 },   // 48 items × 2 + 4 bonus
   ladder:     { title: "סולם ערכים",       sub: "דמויות וסמלים על השטרות", total: 100 },   // figures 6×4, symbols 6×4, notes 4×2.5, coins 6×3, colours 6×4
   pulley:     { title: "פולי הביטחון",     sub: "זיהוי סימני ביטחון",   total: 100 },   // exercise 1: 12, exercises 2–7: 13 each
-  wall:       { title: "קיר טיפוס",        sub: "מעגל החיים של השטרות והמעות", total: 100 }
+  wall:       { title: "קיר טיפוס",        sub: "תחנות בחיי השטרות והמעות", total: 100 }
 };
 
 /* the sets' films: TV screen, PLAY shows "סרטון יתווסף בהמשך" until there is a film. Scenes = [narration, what we see, caption] */
@@ -133,7 +133,7 @@ const DATA = {
           text: "זהב וכסף הפכו לאמצעי תשלום בזכות היותם עמידים, נדירים ובעלי ערך." },
         { key: "coins", label: "המטבעות הראשונים", when: "החל מהמאה ה-7 לפני הספירה", img: "era-coin.png", station: "לאנג'ים",
           text: "החלו לייצר מטבעות בעלי משקל וערך קבועים, שהפכו את המסחר לפשוט ואמין יותר." },
-        { key: "notes", label: "השטרות הראשונים", when: "החל מהמאה ה-10 לספירה", img: "era-note.png", station: "שכיבות סמיכה",
+        { key: "notes", label: "השטרות הראשונים", when: "החל מהמאה ה-11 לספירה", img: "era-note.png", station: "שכיבות סמיכה",
           text: "השטרות מאפשרים לבצע עסקאות גדולות בלי לשאת כמויות גדולות של מתכת." },
         { key: "digital", label: "אמצעי תשלום דיגיטליים", when: "החל מהמאה ה-20", img: "era-digital.png", station: "ספרינט",
           text: "כרטיסי אשראי, אפליקציות תשלום ואמצעים דיגיטליים הפכו את התשלום למהיר ונוח יותר." }
@@ -261,7 +261,7 @@ const DATA = {
     {
       id: "f-sum", scene: "אימון פונקציונלי", name: "סיכום – אימון פונקציונלי", type: "summary", set: "functional",
       tag: "אימון פונקציונלי", hero: "adam-flex",
-      title: "כל הכבוד! סיימתם את האימון הפונקציונלי",
+      title: "סיימתם את האימון הפונקציונלי",
       learned: "לאורך ההיסטוריה התפתחו אמצעי התשלום בהתאם לצרכים המשתנים של החברה:",
       bullets: ["סחר חליפין", "כסף סחיר", "מתכות יקרות", "המטבעות הראשונים", "השטרות הראשונים", "אמצעי תשלום דיגיטליים"],   // the six stations, in order
       closing: "כל שלב פתר בעיה של השלב שלפניו – והפך את המסחר לפשוט, אמין ונוח יותר.",
