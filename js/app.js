@@ -337,7 +337,7 @@
 
   /* ------------------------------------------------ functional: how-to */
   const stations = () => DATA.screens.filter(x => x.type === "station");
-  const ERA_IMG = ["era-barter.png", "era-commodity.png", "era-metal.png", "era-coin.png", "era-note.png", "era-digital.png"];
+  const ERA_IMG = ["era-barter.png", "era-commodity.png", "era-metal-v2.png", "era-coin.png", "era-note.png", "era-digital.png"];
   const TASK_SHORT = { squat: "בוחרים 2 בכל סעיף", plank: "בוחרים 2 בכל סעיף", situp: "גוררים תכונה אחת", lunge: "3 צעדים, בוחרים רכיב", pushup: "בוחרים מאפיין אחד", sprint: "בוחרים 2 בכל סעיף" };
   R.fhowto = s => `
     <img class="bg" src="${IMG}bg-mats.jpg" alt="">
@@ -403,7 +403,7 @@
           <div class="st-meta"><span class="st-rowno" data-rowno></span>${timerHtml()}<span class="st-pts" aria-live="polite"><span class="coin sm"></span><bdi data-pts>0</bdi></span></div>
           <p class="st-q" data-q hidden></p>
           <div class="st-items ${s.drag ? "drag" : ""}" data-items></div>
-          ${s.drag ? `<div class="bars-drop" data-drop="bars"><img src="${IMG}era-metal.png" alt="בצעי כסף"><span>גררו לכאן</span></div>` : ""}
+          ${s.drag ? `<div class="bars-drop" data-drop="bars"><img src="${IMG}era-metal-v2.png" alt="בצעי כסף"><span>גררו לכאן</span></div>` : ""}
           <p class="st-need" data-need></p>
         </div>
         <div data-phase="done" hidden>
