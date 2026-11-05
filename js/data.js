@@ -339,7 +339,7 @@ const DATA = {
       time: 60,
       items: [
         { bn: "landscape-50", ans: "landscape" }, { bn: "figures-50", ans: "figures" }, { bn: "rambam-1000", ans: "persons" },
-        { bn: "gates-100", ans: "gates" }, { bn: "tchernichovsky-50", ans: "poets" }, { bn: "golda-10000", ans: "persons" }
+        { bn: "gates-100", ans: "gates" }, { bn: "spec/tchernichovsky-50", ans: "poets" }, { bn: "golda-10000", ans: "persons" }
       ],
       done: "עליתם שלב בסולם!",
       passAt: 4, fbGood: "התאמתם נכון {n} מתוך {t}. עליתם שלב בסולם.", fbBad: "התאמתם נכון {n} מתוך {t}. כדאי ללמוד עוד על הסמלים.",
