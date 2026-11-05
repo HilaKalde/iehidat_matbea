@@ -643,7 +643,7 @@
         <button class="close-x" data-close="1" aria-label="סגירה">${CLOSE_X}</button>
         <div class="h-title">${FIGURES[k].name}</div>
         <p class="exm-p">${FIGURES[k].def}</p>
-        ${bnImg(FIGURES[k].bn, "השטר של " + FIGURES[k].name, "big")}
+        ${bnImg(FIGURES[k].spec || FIGURES[k].bn, "השטר של " + FIGURES[k].name, "big")}
       </div>`)).join("")}`;
   function bindFigures(scr, s) {
     $$("[data-fig-k]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, b.dataset.figK); b.classList.add("seen"); showLayer(scr, "fig-" + b.dataset.figK); }));
