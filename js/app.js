@@ -876,7 +876,7 @@
      sections); t.rims[side] = [x1, y1, x2, y2] in % of the photo, h = the strip's height in px */
   const COIN_AR = { "10a": 481 / 583, "10b": 387 / 539, "5a": 299 / 299, "5b": 297 / 295, "2a": 439 / 535, "2b": 405 / 535 };
   // every strip is equally wide (RIM_W × its height), its right side on the coin's edge: t.rims[side] = [right edge, top, bottom] in % of the photo
-  const RIM_W = 0.14;
+  const RIM_W = 0.24;
   const rimMag = (t, side, h) => {
     const [re, y1, y2] = t.rims[side], ih = h * 100 / (y2 - y1), iw = ih * COIN_AR[t.coin + side], w = Math.round(h * RIM_W);
     return `<span class="rim-mag" style="width:${w}px;height:${h}px"><img src="${IMG}coin-side-${t.coin}${side}.png" alt="" style="height:${ih.toFixed(1)}px;left:${(w - iw * re / 100).toFixed(1)}px;top:${(-ih * y1 / 100).toFixed(1)}px;transform:none"></span>`;
