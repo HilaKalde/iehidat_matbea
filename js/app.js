@@ -874,10 +874,12 @@
   /* the rim only (never the face – that would give the value away): a tall strip along the edge of the photo of each
      side of the coin (coin-side-<coin>a/b), so the whole rim shows from top to bottom (on 2 ₪: grooved and smooth
      sections); t.rims[side] = [x1, y1, x2, y2] in % of the photo, h = the strip's height in px */
-  const COIN_AR = { "10a": 397 / 539, "10b": 387 / 539, "5a": 299 / 299, "5b": 297 / 295, "2a": 439 / 535, "2b": 405 / 535 };
+  const COIN_AR = { "10a": 481 / 583, "10b": 387 / 539, "5a": 299 / 299, "5b": 297 / 295, "2a": 439 / 535, "2b": 405 / 535 };
+  // every strip is equally wide (RIM_W × its height), its right side on the coin's edge: t.rims[side] = [right edge, top, bottom] in % of the photo
+  const RIM_W = 0.14;
   const rimMag = (t, side, h) => {
-    const [x1, y1, x2, y2] = t.rims[side], ih = h * 100 / (y2 - y1), iw = ih * COIN_AR[t.coin + side];
-    return `<span class="rim-mag" style="width:${Math.round(iw * (x2 - x1) / 100)}px;height:${h}px"><img src="${IMG}coin-side-${t.coin}${side}.png" alt="" style="height:${ih.toFixed(1)}px;transform:translate(-${x1}%,-${y1}%)"></span>`;
+    const [re, y1, y2] = t.rims[side], ih = h * 100 / (y2 - y1), iw = ih * COIN_AR[t.coin + side], w = Math.round(h * RIM_W);
+    return `<span class="rim-mag" style="width:${w}px;height:${h}px"><img src="${IMG}coin-side-${t.coin}${side}.png" alt="" style="height:${ih.toFixed(1)}px;left:${(w - iw * re / 100).toFixed(1)}px;top:${(-ih * y1 / 100).toFixed(1)}px;transform:none"></span>`;
   };  R.dragmatch = s => {
     const coins = s.kind === "coins";
     const target = (t, i) => coins
