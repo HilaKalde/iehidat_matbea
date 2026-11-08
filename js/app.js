@@ -548,7 +548,8 @@
     function renderDone(focus) {
       const a = ans(s.id), max = maxPoints(s), n = a.correct != null ? a.correct : a.points;   // n = correct items (2 points each)
       show("done");
-      const head = s.fb.replace("{n}", n).replace("{t}", max);
+      // s.fbTitle: an opening line above the result (e.g. "השלמתם את תרגיל הסקווט!")
+      const head = (s.fbTitle ? `<span class="ifb-title">${s.fbTitle}</span>` : "") + s.fb.replace("{n}", n).replace("{t}", max);
       showFb($("[data-inline-fb]", scr), n >= max * .5, fbHtml(n >= max * .5, head, s.explain, a.points), focus);
       $("[data-review]", scr).innerHTML = s.rows.map((r, i) => `<div class="rv-row">${r.q ? `<span class="rv-q">${r.q}</span>` : ""}${r.items.map((t, j) => {
         const picked = (a.results[i] || []).includes(j), c = r.correct.includes(j);
