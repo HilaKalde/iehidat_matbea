@@ -1062,3 +1062,17 @@
 .chapter-tag.narrow { width: 190px; }
 
 .film-full video { position: absolute; inset: 0; width: 100%; height: 100%; display: block; background: #000000; object-fit: contain; }
+
+/* pulley drills with demo films (the golden book, the shiny strip): portrait clips of a note being tilted, looping, in tall frames */
+.pl-note.vid { width: 232px; top: 236px; }
+.pl-note.vid.right { left: 858px; } .pl-note.vid.left { left: 110px; }
+.screen:has(.pl-note.vid) .pl-fb { left: 345px !important; top: 92px; width: 510px; z-index: 6; }   /* where the question was (hidden on answering) */
+.screen:has(.pl-note.vid):has(.pl-fb:not([hidden])) .pl-q { visibility: hidden; }
+.pl-note.vid video { width: 100%; height: 384px; display: block; object-fit: cover; border-radius: 6px; background: #E9EDF0; pointer-events: none; }
+/* slide 25: one photo per coin – the zoom window as tall as the stage allows */
+.coin-modal { top: 14px; padding: 14px 28px 12px; }
+.coin-modal .h-title { font-size: 21px; }
+.coin-modal .cm-sides { margin-top: 8px; }
+.coin-modal .cm-cap { margin-top: 4px; font-size: 14px; }
+/* the explanation window's own demo film (assets/video) */
+.sec-video video { width: 100%; height: 100%; display: block; background: #000000; object-fit: contain; }

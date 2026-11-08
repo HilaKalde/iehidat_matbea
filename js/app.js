@@ -883,17 +883,17 @@
     const target = (t, i) => coins
       // by the rim (10 / 5 / 2 ₪): a strip along the rim from each side of the coin; by the diameter
       // (smooth rims): a silhouette at its true relative size + the diameter
-      ? `<div class="dm-t coin-t by-${t.by}" data-drop="${i}">${t.by === "edge" ? `<span class="coin-sides" role="img" aria-label="תקריב של שולי המעה משני צדדיה">${rimMag(t, "a", 112)}${rimMag(t, "b", 112)}<button type="button" class="coin-zoom" data-zoom="${t.coin}" aria-label="הגדלת השוליים">${ZOOM_IC}</button></span><span class="coin-dia rim">${t.rim}</span>` : `<span class="coin-sil" style="--d:${t.d}"></span><span class="coin-dia">קוטר ${String(t.d).replace(".", ",")} מ"מ</span>`}<span class="dm-slot" data-slot>?</span></div>`
+      ? `<div class="dm-t coin-t by-${t.by}" data-drop="${i}">${t.by === "edge" ? `<span class="coin-sides" role="img" aria-label="תקריב של שולי המעה">${Object.keys(t.rims).map(sd => rimMag(t, sd, 112)).join("")}<button type="button" class="coin-zoom" data-zoom="${t.coin}" aria-label="הגדלת השוליים">${ZOOM_IC}</button></span><span class="coin-dia rim">${t.rim}</span>` : `<span class="coin-sil" style="--d:${t.d}"></span><span class="coin-dia">קוטר ${String(t.d).replace(".", ",")} מ"מ</span>`}<span class="dm-slot" data-slot>?</span></div>`
       : `<div class="dm-t note-t" data-drop="${i}"><img src="${BN + t.img}.jpg" alt="שטר כפי שאדם עם לקות ראייה עשוי לראות אותו"><span class="dm-slot" data-slot>?</span></div>`;
     return `
       ${ladderBg()}
       ${ladderHtml(s.stage)}
       ${coins ? s.targets.filter(t => t.by === "edge").map(t => layerHtml("zoom-" + t.coin, `
-        <div class="modal card coin-modal" role="dialog" aria-label="המעה משני צדדיה">
+        <div class="modal card coin-modal" role="dialog" aria-label="שולי המעה">
           <button class="close-x" data-close="1" aria-label="סגירה">${CLOSE_X}</button>
           <div class="h-title">${t.rim}</div>
-          <div class="cm-sides">${rimMag(t, "a", 400)}${rimMag(t, "b", 400)}</div>
-          <p class="cm-cap">השוליים משני צדי המעה</p>
+          <div class="cm-sides">${Object.keys(t.rims).map(sd => rimMag(t, sd, 530)).join("")}</div>
+          <p class="cm-cap">שולי המעה בהגדלה</p>
         </div>`)).join("") : ""}
       <div class="lad-content dm ${coins ? "coins" : "notes"} ${A("fade", 0)}">
         <div class="mq-top"><div class="h-title">${s.title}</div>${s.time ? timerHtml("big") : ""}</div>
@@ -1037,12 +1037,12 @@
         <button type="button" class="sg-it ${visited(s).includes("m" + x.n) ? "seen" : ""}" data-mark="${x.n}"><span class="sg-n">${x.n}</span>${x.name}<span class="tick" aria-hidden="true">✓</span></button>`).join("")}</section>`).join("")}
     </div>
     ${s.list.map(x => layerHtml("mark-" + x.n, `
-      <div class="modal card sec-modal ${x.yt ? "has-video" : ""}" role="dialog" aria-label="${x.name}">
+      <div class="modal card sec-modal ${x.yt || x.vid ? "has-video" : ""}" role="dialog" aria-label="${x.name}">
         <button class="close-x" data-close="1" aria-label="סגירה">${CLOSE_X}</button>
         <div class="exm-head"><span class="sec-badge ${x.g}">${x.n}</span><div><div class="h-title">${x.name}</div><div class="exm-sub">${s.groups.find(g => g[1] === x.g)[0]}${x.back ? " · בגב השטר" : ""}</div></div></div>
         <p class="exm-p">${money(x.text)}</p>
         ${x.foot ? `<p class="sec-foot">${x.foot}</p>` : ""}
-        ${x.yt ? `<div class="sec-video" data-yt="${x.yt}"><button type="button" class="tv-play" data-ytplay aria-label="הפעלת סרטון ההדגמה"><img src="${UI}play.png" alt=""><span>צפו בסרטון ההדגמה</span></button></div>` : ""}
+        ${x.yt || x.vid ? `<div class="sec-video" data-yt="${x.yt || ""}" data-vid="${x.vid || ""}"><button type="button" class="tv-play" data-ytplay aria-label="הפעלת סרטון ההדגמה"><img src="${UI}play.png" alt=""><span>צפו בסרטון ההדגמה</span></button></div>` : ""}
       </div>`)).join("")}`;
   function bindSecurity(scr, s) {
     $$("[data-mark]", scr).forEach(b => b.addEventListener("click", () => {
@@ -1056,6 +1056,8 @@
     const playBtn = `<button type="button" class="tv-play" data-ytplay aria-label="הפעלת סרטון ההדגמה"><img src="${UI}play.png" alt=""><span>צפו בסרטון ההדגמה</span></button>`;
     const play = box => {
       const origin = location.protocol === "file:" ? "" : "&origin=" + encodeURIComponent(location.origin);
+      // a demo film that ships with the lomda (assets/video) plays in a <video>; the rest are YouTube embeds
+      if (box.dataset.vid) { box.innerHTML = `<video src="${VID}${box.dataset.vid}" controls autoplay playsinline controlslist="nodownload" title="סרטון הדגמה"></video>`; return; }
       box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${box.dataset.yt}?autoplay=1&mute=0&rel=0&modestbranding=1&playsinline=1${origin}" title="סרטון הדגמה" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
     };
     scr.addEventListener("click", e => {
@@ -1085,8 +1087,9 @@
     const first = s.num === 1 && firstVisit;
     const note = side => {
       const real = s.realSide === side;
-      return `<button type="button" class="pl-note ${side}" data-side="${side}" aria-label="השטר ${side === "right" ? "העליון" : "התחתון"}"><span class="pl-letter" aria-hidden="true">${side === "right" ? "א" : "ב"}</span>
-        <img src="${BN + s.pair}-${real ? "real" : "fake"}.jpg" alt="">
+      return `<button type="button" class="pl-note ${side}${s.video ? " vid" : ""}" data-side="${side}" aria-label="השטר ${side === "right" ? "העליון" : "התחתון"}"><span class="pl-letter" aria-hidden="true">${side === "right" ? "א" : "ב"}</span>
+        ${s.video ? `<video src="${VID + s.pair}-${real ? "real" : "fake"}.mp4" poster="${VID + s.pair}-${real ? "real" : "fake"}.jpg" autoplay muted loop playsinline aria-hidden="true" tabindex="-1"></video>`
+          : `<img src="${BN + s.pair}-${real ? "real" : "fake"}.jpg" alt="">`}
         <span class="pl-tag" data-tag hidden></span></button>`;
     };
     return `
@@ -1559,8 +1562,8 @@
       p.addEventListener("blur", () => setMachineHover(scr, set, false));
       p.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goTo(p.dataset.go); } });
     });
-    const bgVideo = $("video.bg[autoplay]", scr);
-    if (bgVideo) bgVideo.play().catch(() => {});
+    // looping videos (the warm-up background, the pulley notes) restart whenever their screen is shown again
+    $$("video[autoplay][loop]", scr).forEach(v => v.play().catch(() => {}));
     if (BIND[s.type]) BIND[s.type](scr, s);
   }
 
