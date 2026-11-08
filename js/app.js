@@ -405,6 +405,7 @@
           <div class="st-items ${s.drag ? "drag" : ""}" data-items></div>
           ${s.drag ? `<div class="bars-drop" data-drop="bars"><img src="${IMG}era-metal-v2.png" alt="בצעי כסף"><span>גררו לכאן</span></div>` : ""}
           <p class="st-need" data-need></p>
+          <div class="st-actions st-nextrow" data-nextrow hidden><button type="button" class="btn" data-nextrow-btn>לתרגיל הבא</button></div>
         </div>
         <div data-phase="done" hidden>
           <div class="inline-fb" data-inline-fb role="status" aria-live="polite" tabindex="-1"></div>
@@ -520,13 +521,20 @@
       playFeedbackSound(rowOk);
       animate(rowOk, nOk);
       results[i] = picks;
-      await wait(1500);
+      // the next item starts only on the learner's click ("לתרגיל הבא"; after the last one – to the station's feedback)
+      await waitNext(i === s.rows.length - 1);
       return myRun === run;
     }
+    const nextBox = $("[data-nextrow]", scr), nextBtn = $("[data-nextrow-btn]", scr);
+    const waitNext = last => new Promise(res => {
+      nextBtn.textContent = last ? "לסיכום התחנה" : "לתרגיל הבא";
+      nextBox.hidden = false; nextBtn.focus({ preventScroll: true });
+      nextBtn.onclick = () => { nextBtn.onclick = null; nextBox.hidden = true; res(); };
+    });
     let abort = false;
     async function start() {
       leaveIntro();
-      const myRun = ++run; results = []; points = 0; lungeStep = 0; abort = false; ptsEl.textContent = 0;
+      const myRun = ++run; results = []; points = 0; lungeStep = 0; abort = false; ptsEl.textContent = 0; nextBox.hidden = true;
       both(img => { img.style.removeProperty("--step"); img.classList.remove("stepping"); });
       if (s.ex === "sprint") sprintReady();                // the practice starts: Aya gets ready (she runs only on a correct answer)
       show("play");
