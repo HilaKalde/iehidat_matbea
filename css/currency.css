@@ -63,7 +63,7 @@
 .era-st { margin-top: 12px; font-size: 17px; color: var(--teal); }
 
 /* ---------- functional: how-to ---------- */
-.fh-wrap { left: 140px; top: 90px; width: 920px; color: #FFFFFF; text-align: right; }
+.fh-wrap { left: 90px; top: 90px; width: 970px; color: #FFFFFF; text-align: right; }
 .fh-wrap .h-title { color: #FFFFFF; font-size: 31px; }
 .fh-lead { margin-top: 6px; font-size: 19px; }
 .fh-list { list-style: none; padding: 0; margin: 16px 0 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
