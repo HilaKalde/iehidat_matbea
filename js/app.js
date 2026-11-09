@@ -529,7 +529,7 @@
     const rowHtml = (r, i) => r.items.map((t, j) => `<button type="button" class="st-item" ${s.drag ? "data-chip" : ""} data-j="${j}">${money(t)}</button>`).join("");
     async function playRow(i, myRun) {
       const r = s.rows[i], picks = [];
-      rowNo.textContent = `${s.steps ? "צעד" : "סעיף"} ${i + 1} מתוך ${s.rows.length}`;
+      rowNo.hidden = !!s.steps; rowNo.textContent = s.steps ? "" : `סעיף ${i + 1} מתוך ${s.rows.length}`;
       qEl.hidden = !r.q; qEl.textContent = r.q || "";
       itemsBox.innerHTML = rowHtml(r, i); itemsBox.classList.remove("a", "rise"); void itemsBox.offsetWidth; itemsBox.classList.add("a", "rise");
       const k = r.correct.length;
