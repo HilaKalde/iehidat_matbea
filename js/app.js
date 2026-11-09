@@ -44,6 +44,39 @@
     try { sfxNow.currentTime = 0; const p = sfxNow.play(); if (p) p.catch(() => {}); } catch (e) {}
   }
 
+  /* narration: one voice at a time. A screen's opening text is <slide>.mp3, its layers / items / feedback are <slide>-<key>.mp3 */
+  const NARR = AUDIO + "narr/";
+  let narrA = null, narrQ = [], narrEnd = null;
+  const coverUp = () => { const c = document.getElementById("cover"); return !!c && !c.classList.contains("gone"); };
+  function narrStart(a) {
+    const p = a.play();
+    // a browser refuses sound before the first click (a deep link): it starts with that click
+    if (p) p.catch(err => {
+      if (!err || err.name !== "NotAllowedError") return;
+      const retry = () => { document.removeEventListener("pointerdown", retry, true); document.removeEventListener("keydown", retry, true); if (narrA === a && state.sound) a.play().catch(() => {}); };
+      document.addEventListener("pointerdown", retry, true); document.addEventListener("keydown", retry, true);
+    });
+  }
+  function stopNarr() {
+    narrQ = []; narrEnd = null;
+    if (narrA) { narrA.onended = narrA.onerror = null; try { narrA.pause(); } catch (e) {} narrA = null; }
+  }
+  function narrNext() {
+    const f = narrQ.shift();
+    if (f == null) { const e = narrEnd; narrEnd = null; narrA = null; if (e) e(); return; }
+    const a = narrA = new Audio(NARR + f + ".mp3");
+    a.onended = narrNext; a.onerror = narrNext;
+    if (state.sound) narrStart(a);
+  }
+  // keys of the current slide, played in order ("" = the opening text); onEnd runs when the last one is over
+  function narrate(keys, onEnd) {
+    stopNarr();
+    if (coverUp() || !current) return;
+    const n = current.index + 1;
+    narrQ = [].concat(keys).map(k => (k ? n + "-" + k : "" + n)); narrEnd = onEnd || null;
+    narrNext();
+  }
+
   /* -------------------------------------------------------------- helpers */
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -94,8 +127,8 @@
   const CLOSE_X = `<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>`;
   function layerHtml(id, inner) { return `<div class="layer" data-layer="${id}"><div class="dim"></div>${inner}</div>`; }
   const modalMode = on => $("#stage").classList.toggle("modal-open", on);
-  function showLayer(scr, id) { const L = $(`[data-layer="${id}"]`, scr); if (L) { L.classList.add("show"); modalMode(true); fixOrphans(L); const f = $(".close-x", L); if (f) f.focus({ preventScroll: true }); } }
-  function hideLayer(L) { L.classList.remove("show"); modalMode(false); $$("iframe", L).forEach(f => f.remove()); }
+  function showLayer(scr, id, narrKey, onEnd) { const L = $(`[data-layer="${id}"]`, scr); if (L) { L.classList.add("show"); modalMode(true); fixOrphans(L); const f = $(".close-x", L); if (f) f.focus({ preventScroll: true }); if (narrKey) { L.dataset.narr = "1"; narrate(narrKey, onEnd); } } }
+  function hideLayer(L) { if (L.dataset.narr) stopNarr(); L.classList.remove("show"); modalMode(false); $$("iframe", L).forEach(f => f.remove()); }
 
   function fbHtml(ok, head, body, points, action) {
     return `<div class="ifb-row"><p class="ifb-head">${head}</p>${points ? `<span class="ifb-coins"><span class="coin sm"></span>+${points} מטבעות</span>` : ""}</div>` +
@@ -266,6 +299,7 @@
   /* PLAY: the set's film plays inside the lomda, over the whole stage (YouTube embed); ✕ closes it and stops it.
      A set without a film yet shows "סרטון יתווסף בהמשך" on the TV. */
   function openFilm(scr, v) {
+    stopNarr();
     // YouTube refuses to play an embedded video without a referring site (error 153, "שגיאה בהגדרות של נגן הווידאו"),
     // which is the case when the lomda is opened straight from the disk (file://) – then the film opens on YouTube
     if (!v.src && location.protocol === "file:") { window.open("https://www.youtube.com/watch?v=" + v.yt, "_blank", "noopener"); return; }
@@ -327,7 +361,7 @@
         </div>
       </div>`)).join("")}`;
   function bindTimeline(scr, s) {
-    $$("[data-era]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, b.dataset.era); b.classList.add("seen"); showLayer(scr, "era-" + b.dataset.era); }));
+    $$("[data-era]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, b.dataset.era); b.classList.add("seen"); showLayer(scr, "era-" + b.dataset.era, "era" + s.eras.findIndex(e => e.key === b.dataset.era)); }));
     scr._onLayerClose = () => {
       const p = $("[data-ex-progress]", scr);
       if (allVisited(s) && !p.classList.contains("done")) { p.textContent = "כל הכבוד! הכרתם את כל המסלול – אפשר להמשיך."; p.classList.add("done", "a", "pop"); }
@@ -501,6 +535,7 @@
       const k = r.correct.length;
       need.textContent = s.drag ? "" : (k === 1 ? "בחרו פריט אחד" : `בחרו ${k} פריטים`);
       timer = countdown($("[data-tbar]", scr), s.sec, $("[data-tsec]", scr));
+      narrate("row" + i);
       const pick = btn => {
         if (btn.disabled || picks.length >= k) return;
         const j = +btn.dataset.j; picks.push(j); btn.disabled = true;
@@ -513,6 +548,7 @@
       else $$(".st-item", itemsBox).forEach(b => b.addEventListener("click", () => pick(b)));
       await timer.done;
       if (myRun !== run) return false;
+      stopNarr();
       if (abort) { results[i] = picks; return false; }
       // close the row: missed correct items are outlined, the rest locked
       $$(".st-item", itemsBox).forEach(b => { b.disabled = true; const j = +b.dataset.j; if (r.correct.includes(j) && !picks.includes(j)) b.classList.add("should"); });
@@ -559,6 +595,7 @@
       // s.fbTitle: an opening line above the result (e.g. "השלמתם את תרגיל הסקווט!")
       const head = (s.fbTitle ? `<span class="ifb-title">${s.fbTitle}</span>` : "") + s.fb.replace("{n}", n).replace("{t}", max);
       showFb($("[data-inline-fb]", scr), n >= max * .5, fbHtml(n >= max * .5, head, s.explain, a.points), focus);
+      narrate("fb");
       $("[data-review]", scr).innerHTML = s.rows.map((r, i) => `<div class="rv-row">${r.q ? `<span class="rv-q">${r.q}</span>` : ""}${r.items.map((t, j) => {
         const picked = (a.results[i] || []).includes(j), c = r.correct.includes(j);
         return `<span class="rv-it ${picked ? (c ? "ok" : "bad") : (c ? "should" : "")}">${t}</span>`; }).join("")}</div>`).join("");
@@ -655,7 +692,7 @@
         ${bnImg(FIGURES[k].spec || FIGURES[k].bn, "השטר של " + FIGURES[k].name, "big")}
       </div>`)).join("")}`;
   function bindFigures(scr, s) {
-    $$("[data-fig-k]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, b.dataset.figK); b.classList.add("seen"); showLayer(scr, "fig-" + b.dataset.figK); }));
+    $$("[data-fig-k]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, b.dataset.figK); b.classList.add("seen"); showLayer(scr, "fig-" + b.dataset.figK, "fig" + s.list.indexOf(b.dataset.figK)); }));
   }
 
   /* stage 2 – the five series */
@@ -681,7 +718,7 @@
         ${bnImg(x.bn, "שטר לדוגמה מתוך " + x.name, "big")}
       </div>`)).join("")}`;
   function bindSeries(scr, s) {
-    $$("[data-ser]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, b.dataset.ser); b.classList.add("seen"); showLayer(scr, "ser-" + b.dataset.ser); }));
+    $$("[data-ser]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, b.dataset.ser); b.classList.add("seen"); showLayer(scr, "ser-" + b.dataset.ser, "ser" + s.list.findIndex(x => x.key === b.dataset.ser)); }));
   }
 
   /* timed matching quiz (stage 1 figure → deed, stage 2 note → series, stage 4 figure → colour) */
@@ -744,6 +781,7 @@
     bar.hidden = true;
     async function start() {
       const myRun = ++run, picks = {};
+      stopNarr();
       show("play"); bar.hidden = false;
       dots.forEach(d => (d.className = ""));
       timer = countdown(bar, s.time, $("[data-tsec]", scr));
@@ -753,6 +791,7 @@
         const it = m.items[i];
         dots.forEach((d, j) => d.classList.toggle("now", j === i));
         vis.innerHTML = m.visual(it); vis.classList.remove("a", "pop"); void vis.offsetWidth; vis.classList.add("a", "pop");
+        if (s.kind !== "series") narrate("item" + i);
         opts.forEach(o => { o.disabled = false; o.className = "mq-opt"; $$(".mq-right", o).forEach(x => x.remove()); });
         const chosen = await new Promise(res => {
           const h = e => { const o = e.target.closest("[data-opt]"); if (!o || o.disabled) return; scr.removeEventListener("click", h); res(o.dataset.opt); };
@@ -760,6 +799,7 @@
           timer.done.then(() => { scr.removeEventListener("click", h); res(null); });
         });
         if (chosen == null || myRun !== run) return;
+        stopNarr();
         const ok = chosen === it.ans; picks[it.key] = chosen;
         // a wrong pick: the chosen answer turns red, the right one green, the rest fade
         opts.forEach(o => {
@@ -791,6 +831,7 @@
       const good = n >= (s.passAt || t / 2);
       const head = s.fbGood ? (good ? s.fbGood : s.fbBad).replace("{n}", n).replace("{t}", t) : `התאמתם נכון ${n} מתוך ${t}. ${s.done}`;
       showFb($("[data-inline-fb]", scr), good, fbHtml(good, head, "", n), focus);
+      if (s.kind === "color") narrate(good ? "good" : "bad"); else stopNarr();
       $("[data-results]", scr).innerHTML = m.items.map(it => {
         const p = a.picks[it.key], ok = p === it.ans;
         const picked = p == null ? "לא נענה" : (m.options.find(o => o.key === p) || {}).label;
@@ -833,7 +874,10 @@
         <img class="vis-big" src="${IMG + v.img}" alt="הדמיה: ${v.name}">
       </div>`)).join("")}`;
   function bindVision(scr, s) {
-    $$("[data-vis]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, "v" + b.dataset.vis); b.classList.add("seen"); showLayer(scr, "vis-" + b.dataset.vis); }));
+    $$("[data-vis]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, "v" + b.dataset.vis); b.classList.add("seen"); showLayer(scr, "vis-" + b.dataset.vis, "vis" + b.dataset.vis); }));
+    // the closing lines of the narration: once all four pictures were opened and the last window closes
+    let outroDone = s.list.every((v, i) => visited(s).includes("v" + i));
+    scr._onLayerClose = () => { if (!outroDone && s.list.every((v, i) => visited(s).includes("v" + i))) { outroDone = true; narrate("outro"); } };
   }
   R.access = s => {
     if (s.kind === "notes") return `
@@ -877,7 +921,7 @@
     return "";
   }
   function bindAccess(scr, s) {
-    $$("[data-acc]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, b.dataset.acc); b.classList.add("seen"); showLayer(scr, "acc-" + b.dataset.acc); }));
+    $$("[data-acc]", scr).forEach(b => b.addEventListener("click", () => { markVisited(s, b.dataset.acc); b.classList.add("seen"); showLayer(scr, "acc-" + b.dataset.acc, "acc" + s.list.findIndex(x => x.key === b.dataset.acc)); }));
   }
   const ZOOM_IC = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M15 15l6 6M10 7v6M7 10h6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>`;
   /* the rim only (never the face – that would give the value away): a tall strip along the edge of the photo of each
@@ -1002,6 +1046,7 @@
       const before = stagesDone();
       setAns(s.id, { completed: true, points: n * (s.pts || 1), correct: n, placed: Object.assign({}, placed) });
       updateChrome(s); playFeedbackSound(n === s.targets.length);
+      if (s.kind === "coins") narrate("fb"); else stopNarr();
       ph("play").hidden = false; ph("done").hidden = false; ph("intro").hidden = true;
       showFb($("[data-inline-fb]", scr), n === s.targets.length, fbHtml(n === s.targets.length, `זיהיתם נכון ${n} מתוך ${s.targets.length}.${s.done ? " " + s.done : ""}`, "", n), true);
       if (stagesDone() > before) climb(scr, s.stage);
@@ -1009,6 +1054,7 @@
     check.addEventListener("click", finish);
     const startBtn = $("[data-start]", scr);
     if (startBtn) startBtn.addEventListener("click", () => {
+      stopNarr();
       ph("intro").hidden = true; ph("play").hidden = false;
       if (s.time) { bar.hidden = false; const my = ++run; timer = countdown(bar, s.time, $("[data-tsec]", scr)); timer.done.then(r => { if (r === "time" && my === run && alive(scr)) finish(); }); }
     });
@@ -1027,6 +1073,7 @@
       lock(); mark(); check.hidden = true; $(".dm-chips", scr).hidden = true;
       const nRight = a => (a.correct != null ? a.correct : a.points);
       showFb($("[data-inline-fb]", scr), nRight(a) === s.targets.length, fbHtml(nRight(a) === s.targets.length, `זיהיתם נכון ${nRight(a)} מתוך ${s.targets.length}.${s.done ? " " + s.done : ""}`, "", a.points), false);
+      if (s.kind === "coins") narrate("fb");
     }
     scr._leave = () => { run++; if (timer) timer.stop(); };
   }
@@ -1059,10 +1106,10 @@
     $$("[data-mark]", scr).forEach(b => b.addEventListener("click", () => {
       const n = b.dataset.mark; markVisited(s, "m" + n);
       $$(`[data-mark="${n}"]`, scr).forEach(x => x.classList.add("seen"));
-      showLayer(scr, "mark-" + n);
-      // the demo film starts as soon as its window opens (no PLAY click)
-      const box = $(`[data-layer="mark-${n}"] [data-yt]`, scr);
-      if (box) play(box);
+      // the demo film starts right after the mark's narration (no PLAY click; with the sound off – at once)
+      const box = $(`[data-layer="mark-${n}"] [data-yt]`, scr), film = () => { if (box && box.isConnected) play(box); };
+      if (state.sound) showLayer(scr, "mark-" + n, "mark" + n, film);
+      else { showLayer(scr, "mark-" + n, "mark" + n); film(); }
     }));
     const playBtn = `<button type="button" class="tv-play" data-ytplay aria-label="הפעלת סרטון ההדגמה"><img src="${UI}play.png" alt=""><span>צפו בסרטון ההדגמה</span></button>`;
     const play = box => {
@@ -1073,7 +1120,7 @@
     };
     scr.addEventListener("click", e => {
       const b = e.target.closest("[data-ytplay]"); if (!b) return;
-      play(b.closest("[data-yt]"));
+      stopNarr(); play(b.closest("[data-yt]"));
     });
     // closing a layer stops its film (the iframe is removed) – the PLAY button comes back
     scr._onLayerClose = () => $$("[data-yt]", scr).forEach(box => { if (!$("[data-ytplay]", box)) box.innerHTML = playBtn; });
@@ -1137,7 +1184,8 @@
       const head = ok ? "זיהיתם נכון!" : "הפעם משכתם את המזויף.";
       fb.classList.toggle("under-left", side === "left"); fb.classList.toggle("under-right", side !== "left");   // the feedback under the chosen note
       const fill = () => showFb(fb, ok, fbHtml(ok, head, s.explain, ok ? (s.pts || 10) : 0, `<div class="ifb-actions"><button type="button" class="btn" data-go="${s.next}">${nextLbl}</button></div>`), animate);
-      if (animate) setTimeout(fill, 800); else fill();
+      const speak = () => { if (alive(scr)) narrate([ok ? "ok" : "bad", "explain"]); };
+      if (animate) setTimeout(() => { fill(); speak(); }, 800); else { fill(); speak(); }
     };
     const a = ans(s.id);
     if (a && a.completed) finish(a.answer, false);
@@ -1193,6 +1241,7 @@
       $("[data-hint]", scr).hidden = true; body.hidden = false;
       $("[data-num]", scr).textContent = i + 1; $("[data-title]", scr).textContent = st[0]; $("[data-text]", scr).textContent = st[2] || "";
       body.classList.remove("a", "rise"); void body.offsetWidth; body.classList.add("a", "rise");
+      narrate("step" + i);
     });
   }  /* the climbing wall: the empty wall board (מכשירים/קיר טיפוס בלי אבנים) with the holds placed on it – rows (bottom → top)
      × 3 columns, each hold one of the three supplied colours. The 12 rows are climbed in two parts as one journey: the
@@ -1305,6 +1354,7 @@
       const head = `סידרתם נכון ${nRight} מתוך ${rows} שלבים ${s.panelTitle ? "בתחנות בחיי השטרות והמעות" : "בהנפקת שטר הכסף"}`;
       const body = all ? "בחרתם את השלב הנכון והתקדמתם אחיזה אחר אחיזה עד לפסגה." : "בכל טעות הוצג השלב הנכון והמשכתם לטפס. כדאי לעבור שוב על השלבים ברשימה שבצד.";
       showFb(fb, true, fbHtml(true, head, body, a.points), animate);
+      narrate(all ? "good" : "bad");
       // the green feedback box on the left of the wall, the two buttons below it
       if (!$(".wp-fb-actions", scr)) fb.insertAdjacentHTML("afterend", `<div class="wp-fb-actions">${retries() < MAX_CLIMBS ? `<button type="button" class="link-btn" data-again2>טיפוס חוזר</button>` : ""}<button type="button" class="btn" data-go="${s.next}">לסיכום הסט</button></div>`);
     };
@@ -1422,14 +1472,15 @@
     const fbFor = ok => `<div class="ifb-row"><p class="ifb-head">${ok ? "יפה מאוד! הכסף שלכם נשמר" : "לא נכון, יש לכם 10 מטבעות פחות בקופה"}</p><span class="ifb-coins"><span class="coin sm"></span>נשארו ${bank()} מטבעות</span></div><div class="ifb-body">${money(s.explain)}</div>`;
     const heroImg = $("[data-hero]", scr), train = () => playWebp(heroImg, heroImg.dataset.hero);
     const a = ans(s.id);
-    if (a && a.completed) { showFinal(a.answer); showFb(fb, a.correct, fbFor(a.correct), false); if (a.correct) train(); }
+    if (a && a.completed) { showFinal(a.answer); showFb(fb, a.correct, fbFor(a.correct), false); narrate(a.correct ? "ok" : "bad"); if (a.correct) train(); }
     opts.forEach(o => o.addEventListener("click", () => {
       if (isDone(s.id)) return;
       const sel = +o.dataset.opt, ok = sel === s.correct;
       setAns(s.id, { completed: true, answer: sel, correct: ok });
       showFinal(sel); playFeedbackSound(ok);
       if (ok) train(); else coinsOut(scr);
-      setTimeout(() => showFb(fb, ok, fbFor(ok)), ok ? 500 : 1300);
+      stopNarr();
+      setTimeout(() => { showFb(fb, ok, fbFor(ok)); if (alive(scr)) narrate(ok ? "ok" : "bad"); }, ok ? 500 : 1300);
     }));
   }
   function coinsOut(scr) {
@@ -1575,6 +1626,8 @@
     });
     // looping videos (the warm-up background, the pulley notes) restart whenever their screen is shown again
     $$("video[autoplay][loop]", scr).forEach(v => v.play().catch(() => {}));
+    // the screen's narration; a completed exercise opens on its feedback instead (its renderer narrates that)
+    if (!isDone(s.id)) narrate(""); else stopNarr();
     if (BIND[s.type]) BIND[s.type](scr, s);
   }
 
@@ -1602,8 +1655,12 @@
   soundImg();
   C("sound").addEventListener("click", () => {
     state.sound = !state.sound; save(); soundImg();
-    if (!state.sound) stopFeedbackSound();
-    toast(state.sound ? "הסאונד הופעל (הקריינות תתווסף בהמשך)" : "הסאונד הושתק");
+    if (!state.sound) {
+      stopFeedbackSound();
+      if (narrEnd) { const e = narrEnd; stopNarr(); e(); }           // a film waiting for the narration starts now
+      else if (narrA) narrA.pause();
+    } else if (narrA) narrStart(narrA);
+    toast(state.sound ? "הסאונד הופעל" : "הסאונד הושתק");
   });
   C("home").addEventListener("click", () => goTo("menu"));
   C("skip").addEventListener("click", () => { const to = C("skip").dataset.go; if (to) goTo(to); });
@@ -1692,8 +1749,8 @@
   const firstScreen = DATA.screens[0].id;
   const behind = [$("#screens"), $("#chrome")];
   const dropCover = () => { cover.classList.add("gone"); behind.forEach(e => e.removeAttribute("inert")); };
-  if (byId[start] && start !== firstScreen) dropCover();
+  if (byId[start] && start !== firstScreen) { dropCover(); if (!isDone(current.id)) narrate(""); }
   else behind.forEach(e => e.setAttribute("inert", ""));
   coverBtn.addEventListener("click", () => { dropCover(); goTo(firstScreen); });
-  sel.addEventListener("change", dropCover);
+  sel.addEventListener("change", () => { const was = coverUp(); dropCover(); if (was && !isDone(current.id)) narrate(""); });
 })();
