@@ -1207,7 +1207,10 @@
     <img class="char wh-climber ${A("fly-l", 300)}" src="${IMG}aya-climb4.png" alt="איה מטפסת על קיר הטיפוס">
     <div class="wall-content wh-content ${A("rise", 150)}">
       <div class="h-title">${s.title}</div>
-      ${s.paras.map(p => `<p class="txt wall-lead">${p.replace("✔", '<span class="ic-ok" aria-hidden="true">✔</span>').replace("✖", '<span class="ic-bad" aria-hidden="true">✖</span>')}</p>`).join("")}
+      ${s.paras.map(p => `<p class="txt wall-lead">${/[✔✖]/.test(p)
+        // ✔ / ✖ lines: each its own row, a wrapped line starts under the text and not under the icon
+        ? p.split("<br>").map(l => `<span class="wh-rule">${l.replace(/^\s*([✔✖])\s*/, (m, ic) => `<span class="${ic === "✔" ? "ic-ok" : "ic-bad"}" aria-hidden="true">${ic}</span><span>`)}</span></span>`).join("")
+        : p}</p>`).join("")}
       <div class="wall-actions"><button class="btn practice-btn" data-go="${s.next}">${s.button}</button></div>
     </div>`;
   /* the life cycle of banknotes and coins, before the climbing wall: the 12 steps around a loop (clockwise from the top, numbered; no lines or arrows – kept light),
