@@ -742,8 +742,10 @@
 /* slide 41: more space between the two last lines */
 .wh-content .wall-lead:nth-of-type(3) { line-height: 2; }
 /* slide 42: the second line of a ✔ / ✖ row lines up with the text above it */
-.wh-rule { display: flex; align-items: flex-start; gap: 4px; }
-.wh-rule .ic-ok, .wh-rule .ic-bad { flex: none; margin: 4px 0 0; }
+/* the two lines of a row close together, the rows apart, and a little air between the icon and the text */
+.wh-rule { display: flex; align-items: flex-start; gap: 10px; line-height: 1.45; }
+.wh-rule + .wh-rule { margin-top: 10px; }
+.wh-rule .ic-ok, .wh-rule .ic-bad { flex: none; margin: 0; }
 /* round 41: the ✓ of a correct hold back to the small corner badge */
 .stone.ok::after { left: -9px; top: -9px; transform: none; width: 18px; height: 18px; font-size: 11px; border-width: 1.5px; }
 .stone.ok img { filter: drop-shadow(0 0 0 #2E6B1F) drop-shadow(0 0 5px #7CD35A) brightness(.85); }
