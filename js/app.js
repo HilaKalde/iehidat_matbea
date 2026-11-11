@@ -773,8 +773,13 @@
     </div>`;
   };
   function bindMatch(scr, s) {
-    // slide 27: the clue opens only when the learner asks for it
-    scr.addEventListener("click", e => { const b = e.target.closest("[data-hint]"); if (!b) return; b.hidden = true; b.setAttribute("aria-expanded", "true"); b.nextElementSibling.hidden = false; });
+    // slide 27: the clue opens only when the learner asks for it, and is read out (<slide>-hint<i>.mp3)
+    scr.addEventListener("click", e => {
+      const b = e.target.closest("[data-hint]"); if (!b) return;
+      b.hidden = true; b.setAttribute("aria-expanded", "true"); b.nextElementSibling.hidden = false;
+      const i = dots.findIndex(d => d.classList.contains("now"));
+      if (i >= 0) narrate("hint" + i);
+    });
     const m = matchModel(s), ph = k => $(`[data-phase="${k}"]`, scr), show = k => ["intro", "play", "done"].forEach(x => (ph(x).hidden = x !== k));
     const bar = $("[data-tbar]", scr), vis = $("[data-visual]", scr), opts = $$("[data-opt]", scr), dots = $$("[data-dot]", scr);
     let run = 0, timer = null;
