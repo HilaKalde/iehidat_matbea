@@ -830,7 +830,7 @@
       // s.fbGood / s.fbBad (from s.passAt right answers): separate texts for a good and a weak result
       const good = n >= (s.passAt || t / 2);
       const head = s.fbGood ? (good ? s.fbGood : s.fbBad).replace("{n}", n).replace("{t}", t) : `התאמתם נכון ${n} מתוך ${t}. ${s.done}`;
-      showFb($("[data-inline-fb]", scr), good, fbHtml(good, head, "", n), focus);
+      showFb($("[data-inline-fb]", scr), good, fbHtml(good, head, "", a.points), focus);
       if (s.kind === "color") narrate(good ? "good" : "bad"); else stopNarr();
       $("[data-results]", scr).innerHTML = m.items.map(it => {
         const p = a.picks[it.key], ok = p === it.ans;
@@ -1048,7 +1048,7 @@
       updateChrome(s); playFeedbackSound(n === s.targets.length);
       if (s.kind === "coins") narrate("fb"); else stopNarr();
       ph("play").hidden = false; ph("done").hidden = false; ph("intro").hidden = true;
-      showFb($("[data-inline-fb]", scr), n === s.targets.length, fbHtml(n === s.targets.length, `זיהיתם נכון ${n} מתוך ${s.targets.length}.${s.done ? " " + s.done : ""}`, "", n), true);
+      showFb($("[data-inline-fb]", scr), n === s.targets.length, fbHtml(n === s.targets.length, `זיהיתם נכון ${n} מתוך ${s.targets.length}.${s.done ? " " + s.done : ""}`, "", n * (s.pts || 1)), true);
       if (stagesDone() > before) climb(scr, s.stage);
     }
     check.addEventListener("click", finish);
